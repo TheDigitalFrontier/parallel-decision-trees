@@ -2,7 +2,11 @@
 #include <stdlib.h>
 #include <time.h>
 #include <array>
+#include <vector>
 #include "timing.h"
+#include "timing.c"
+
+#include "helpers.cpp"
 
 int main(int argc, char** argv){
     // argc is count of arguments provided
@@ -42,8 +46,18 @@ int main(int argc, char** argv){
     printf("Row 3, Col 2: %f\n", dataset[2][1]);
     //printf("Row 0: %f\n", **dataset);
 
-    /* do stuff */
+    /* ----- BEGIN ----- */
 
+    // Test that accuracy scoring from helpers.cpp works
+    std::vector<int> tar = {0, 1, 1, 0, 0};
+    // should print 5/5 == 1.0:
+    std::vector<int> pred1 = {0, 1, 1, 0, 0};
+    printf("Accuracy pred1: %f\n", accuracy_score(tar, pred1));
+    // should print 3/5 = =0.6:
+    std::vector<int> pred2 = {0, 0, 1, 1, 0};
+    printf("Accuracy pred2: %f\n", accuracy_score(tar, pred2));
+
+    /* ----- WRAP UP ----- */
     // record end time
     get_time(&tend);
     // print results

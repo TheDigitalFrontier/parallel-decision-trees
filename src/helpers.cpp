@@ -3,10 +3,10 @@
 #include <vector>
 
 //double accuracy_score(double* target, double* prediction){
-double accuracy_score(std::vector<double> targets, std::vector<double> predictions){
+double accuracy_score(std::vector<int> targets, std::vector<int> predictions){
     // todo: verify that target and predict have same size
 
-    int correct = 0;
+    double correct = 0;
     for (int i = 0; i < targets.size(); i++)
     {
         if (targets[i] == predictions[i])
