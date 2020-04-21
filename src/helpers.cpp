@@ -3,7 +3,7 @@
 #include <vector>
 
 //double accuracy_score(double* target, double* prediction){
-double accuracy_score(std::vector<int> targets, std::vector<int> predictions){
+double accuracy_score(std::vector<double> targets, std::vector<double> predictions){
     // todo: verify that target and predict have same size
 
     double correct = 0;
@@ -15,5 +15,5 @@ double accuracy_score(std::vector<int> targets, std::vector<int> predictions){
         }
         
     }
-    return double(correct/targets.size());
+    return correct/targets.size();
 }

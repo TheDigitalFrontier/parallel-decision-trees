@@ -49,12 +49,12 @@ int main(int argc, char** argv){
     /* ----- BEGIN ----- */
 
     // Test that accuracy scoring from helpers.cpp works
-    std::vector<int> tar = {0, 1, 1, 0, 0};
+    std::vector<double> tar = {0, 1, 1, 0, 0};
     // should print 5/5 == 1.0:
-    std::vector<int> pred1 = {0, 1, 1, 0, 0};
+    std::vector<double> pred1 = {0, 1, 1, 0, 0};
     printf("Accuracy pred1: %f\n", accuracy_score(tar, pred1));
     // should print 3/5 = =0.6:
-    std::vector<int> pred2 = {0, 0, 1, 1, 0};
+    std::vector<double> pred2 = {0, 0, 1, 1, 0};
     printf("Accuracy pred2: %f\n", accuracy_score(tar, pred2));
 
     /* ----- WRAP UP ----- */
