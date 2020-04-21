@@ -6,16 +6,20 @@
 int main(int argc, char** argv){
     // argc is count of arguments provided
     // argv is array of arguments
-
-    printf("Hello world\n");
-
-    // get algorithm parameters
     int ntrees, mtry;
+    timing_t tstart, tend;
 
-    ntrees = (argc > 0) ? atoi(argv[0]) : 5;
-    mtry = (argc > 1) ? atoi(argv[1]) : 2;
+    printf("Starting...\n");
+    // record starting time in tstart
+    get_time(&tstart);
+
+    // get parameters if specified, otherwise use defaults
+    ntrees = (argc > 1) ? atoi(argv[1]) : 5;
+    mtry = (argc > 2) ? atoi(argv[2]) : 2;
+    printf("ntrees = %d, mtry = %d\n", ntrees, mtry);
 
     // contrived dataset for testing: (input1, input2, class)
+    // https://www.geeksforgeeks.org/multidimensional-arrays-c-cpp/
     double dataset[10][3] = {
         {2.7810836,2.550537003,0}, 
         {1.465489372,2.362125076,0}, 
@@ -29,8 +33,15 @@ int main(int argc, char** argv){
         {7.673756466,3.508563011,1}
     };
 
-    printf("Done, mtry = %d, ntrees = %d\n", ntrees, mtry);
+    // should print 4.400293529
+    printf("Row 3, Col 2: %f\n", dataset[2][1]);
+    //printf("Row 0: %f\n", **dataset);
 
-    printf("Row 0: %f\n", dataset[0][0]);
+    /* do stuff */
+
+    // record end time
+    get_time(&tend);
+    // print results
+    printf("Done in %Lg seconds\n", timespec_diff(tstart, tend));
 }
 
