@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <array>
 #include "timing.h"
 
 int main(int argc, char** argv){
@@ -20,7 +21,8 @@ int main(int argc, char** argv){
 
     // contrived dataset for testing: (input1, input2, class)
     // https://www.geeksforgeeks.org/multidimensional-arrays-c-cpp/
-    double dataset[10][3] = {
+    //double dataset[10][3] = {
+    std::array<std::array<double, 3>, 10> dataset = {{
         {2.7810836,2.550537003,0}, 
         {1.465489372,2.362125076,0}, 
         {3.396561688,4.400293529,0}, 
@@ -31,7 +33,10 @@ int main(int argc, char** argv){
         {6.922596716,1.77106367,1}, 
         {8.675418651,-0.242068655,1}, 
         {7.673756466,3.508563011,1}
-    };
+    }};
+
+    printf("Rows: %lu\n", dataset.size());
+    printf("Cols: %lu\n", dataset[0].size());
 
     // should print 4.400293529
     printf("Row 3, Col 2: %f\n", dataset[2][1]);
