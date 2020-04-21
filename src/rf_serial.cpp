@@ -47,7 +47,7 @@ int main(int argc, char** argv){
     /* ---------- BEGIN ---------- */
     // UNIT TEST contrived dataset works as intended
     // should print 4.400293529
-    printf("Row 3, Col 2: %f\n", contrived_data[2][1]);
+    printf("Row 3, Col 2: %f\n\n", contrived_data[2][1]);
 
     // UNIT TEST accuracy scoring from helpers.cpp
     std::vector<double> tar = {0, 1, 1, 0, 0};
@@ -56,20 +56,16 @@ int main(int argc, char** argv){
     printf("Accuracy pred1: %f\n", accuracy_score(tar, pred1));
     // should print 3/5 = =0.6:
     std::vector<double> pred2 = {0, 0, 1, 1, 0};
-    printf("Accuracy pred2: %f\n", accuracy_score(tar, pred2));
+    printf("Accuracy pred2: %f\n\n", accuracy_score(tar, pred2));
 
     // UNIT TEST split_dataset from helpers.cpp
-    printf("Starting variables\n");
     int split_col = 0;
-    double split_thresh = 4.0;
-    printf("Starting split\n");
-    //std::vector<std::vector<std::vector<double>>> dataset_splits = split_dataset(contrived_data, split_col, split_thresh);
-
-    std::vector<double> derp;
-    printf("Derp size: %lu\n", derp.size());
-    //derp.insert({2.0});
-    derp.push_back(2.0);
-    printf("%f\n", derp[0]);
+    double split_thresh = 3.1;
+    printf("Splitting contrived dataset on column %d threshold %f\n", split_col, split_thresh);
+    std::vector<std::vector<std::vector<double>>> dataset_splits = split_dataset(contrived_data, split_col, split_thresh);
+    std::vector<std::vector<double>> left = dataset_splits[0];
+    std::vector<std::vector<double>> right = dataset_splits[1];
+    printf("Left set %lu rows, right set %lu rows\n\n", left.size(), right.size());
 
     /* ---------- WRAP UP ---------- */
     // record end time
