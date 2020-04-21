@@ -26,7 +26,9 @@ int main(int argc, char** argv){
     // contrived dataset for testing: (input1, input2, class)
     // https://www.geeksforgeeks.org/multidimensional-arrays-c-cpp/
     //double dataset[10][3] = {
-    std::array<std::array<double, 3>, 10> dataset = {{
+    //std::array<std::array<double, 3>, 10> dataset = {{
+    //https://en.cppreference.com/w/cpp/container/vector 
+    std::vector<std::vector<double>> contrived_data = {
         {2.7810836,2.550537003,0}, 
         {1.465489372,2.362125076,0}, 
         {3.396561688,4.400293529,0}, 
@@ -37,18 +39,17 @@ int main(int argc, char** argv){
         {6.922596716,1.77106367,1}, 
         {8.675418651,-0.242068655,1}, 
         {7.673756466,3.508563011,1}
-    }};
+    };
 
-    printf("Rows: %lu\n", dataset.size());
-    printf("Cols: %lu\n", dataset[0].size());
+    printf("Rows: %lu\n", contrived_data.size());
+    printf("Cols: %lu\n", contrived_data[0].size());
 
+    /* ---------- BEGIN ---------- */
+    // UNIT TEST contrived dataset works as intended
     // should print 4.400293529
-    printf("Row 3, Col 2: %f\n", dataset[2][1]);
-    //printf("Row 0: %f\n", **dataset);
+    printf("Row 3, Col 2: %f\n", contrived_data[2][1]);
 
-    /* ----- BEGIN ----- */
-
-    // Test that accuracy scoring from helpers.cpp works
+    // UNIT TEST accuracy scoring from helpers.cpp
     std::vector<double> tar = {0, 1, 1, 0, 0};
     // should print 5/5 == 1.0:
     std::vector<double> pred1 = {0, 1, 1, 0, 0};
@@ -57,10 +58,23 @@ int main(int argc, char** argv){
     std::vector<double> pred2 = {0, 0, 1, 1, 0};
     printf("Accuracy pred2: %f\n", accuracy_score(tar, pred2));
 
-    /* ----- WRAP UP ----- */
+    // UNIT TEST split_dataset from helpers.cpp
+    printf("Starting variables\n");
+    int split_col = 0;
+    double split_thresh = 4.0;
+    printf("Starting split\n");
+    //std::vector<std::vector<std::vector<double>>> dataset_splits = split_dataset(contrived_data, split_col, split_thresh);
+
+    std::vector<double> derp;
+    printf("Derp size: %lu\n", derp.size());
+    //derp.insert({2.0});
+    derp.push_back(2.0);
+    printf("%f\n", derp[0]);
+
+    /* ---------- WRAP UP ---------- */
     // record end time
     get_time(&tend);
     // print results
-    printf("Done in %Lg seconds\n", timespec_diff(tstart, tend));
+    printf("Done in %Lg s\n", timespec_diff(tstart, tend));
 }
 
