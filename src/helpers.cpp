@@ -71,31 +71,31 @@ datavec get_column(dataframe data, int column_id){
 }
 
 /* 
-
+TODO: change to take as parameter std::vector<dataframe>, i.e. same as output of split_dataset, to calculate Gini score between an arbitrary number of dataframes
 */
 double gini_index(dataframe data1, dataframe data2){
     double gini = 0.0;
     // Get class labels in the two dataframes (by convention last column)
     datavec class1 = get_column(data1, -1);
     datavec class2 = get_column(data2, -1);
-
-    // Todo determine classes by finding set of (class1,class2) 
-    //std::vector<double> classes = {0.0, 1.0};
     // Combine the two vectors of class labels
     std::vector<double> classes = class1;
     classes.insert(classes.end(), class2.begin(), class2.end());
     // Find unique class labels
     sort(classes.begin(), classes.end());
     classes.erase(unique(classes.begin(), classes.end()), classes.end());
-    
-    // for each class in set of unique class labels
-    for(double&c: classes){
-        // do nothing
+    // for each class in set of unique class labels, calculate proportion and add to Gini
+    double prop;
+    for(double&cur_class: classes){
+        // If class1 is not empty, iterate through it (perfect split means one df empty)
+        if (class1.size() > 0){
+            prop = std::count(class1.begin(), class1.end(), cur_class);
+            gini += (prop * (1 - prop));
+        }
+        if (class2.size() > 0){
+            prop = std::count(class2.begin(), class2.end(), cur_class);
+            gini += (prop * (1 - prop));
+        }
     }
-
-    //std::set_intersection()
-
-    //std::for_each(classes.begin(), classes.end(), [](double c){});
-
     return gini;
 }
