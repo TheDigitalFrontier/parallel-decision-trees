@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <vector>
 
+// Data type aliasing
 using dataframe = std::vector<std::vector<double>>;
 using datavec = std::vector<double>;
 
