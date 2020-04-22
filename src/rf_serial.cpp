@@ -3,6 +3,7 @@
 #include <time.h>
 #include <array>
 #include <vector>
+#include <set>
 #include "timing.h"
 #include "timing.c"
 
@@ -77,10 +78,15 @@ int main(int argc, char** argv){
     printf("\n\nClasses length: %lu\n", contrived_classes.size());
     printf("First: %f, Last: %f\n\n", contrived_classes[0], contrived_classes[contrived_classes.size()-1]);
 
+    // UNIT TEST gini_index
+    double gs = gini_index(left, right);
+    printf("\nGini: %f\n", gs);
+    
+
     /* ---------- WRAP UP ---------- */
     // record end time
     get_time(&tend);
     // print results
-    printf("Done in %Lg s\n", timespec_diff(tstart, tend));
+    printf("\n\nDone in %Lg s\n", timespec_diff(tstart, tend));
 }
 

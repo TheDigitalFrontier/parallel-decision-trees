@@ -2,6 +2,9 @@
 #include <stdlib.h>
 #include <vector>
 
+// todo use namespace across the board, since many functions?
+// using namespace std;
+
 // Data type aliasing
 using dataframe = std::vector<std::vector<double>>;
 using datavec = std::vector<double>;
@@ -72,8 +75,27 @@ datavec get_column(dataframe data, int column_id){
 */
 double gini_index(dataframe data1, dataframe data2){
     double gini = 0.0;
-    datavec class1 = get_column(data1, -2);
-    datavec class2;
+    // Get class labels in the two dataframes (by convention last column)
+    datavec class1 = get_column(data1, -1);
+    datavec class2 = get_column(data2, -1);
+
+    // Todo determine classes by finding set of (class1,class2) 
+    //std::vector<double> classes = {0.0, 1.0};
+    // Combine the two vectors of class labels
+    std::vector<double> classes = class1;
+    classes.insert(classes.end(), class2.begin(), class2.end());
+    // Find unique class labels
+    sort(classes.begin(), classes.end());
+    classes.erase(unique(classes.begin(), classes.end()), classes.end());
+    
+    // for each class in set of unique class labels
+    for(double&c: classes){
+        // do nothing
+    }
+
+    //std::set_intersection()
+
+    //std::for_each(classes.begin(), classes.end(), [](double c){});
 
     return gini;
 }
