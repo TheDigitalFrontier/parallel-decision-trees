@@ -2,10 +2,14 @@
 #include <stdlib.h>
 #include <vector>
 
+using dataframe = std::vector<std::vector<double>>;
+using datavec = std::vector<double>;
+
 /*
 Calculate the accuracy in percent of a vector of predictions compared to a vector of targets
 */
-double accuracy_score(std::vector<double> targets, std::vector<double> predictions){
+//double accuracy_score(std::vector<double> targets, std::vector<double> predictions){
+double accuracy_score(datavec targets, datavec predictions){
     // todo: verify that target and predict have same size
 
     double correct = 0;
@@ -24,19 +28,20 @@ double accuracy_score(std::vector<double> targets, std::vector<double> predictio
 Takes in a dataset and the column index number and threshold value
 Returns two datasets: left is rows with that column's values < threshold
 */
-std::vector<std::vector<std::vector<double>>> split_dataset(std::vector<std::vector<double>> dataset, int col_ind, double split_thresh){ 
-   std::vector<std::vector<double>> left, right;
-   for (int i = 0; i < dataset.size(); i++)
+//std::vector<std::vector<std::vector<double>>> split_dataset(std::vector<std::vector<double>> dataset, int col_ind, double split_thresh){ 
+std::vector<dataframe> split_dataset(dataframe data, int col_ind, double split_thresh){ 
+   dataframe left, right;
+   for (int i = 0; i < data.size(); i++)
    {
-       if (dataset[i][col_ind] < split_thresh)
+       if (data[i][col_ind] < split_thresh)
        {
-           left.push_back(dataset[i]);
+           left.push_back(data[i]);
        }
        else
        {
-           right.push_back(dataset[i]);
+           right.push_back(data[i]);
        }
    }
-   std::vector<std::vector<std::vector<double>>> two_datasets = {left, right};
+   std::vector<dataframe> two_datasets = {left, right};
    return two_datasets;
 }
