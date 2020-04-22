@@ -89,11 +89,11 @@ double gini_index(dataframe data1, dataframe data2){
     for(double&cur_class: classes){
         // If class1 is not empty, iterate through it (perfect split means one df empty)
         if (class1.size() > 0){
-            prop = std::count(class1.begin(), class1.end(), cur_class);
-            gini += (prop * (1 - prop));
+            prop = double(std::count(class1.begin(), class1.end(), cur_class)) / class1.size();
+            gini += (prop * (1.0 - prop));
         }
         if (class2.size() > 0){
-            prop = std::count(class2.begin(), class2.end(), cur_class);
+            prop = double(std::count(class2.begin(), class2.end(), cur_class)) / class2.size();
             gini += (prop * (1 - prop));
         }
     }

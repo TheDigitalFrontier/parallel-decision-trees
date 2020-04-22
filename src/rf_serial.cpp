@@ -75,14 +75,12 @@ int main(int argc, char** argv){
 
     // UNIT TEST get_column
     datavec contrived_classes = get_column(contrived_data, -1);
-    printf("\n\nClasses length: %lu\n", contrived_classes.size());
-    printf("First: %f, Last: %f\n\n", contrived_classes[0], contrived_classes[contrived_classes.size()-1]);
+    printf("\nClasses length: %lu\n", contrived_classes.size());
+    printf("First: %f, Last: %f\n", contrived_classes[0], contrived_classes[contrived_classes.size()-1]);
 
     // UNIT TEST gini_index
     double gs = gini_index(left, right);
-    printf("\nGini: %f\n", gs);
-    
-    printf("\nNumber of 0's: %ld", std::count(contrived_classes.begin(), contrived_classes.end(), 0.0));
+    printf("Gini: %f\n", gs);
 
     /* ---------- WRAP UP ---------- */
     // record end time
