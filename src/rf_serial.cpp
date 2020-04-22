@@ -51,8 +51,6 @@ int main(int argc, char** argv){
     // UNIT TEST contrived dataset works as intended
     // should print 4.400293529
     printf("Row 3, Col 2: %f\n", contrived_data[2][1]);
-    // apparently [-2] is the last value in the vector, not [-1]...
-    printf("Class: %f\n\n", contrived_data[2][-2]);
 
     // UNIT TEST accuracy scoring from helpers.cpp
     //std::vector<double> tar = {0, 1, 1, 0, 0};
@@ -75,9 +73,9 @@ int main(int argc, char** argv){
     printf("Left set %lu rows, right set %lu rows\n", left.size(), right.size());
 
     // UNIT TEST get_column
-    datavec contrived_classes = get_column(contrived_data, 2);
+    datavec contrived_classes = get_column(contrived_data, -1);
     printf("\n\nClasses length: %lu\n", contrived_classes.size());
-    printf("First: %f, Last: %f\n\n", contrived_classes[0], contrived_classes[-1]);
+    printf("First: %f, Last: %f\n\n", contrived_classes[0], contrived_classes[contrived_classes.size()-1]);
 
     /* ---------- WRAP UP ---------- */
     // record end time
