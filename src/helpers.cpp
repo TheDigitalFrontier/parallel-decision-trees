@@ -46,3 +46,26 @@ std::vector<dataframe> split_dataset(dataframe data, int col_ind, double split_t
    std::vector<dataframe> two_datasets = {left, right};
    return two_datasets;
 }
+
+/*
+Extract column of dataframe as a datavec. No native way in C++ to do so, as 2D array is really stored in memory as a 1D array.
+Indexing supports actual index or -2 for last column (class, by convention)
+*/
+datavec get_column(dataframe data, int column_id){
+    datavec data_column;
+    for (int i = 0; i < data.size(); i++)
+    {
+        data_column.push_back(data[i][column_id]);
+    }
+    return data_column;
+}
+
+/* 
+
+*/
+double gini_index(dataframe data1, dataframe data2){
+    double gini = 0.0;
+    datavec class1, class2;
+
+    return gini;
+}
