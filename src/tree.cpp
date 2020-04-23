@@ -80,21 +80,17 @@ double TreeNode::getSplitThreshold()
 
 // Setters:
 
-void TreeNode::setParent(TreeNode *parent)
-{
-    this->parent_ = parent;
-    this->updateNodeSizes();
-}
-
 void TreeNode::setLeft(TreeNode *left)
 {
     this->left_ = left;
+    left->parent_ = this;
     this->updateNodeSizes();
 }
 
 void TreeNode::setRight(TreeNode *right)
 {
     this->right_ = right;
+    right->parent_ = this;
     this->updateNodeSizes();
 }
 

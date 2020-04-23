@@ -39,7 +39,6 @@ public:
     double getSplitThreshold();
 
     // Setters:
-    void setParent(TreeNode *parent);
     void setLeft(TreeNode *left);
     void setRight(TreeNode *right);
     void setSplitFeature(int split_feature);
