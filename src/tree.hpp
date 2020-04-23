@@ -12,6 +12,8 @@ private:
 
     // Attributes:
     int size_;  // Size of subtree, including self.
+    int height_;  // Height of subtree rooted at this node.
+    int depth_;  // Distance between this node and the root (where root has depth zero).
     TreeNode *parent_;  // Pointer to parent node.
     TreeNode *left_;  // Pointer to left child.
     TreeNode *right_;  // Pointer to right child.
@@ -29,6 +31,8 @@ public:
 
     // Getters:
     int getSize();
+    int getHeight();
+    int getDepth();
     TreeNode * getParent();
     TreeNode * getLeft();
     TreeNode * getRight();
@@ -44,6 +48,8 @@ public:
     // Utilities:
     TreeNode * findRoot();
     void updateSizes();
+    void updateHeights();
+    void updateDepths();
 
 };
 
@@ -62,6 +68,7 @@ public:
 
     // Getters:
     int getSize();
+    int getHeight();
     TreeNode * getRoot();
 
     // Setters:

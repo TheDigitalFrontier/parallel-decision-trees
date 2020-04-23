@@ -14,7 +14,10 @@ TreeNode::TreeNode(TreeNode *parent, TreeNode *left, TreeNode *right, int split_
     this->right_ = right;
     this->split_feature_ = split_feature;
     this->split_threshold_ = split_threshold;
-    this->findRoot()->updateSizes();
+    TreeNode *root = this->findRoot();
+    root->updateSizes();
+    root->updateHeights();
+    root->updateDepths();
 }
 
 TreeNode::TreeNode(TreeNode *parent, TreeNode *left, TreeNode *right)
@@ -25,25 +28,37 @@ TreeNode::TreeNode(TreeNode *parent, TreeNode *left, TreeNode *right)
     this->right_ = right;
     //this->split_feature_ = NULL;
     //this->split_threshold_ = NULL;
-    this->findRoot()->updateSizes();
+    TreeNode *root = this->findRoot();
+    root->updateSizes();
+    root->updateHeights();
+    root->updateDepths();
 }
 
 TreeNode::TreeNode(TreeNode *left, TreeNode *right) : TreeNode(nullptr, left, right)
 {
     /** Build a TreeNode with only child nodes. */
-    this->findRoot()->updateSizes();
+    TreeNode *root = this->findRoot();
+    root->updateSizes();
+    root->updateHeights();
+    root->updateDepths();
 }
 
 TreeNode::TreeNode(TreeNode *parent) : TreeNode(parent, nullptr, nullptr)
 {
     /** Build a TreeNode with only a parent node. */
-    this->findRoot()->updateSizes();
+    TreeNode *root = this->findRoot();
+    root->updateSizes();
+    root->updateHeights();
+    root->updateDepths();
 }
 
 TreeNode::TreeNode() : TreeNode(nullptr, nullptr, nullptr)
 {
     /** Build a TreeNode with null attributes. */
-    this->findRoot()->updateSizes();
+    TreeNode *root = this->findRoot();
+    root->updateSizes();
+    root->updateHeights();
+    root->updateDepths();
 }
 
 // Getters:
@@ -51,6 +66,16 @@ TreeNode::TreeNode() : TreeNode(nullptr, nullptr, nullptr)
 int TreeNode::getSize()
 {
     return this->size_;
+}
+
+int TreeNode::getHeight()
+{
+    return this->height_;
+}
+
+int TreeNode::getDepth()
+{
+    return this->depth_;
 }
 
 TreeNode * TreeNode::getParent()
@@ -134,6 +159,30 @@ void TreeNode::updateSizes()
     if ( this->right_ != nullptr ){ this->size_ += this->right_->size_; }
 }
 
+void TreeNode::updateHeights()
+{
+    // Recruse down:
+    if (this->left_ != nullptr ){ this->left_->updateHeights(); }
+    if (this->right_ != nullptr ){ this->right_->updateHeights(); }
+    // Update this node and return:
+    int left_height;
+    int right_height;
+    if ( this->left_ != nullptr ){ left_height = this->left_->height_; } else { left_height = 0; }
+    if ( this->right_ != nullptr ){ right_height = this->right_->height_; } else { right_height = 0; }
+    this->height_ = std::max(left_height,right_height) + 1;
+}
+
+void TreeNode::updateDepths()
+{
+    // Update this node:
+    int height;
+    if ( this->parent_ != nullptr ){ height = this->parent_->depth_ + 1; } else { height = 0; }
+    this->height_ = height;
+    // Recruse down:
+    if (this->left_ != nullptr ){ this->left_->updateDepths(); }
+    if (this->right_ != nullptr ){ this->right_->updateDepths(); }
+}
+
 /**
  * DecisionTree
  */
@@ -154,7 +203,22 @@ DecisionTree::DecisionTree(TreeNode *root)
 
 int DecisionTree::getSize()
 {
-    return this->root_->getSize();
+    if ( this->root_ != nullptr )
+    {
+        return this->root_->getSize();
+    } else {
+        return 0;
+    }
+}
+
+int DecisionTree::getHeight()
+{
+    if ( this->root_ != nullptr )
+    {
+        return this->root_->getHeight();
+    } else {
+        return 0;
+    }
 }
 
 TreeNode * DecisionTree::getRoot()
@@ -168,6 +232,8 @@ void DecisionTree::setRoot(TreeNode *root)
 {
     this->root_ = root;
     this->root_->updateSizes();
+    this->root_->updateHeights();
+    this->root_->updateDepths();
 }
 
 /*
