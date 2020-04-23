@@ -136,7 +136,10 @@ void TreeNode::setLeft(TreeNode *left)
      */
     this->left_ = left;
     left->parent_ = this;
-    this->findRoot()->updateSizes();
+    TreeNode *root = this->findRoot();
+    root->updateSizes();
+    root->updateHeights();
+    root->updateDepths();
 }
 
 void TreeNode::setRight(TreeNode *right)
@@ -146,7 +149,10 @@ void TreeNode::setRight(TreeNode *right)
      */
     this->right_ = right;
     right->parent_ = this;
-    this->findRoot()->updateSizes();
+    TreeNode *root = this->findRoot();
+    root->updateSizes();
+    root->updateHeights();
+    root->updateDepths();
 }
 
 void TreeNode::setSplitFeature(int split_feature)
@@ -217,9 +223,9 @@ void TreeNode::updateDepths()
      * Helper function for recursively updating node size.
      */
     // Update this node:
-    int height;
-    if ( this->parent_ != nullptr ){ height = this->parent_->depth_ + 1; } else { height = 0; }
-    this->height_ = height;
+    int d;
+    if ( this->parent_ != nullptr ){ d = this->parent_->depth_ + 1; } else { d = 0; }
+    this->depth_ = d;
     // Recruse down:
     if (this->left_ != nullptr ){ this->left_->updateDepths(); }
     if (this->right_ != nullptr ){ this->right_->updateDepths(); }
