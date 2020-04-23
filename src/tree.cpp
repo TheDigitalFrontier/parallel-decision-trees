@@ -14,7 +14,7 @@ TreeNode::TreeNode(TreeNode *parent, TreeNode *left, TreeNode *right, int split_
     this->right_ = right;
     this->split_feature_ = split_feature;
     this->split_threshold_ = split_threshold;
-    this->updateNodeSizes();
+    this->findRoot()->updateSizes();
 }
 
 TreeNode::TreeNode(TreeNode *parent, TreeNode *left, TreeNode *right)
@@ -25,25 +25,25 @@ TreeNode::TreeNode(TreeNode *parent, TreeNode *left, TreeNode *right)
     this->right_ = right;
     //this->split_feature_ = NULL;
     //this->split_threshold_ = NULL;
-    this->updateNodeSizes();
+    this->findRoot()->updateSizes();
 }
 
 TreeNode::TreeNode(TreeNode *left, TreeNode *right) : TreeNode(nullptr, left, right)
 {
     /** Build a TreeNode with only child nodes. */
-    this->updateNodeSizes();
+    this->findRoot()->updateSizes();
 }
 
 TreeNode::TreeNode(TreeNode *parent) : TreeNode(parent, nullptr, nullptr)
 {
     /** Build a TreeNode with only a parent node. */
-    this->updateNodeSizes();
+    this->findRoot()->updateSizes();
 }
 
 TreeNode::TreeNode() : TreeNode(nullptr, nullptr, nullptr)
 {
     /** Build a TreeNode with null attributes. */
-    this->updateNodeSizes();
+    this->findRoot()->updateSizes();
 }
 
 // Getters:
@@ -84,14 +84,14 @@ void TreeNode::setLeft(TreeNode *left)
 {
     this->left_ = left;
     left->parent_ = this;
-    this->updateNodeSizes();
+    this->findRoot()->updateSizes();
 }
 
 void TreeNode::setRight(TreeNode *right)
 {
     this->right_ = right;
     right->parent_ = this;
-    this->updateNodeSizes();
+    this->findRoot()->updateSizes();
 }
 
 void TreeNode::setSplitFeature(int split_feature)
@@ -120,24 +120,14 @@ TreeNode * TreeNode::findRoot()
     return root;
 }
 
-void TreeNode::updateNodeSizes()
-{
-    /**
-     * Updates node sizes in the whole tree.
-     */
-    TreeNode *root;
-    root = this->findRoot();
-    root->updateSizeRecursion();
-}
-
-void TreeNode::updateSizeRecursion()
+void TreeNode::updateSizes()
 {
     /**
      * Helper function for recursively updating node size.
      */
     // Recruse down:
-    if (this->left_ != nullptr ){ this->left_->updateSizeRecursion(); }
-    if (this->right_ != nullptr ){ this->right_->updateSizeRecursion(); }
+    if (this->left_ != nullptr ){ this->left_->updateSizes(); }
+    if (this->right_ != nullptr ){ this->right_->updateSizes(); }
     // Update this node and return:
     this->size_ = 1;
     if ( this->left_ != nullptr ){ this->size_ += this->left_->size_; }
@@ -177,7 +167,7 @@ TreeNode * DecisionTree::getRoot()
 void DecisionTree::setRoot(TreeNode *root)
 {
     this->root_ = root;
-    this->root_->updateNodeSizes();
+    this->root_->updateSizes();
 }
 
 /*

@@ -18,9 +18,6 @@ private:
     int split_feature_;  // Index of splitting column.
     double split_threshold_;  // Numberical splitting thresold.
 
-    // Private helpers:
-    void updateSizeRecursion();
-
 public:
     
     // Constructors:
@@ -46,7 +43,7 @@ public:
 
     // Utilities:
     TreeNode * findRoot();
-    void updateNodeSizes();
+    void updateSizes();
 
 };
 
