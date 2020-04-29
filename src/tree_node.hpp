@@ -1,5 +1,5 @@
-#ifndef TREE_HPP
-#define TREE_HPP
+#ifndef TREE_NODE_HPP
+#define TREE_NODE_HPP
 
 class TreeNode
 {
@@ -50,31 +50,6 @@ public:
     void updateSizes();
     void updateHeights();
     void updateDepths();
-
-};
-
-class DecisionTree
-{
-private:
-
-    // Attributes:
-    TreeNode *root_;
-
-public:
-
-    // Constructors:
-    DecisionTree();
-    DecisionTree(TreeNode *root);
-
-    // Getters:
-    int getSize();
-    int getHeight();
-    TreeNode * getRoot();
-
-    // Setters:
-    void setRoot(TreeNode *root);
-
-    // Utilities:
 
 };
 

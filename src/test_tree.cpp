@@ -1,5 +1,6 @@
 #include <iostream>
-#include "tree.cpp"
+#include "tree_node.cpp"
+#include "decision_tree.cpp"
 
 int main(){
 
