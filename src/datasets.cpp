@@ -1,6 +1,9 @@
 #include "datasets.hpp"
-#include <vector>
 #include <assert.h>
+#include <math.h>
+#include <iostream>
+#include <iomanip>
+#include <vector>
 
 
 /*
@@ -8,13 +11,13 @@
  */
 
 
-int DataVector::size()
+int DataVector::size() const
 {
     /** Returns the number of values in the row/column. */
     return this->size_;
 }
 
-bool DataVector::is_row()
+bool DataVector::is_row() const
 {
     /**
      * Returns true if the vector represents a row
@@ -23,13 +26,13 @@ bool DataVector::is_row()
     return this->is_row_;
 }
 
-bool DataVector::is_locked()
+bool DataVector::is_locked() const
 {
     /** Checks if object is read-only. */
     return this->is_locked_;
 }
 
-double DataVector::value(int i)
+double DataVector::value(int i) const
 {
     /** Get cell in given position (positive or negative index). */
     if (i>=0)
@@ -44,7 +47,7 @@ double DataVector::value(int i)
     return this->values_[ i ];
 }
 
-std::vector<double> DataVector::vector()
+std::vector<double> DataVector::vector() const
 {
     /** Get a copy of the values as a vector of doubles. */
     std::vector<double> vector;
@@ -106,25 +109,25 @@ DataVector::DataVector(std::vector<double> vector, bool is_row)
  */
 
 
-int DataFrame::length()
+int DataFrame::length() const
 {
     /** Returns the number of rows in the frame. */
     return this->length_;
 }
 
-int DataFrame::width()
+int DataFrame::width() const
 {
     /** Returns the number of columns in the frame. */
     return this->width_;
 }
 
-bool DataFrame::is_locked()
+bool DataFrame::is_locked() const
 {
     /** Checks if object is read-only. */
     return this->is_locked_;
 }
 
-DataVector* DataFrame::row(int r)
+DataVector* DataFrame::row(int r) const
 {
     /** Get pointer to given row (stored internally). */
     if (r>=0)
@@ -139,7 +142,7 @@ DataVector* DataFrame::row(int r)
     return this->rows_[ r ];
 }
 
-DataVector DataFrame::col(int c)
+DataVector DataFrame::col(int c) const
 {
     /** Get given column (constructed on the fly). */
     DataVector column = DataVector(false);  // is_row==false.
@@ -160,13 +163,13 @@ DataVector DataFrame::col(int c)
     return &column;
 }
 
-double DataFrame::value(int r, int c)
+double DataFrame::value(int r, int c) const
 {
     /** Get value in given row and column. */
     return this->row(r)->value(c);
 }
 
-std::vector<std::vector<double>> DataFrame::matrix()
+std::vector<std::vector<double>> DataFrame::matrix() const
 {
     /** Get a copy of values as a vector of vectors of doubles. */
     std::vector<std::vector<double>> matrix;
@@ -246,6 +249,52 @@ void DataFrame::addCol(std::vector<double> vector)
     }
 }
 
+std::string DataFrame::to_string(bool new_line, int col_width) const
+{
+    std::string out = "";
+    for (int r = 0; r < this->length(); r++)
+    {
+        out += "| ";
+        for (int c = 0; c < this->width(); c++)
+        {
+            double value = this->value(r,c);
+            std::string pad,val = "";
+            val = std::to_string(value);
+            // Add space to align negative sign:
+            if (value>=0)
+            {
+                val = ' '+val;
+            }
+            // Truncate if too long:
+            if (val.length()>col_width)
+            {
+                val = val.substr(0,col_width);
+            }
+            // Pad if too short:
+            if (val.length()<col_width)
+            {
+                pad.append(col_width-val.length(),' ');
+            }
+            // Append padding and value:
+            out += pad;
+            out += val;
+            out += " | ";
+        }
+        out += '\n';
+    }
+    // Add (optional) extra newline character:
+    if (new_line)
+    {
+        out += '\n';
+    }
+    return out;
+}   
+
+void DataFrame::print(bool new_line, int col_width) const
+{
+    std::cout << this->to_string(new_line, col_width);
+}
+
 
 /*
  * DATA FRAME - CONSTRUCTORS :
@@ -323,4 +372,15 @@ DataLoader::DataLoader(std::vector<std::vector<double>> matrix)
 {
     /** Load dataset from vector of vectors. */
     this->dataframe_ = DataFrame(matrix);
+}
+
+
+/*
+ *  INPUT/OUTPUT
+ */
+
+std::ostream& operator<<(std::ostream& os, const DataFrame& dataframe)
+{
+    os << dataframe.to_string(false);  // Don't add extra newline character.
+    return os;
 }
