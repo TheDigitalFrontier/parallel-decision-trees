@@ -47,6 +47,7 @@ public:
 
     // Utilities:
     void lock();
+    void lock_all();
     void addCell(DataCell *cell);
 
     // Constructors:
@@ -59,7 +60,6 @@ class DataCol
 {
     /** 
      * A column in a DataFrame.
-     * Not part of the DataFrame structure; only used as a return type.
      * */
 
 private:
@@ -77,6 +77,7 @@ public:
     
     // Utilities:
     void lock();
+    void lock_all();
     void addCell(DataCell *cell);
 
     // Constructors:
@@ -98,6 +99,7 @@ private:
     int length_;  // Number of rows.
     int width_;  // Number of columns.
     std::vector<DataRow> rows_;
+    std::vector<DataCol> cols_;
 
 public:
 
@@ -110,7 +112,9 @@ public:
 
     // Utilities:
     void lock();
+    void lock_all();
     void addRow(DataRow *row);
+    void addCol(DataCol *col);
 
     // Constructors:
     DataFrame();
