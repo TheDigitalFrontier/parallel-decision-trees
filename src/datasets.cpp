@@ -4,212 +4,98 @@
 
 
 /*
- * DATA CELL - ACCESSORS :
+ * DATAVECTOR - ACCESSORS :
  */
 
 
-double DataCell::value()
+int DataVector::size()
 {
-    /** Returns the value (double) in a cell. */
-    return this->value_;
+    /** Returns the number of values in the row/column. */
+    return this->size_;
 }
 
-
-/*
- * DATA CELL - UTILITES :
- */
-
-
-void DataCell::lock()
+bool DataVector::is_row()
 {
-    /** Prevent unwanted changes to data. */
-    this->locked_ = true;
+    /**
+     * Returns true if the vector represents a row
+     * and false if it represents a column.
+     */
+    return this->is_row_;
 }
 
-
-/*
- * DATA CELL - CONSTRUCTORS :
- */
-
-
-DataCell::DataCell()
+bool DataVector::is_locked()
 {
-    /** Create cell without assigning value. */
-    this->locked_ = false;
+    /** Checks if object is read-only. */
+    return this->is_locked_;
 }
 
-DataCell::DataCell(double value)
+double DataVector::value(int i)
 {
-    /** Create cell with value */
-    this->locked_ = false;
-    this->value_ = value;
-}
-
-
-/*
- * DATA ROW - ACCESSORS :
- */
-
-
-int DataRow::width()
-{
-    /** Returns the number of columns (cells) in the row. */
-    return this->width_;
-}
-
-DataCell *DataRow::cell(int c)
-{
-    /** Get cell in given column (positive or negative index). */
-    if (c>=0)
+    /** Get cell in given position (positive or negative index). */
+    if (i>=0)
     {
         // Index from beginning (positive):
-        assert ( c<this->width() );
+        assert ( i<this->size() );
     } else {
         // Index from end (negative):
-        assert ( c>=-this->width() );
-        c += this->width();
+        assert ( i>=-this->size() );
+        i += this->size();
     }
-    return &this->cells_[ c ];
+    return this->values_[ i ];
+}
+
+std::vector<double> DataVector::vector()
+{
+    /** Get a copy of the values as a vector of doubles. */
+    std::vector<double> vector;
+    for (int i = 0; i < this->size(); i++)
+    {
+        vector.push_back( this->values_[ i ] );
+    }
+    return vector;
 }
 
 
 /*
- * DATA ROW - UTILITES :
+ * DATAVECTOR - UTILITES :
  */
 
 
-void DataRow::lock()
+void DataVector::lock()
 {
     /** Prevent unwanted changes to data. */
-    this->locked_ = true;
+    this->is_locked_ = true;
 }
 
-void DataRow::addCell(DataCell *cell)
+void DataVector::addValue(double value)
 {
     /** Adds a cell to a row. */
-    //assert (this->locked_==false);
-    this->cells_.push_back(*cell);
-    this->width_ += 1;
+    //assert (!this->is_locked());
+    this->values_.push_back(value);
+    this->size_ += 1;
 }
 
 
 /*
- * DATA ROW - CONSTRUCTORS :
+ * DATAVECTOR - CONSTRUCTORS :
  */
 
 
-DataRow::DataRow()
+DataVector::DataVector(bool is_row)
 {
-    this->locked_ = false;
-    this->width_ = 0;
+    this->is_row_ = is_row;
+    this->is_locked_ = false;
+    this->size_ = 0;
 }
 
-DataRow::DataRow(std::vector<double> vector)
+DataVector::DataVector(std::vector<double> vector, bool is_row)
 {
-    this->locked_ = false;
-    this->width_ = vector.size();
-    for (int c = 0; c < vector.size(); c++)
+    this->is_row_ = is_row;
+    this->is_locked_ = false;
+    this->size_ = vector.size();
+    for (int i = 0; i < vector.size(); i++)
     {
-        double value = vector[c];
-        DataCell datacell = DataCell(value);
-        //datacell.lock();
-        this->addCell(&datacell);
-    }
-    //this->lock();
-}
-
-void DataRow::lock_all()
-{
-    /** Prevent unwanted changes to data. */
-    this->locked_ = true;
-    // Lock cells:
-    for (int c = 0; c < this->width_; c++)
-    {
-        this->cells_[c].lock();
-    }
-}
-
-
-
-/*
- * DATA COL - ACCESSORS :
- */
-
-
-int DataCol::length()
-{
-    /** Returns the number of rows (cells) in the column. */
-    return this->length_;
-}
-
-DataCell *DataCol::cell(int r)
-{
-    /** Get cell in given row (positive or negative index). */
-    if (r>=0)
-    {
-        // Index from beginning (positive):
-        assert ( r<this->length() );
-    } else {
-        // Index from end (negative):
-        assert ( r>=-this->length() );
-        r += this->length();
-    }
-    return &this->cells_[ r ];
-}
-
-
-/*
- * DATA COL - UTILITES :
- */
-
-
-void DataCol::lock()
-{
-    /** Prevent unwanted changes to data. */
-    this->locked_ = true;
-}
-
-void DataCol::lock_all()
-{
-    /** Prevent unwanted changes to data. */
-    this->locked_ = true;
-    // Lock cells:
-    for (int r = 0; r < this->length_; r++)
-    {
-        this->cells_[r].lock();
-    }
-}
-
-void DataCol::addCell(DataCell *cell)
-{
-    /** Adds a cell to a row. */
-    //assert (this->locked_==false);
-    this->cells_.push_back(*cell);
-    this->length_ += 1;
-}
-
-
-/*
- * DATA COL - CONSTRUCTORS :
- */
-
-
-DataCol::DataCol()
-{
-    this->locked_ = false;
-    this->length_ = 0;
-}
-
-DataCol::DataCol(std::vector<double> vector)
-{
-    this->locked_ = false;
-    this->length_ = vector.size();
-    for (int r = 0; r < vector.size(); r++)
-    {
-        double value = vector[r];
-        DataCell datacell = DataCell(value);
-        //datacell.lock();
-        this->addCell(&datacell);
+        this->addValue( vector[i] );
     }
     //this->lock();
 }
@@ -232,9 +118,15 @@ int DataFrame::width()
     return this->width_;
 }
 
-DataRow *DataFrame::row(int r)
+bool DataFrame::is_locked()
 {
-    /** Get given row (positive or negative index). */
+    /** Checks if object is read-only. */
+    return this->is_locked_;
+}
+
+DataVector* DataFrame::row(int r)
+{
+    /** Get pointer to given row (stored internally). */
     if (r>=0)
     {
         // Index from beginning (positive):
@@ -244,12 +136,13 @@ DataRow *DataFrame::row(int r)
         assert ( r>=-this->length() );
         r += this->length();
     }
-    return &this->rows_[ r ];
+    return this->rows_[ r ];
 }
 
-DataCol *DataFrame::col(int c)
+DataVector DataFrame::col(int c)
 {
-    /** Get given column (positive or negative index). */
+    /** Get given column (constructed on the fly). */
+    DataVector column = DataVector(false);  // is_row==false.
     if (c>=0)
     {
         // Index from beginning (positive):
@@ -259,15 +152,34 @@ DataCol *DataFrame::col(int c)
         assert ( c>=-this->width() );
         c += this->width();
     }
-    return &this->cols_[ c ];
+    for (int i = 0; i < this->length(); i++)
+    {
+        column.addValue( this->rows_[i]->value(c) );
+    }
+    //column.lock();
+    return &column;
 }
 
-DataCell *DataFrame::cell(int r, int c)
+double DataFrame::value(int r, int c)
 {
     /** Get value in given row and column. */
-    DataRow *datarow = this->row(r);
-    DataCell *datacell = datarow->cell(c);
-    return datacell;
+    return this->row(r)->value(c);
+}
+
+std::vector<std::vector<double>> DataFrame::matrix()
+{
+    /** Get a copy of values as a vector of vectors of doubles. */
+    std::vector<std::vector<double>> matrix;
+    for (int i = 0; i < this->length(); i++)
+    {
+        std::vector<double> temp_vector;
+        for (int j = 0; j < this->length(); j++)
+        {
+            temp_vector.push_back( this->value(i,j) );
+        }
+        matrix.push_back(temp_vector);
+    }
+    return matrix;
 }
 
 
@@ -279,48 +191,58 @@ DataCell *DataFrame::cell(int r, int c)
 void DataFrame::lock()
 {
     /** Prevent unwanted changes to data. */
-    this->locked_ = true;
-}
-
-void DataFrame::lock_all()
-{
-    /** Prevent unwanted changes to data. */
-    this->locked_ = true;
-    // Lock rows:
-    for (int r = 0; r < this->length_; r++)
+    this->is_locked_ = true;
+    for (int i = 0; i < this->length(); i++)
     {
-        this->rows_[r].lock_all();
-    }
-    // Lock columns:
-    for (int c = 0; c < this->width_; c++)
-    {
-        this->cols_[c].lock_all();
+        this->rows_[i]->lock();
     }
 }
 
-void DataFrame::addRow(DataRow *row)
+void DataFrame::addRow(DataVector *row)
 {
-    /** Adds a row to a frame. */
-    //assert (this->locked_==false);
-    // Add new row to row list:
-    this->rows_.push_back(*row);
-    // Add each new value to column list:
-    for (int r = 0; r < row->width(); r++)
+    /** Append the pointer to the list of rows. */
+    //assert (!this->is_locked());
+    assert (row->is_row());
+    assert (row->size()==this->width());
+    this->rows_.push_back(row);
+}
+
+void DataFrame::addRow(std::vector<double> vector)
+{
+    /** Wrap the values in a DataRow and add its pointer to the list. */
+    //assert (!this->is_locked());
+    assert (!vector.size()==this->width());
+    DataVector* row = new DataVector(true);  // is_row==true.
+    for (int i = 0; i < this->width(); i++)
     {
-        this->cols_[r].addCell( row->cell(r) );
+        row->addValue( vector[i] );
+    }
+    //row.lock();
+    this->rows_.push_back(row);
+}
+
+void DataFrame::addCol(DataVector col)
+{
+    /** Append the values to each row in the list. */
+    //assert (!this->is_locked());
+    assert (!col.is_row());
+    assert (col.size()==this->length());
+    for (int i = 0; i < this->length(); i++)
+    {
+        assert (!this->rows_[i]->is_locked());
+        this->rows_[i]->addValue( col.value(i) );
     }
 }
 
-void DataFrame::addCol(DataCol *col)
+void DataFrame::addCol(std::vector<double> vector)
 {
-    /** Adds a row to a frame. */
-    //assert (this->locked_==false);
-    // Add new column to column list:
-    this->cols_.push_back(*col);
-    // Add each new value to row list:
-    for (int c = 0; c < col->length(); c++)
+    /** Append the values to each row in the list. */
+    //assert (!this->is_locked());
+    assert (vector.size()==this->length());
+    for (int i = 0; i < this->length(); i++)
     {
-        this->cols_[c].addCell( col->cell(c) );
+        assert (!this->rows_[i]->is_locked());
+        this->rows_[i]->addValue( vector[i] );
     }
 }
 
@@ -332,14 +254,14 @@ void DataFrame::addCol(DataCol *col)
 
 DataFrame::DataFrame()
 {
-    this->locked_ = false;
+    this->is_locked_ = false;
     this->width_ = 0;
     this->length_ = 0;
 }
 
 DataFrame::DataFrame(std::vector<std::vector<double>> matrix)
 {
-    this->locked_ = false;
+    this->is_locked_ = false;
     this->length_ = matrix.size();
     if (matrix.size()>0){
         this->width_ = matrix[0].size();
@@ -348,19 +270,10 @@ DataFrame::DataFrame(std::vector<std::vector<double>> matrix)
     }
     for (int r = 0; r < this->length_; r++)
     {
-        this->rows_.push_back( DataRow() );
-        assert (matrix[r].size()==this->width_);
-        for (int c = 0; c < this->width_; c++)
-        {
-            if (r==0){
-                this->cols_.push_back( DataCol() );
-            }
-            double value = matrix[r][c];
-            DataCell datacell = DataCell(value);
-            //datacell.lock();
-            this->rows_[r].addCell(&datacell);
-            this->cols_[c].addCell(&datacell);
-        }
+        assert (matrix[r].size()==this->width());
+        DataVector* row = new DataVector(matrix[r],true);  // is_row==true.
+        //row->lock();
+        this->rows_.push_back(row);
     }
     //this->lock();
 }

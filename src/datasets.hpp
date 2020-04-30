@@ -1,88 +1,35 @@
 #include <vector>
 
-class DataCell
+class DataVector
 {
     /** 
-     * A cell in a DataRow.
+     * A row (or column) in a DataFrame.
      * */
 
 private:
 
     // Attributes:
-    bool locked_;  // Flag to prevent edits after construction.
-    double value_;
-
-public:
-    
-    // Accessors:
-    double value();
-
-    // Utilities:
-    void lock();
-
-    // Constructors:
-    DataCell();
-    DataCell(double value);
-
-};
-
-class DataRow
-{
-    /** 
-     * A row in a DataFrame.
-     * */
-
-private:
-
-    // Attributes:
-    bool locked_;  // Flag to prevent edits after construction.
-    std::vector<DataCell> cells_;  // Vector of cells in this row.
-    int width_;  // Number of cells in this row.
+    bool is_locked_;  // Flag to prevent edits after construction.
+    bool is_row_;  // Flag to track whether a vector is a row or column.
+    std::vector<double> values_;  // Vector of value.
+    int size_;  // Number of values in this vector.
 
 public:
 
     // Accessors:
-    int width();
-    DataCell *cell(int c);  // Get cell in given column.
+    int size();  // Returns number of entries in vector.
+    bool is_row();  // Checks if object represents a row (true) or column (false).
+    bool is_locked();  // Checks if object is read-only.
+    double value(int c);  // Get value in given position.
+    std::vector<double> vector();  // Get a copy of values as a vector of doubles.
 
     // Utilities:
-    void lock();
-    void lock_all();
-    void addCell(DataCell *cell);
+    void lock();  // Lock object to make it read-only.
+    void addValue(double value);  // Add value to vector.
 
     // Constructors:
-    DataRow();
-    DataRow(std::vector<double> vector);
-
-};
-
-class DataCol
-{
-    /** 
-     * A column in a DataFrame.
-     * */
-
-private:
-
-    // Attributes:
-    bool locked_;  // Flag to prevent edits after construction.
-    std::vector<DataCell> cells_;  // Vector of cells in this column.
-    int length_;  // Number of cells in this row.
-
-public:
-
-    // Accessors:
-    int length();
-    DataCell *cell(int r);  // Get cell in given row.
-    
-    // Utilities:
-    void lock();
-    void lock_all();
-    void addCell(DataCell *cell);
-
-    // Constructors:
-    DataCol();
-    DataCol(std::vector<double> vector);
+    DataVector(bool is_row=true);
+    DataVector(std::vector<double> vector, bool is_row=true);
 
 };
 
@@ -95,26 +42,29 @@ class DataFrame
 private:
 
     // Attributes:
-    bool locked_;  // Flag to prevent edits after construction.
+    bool is_locked_;  // Flag to prevent edits after construction.
     int length_;  // Number of rows.
     int width_;  // Number of columns.
-    std::vector<DataRow> rows_;
-    std::vector<DataCol> cols_;
+    std::vector<DataVector*> rows_;  // A vector of pointers to data rows.
 
 public:
 
     // Accessors:
-    int length();
-    int width();
-    DataRow *row(int r);  // Get given row.
-    DataCol *col(int c);  // Get given column.
-    DataCell *cell(int r, int c);  // Get cell in given row and column.
+    int length();  // Returns number of rows.
+    int width();  // Returns number of columns.
+    bool is_locked();  // Checks if object is read-only.
+    DataVector* row(int r);  // Get pointer to given row (stored internally).
+    DataVector col(int c);  // Get given column (constructed on the fly).
+    double value(int r, int c);  // Get value in given row and column.
+    std::vector<std::vector<double>> matrix();  // Get a copy of values as a vector of vectors of doubles.
 
     // Utilities:
-    void lock();
-    void lock_all();
-    void addRow(DataRow *row);
-    void addCol(DataCol *col);
+    void lock();  // Lock object to make it read-only.
+    void addRow(DataVector *row);  // Append the pointer to the list of rows.
+    void addRow(std::vector<double> vector);  // Wrap the values in a DataRow and add its pointer to the list.
+    void addCol(DataVector col);  // Append the values to each row in the list.
+    void addCol(std::vector<double> vector);  // Append the values to each row in the list.
+    DataFrame transpose();  // Returns a transposed copy of the DataFrame.
 
     // Constructors:
     DataFrame();
@@ -140,7 +90,7 @@ public:
     // Accessors:
 
     // Utilities:
-    DataFrame load();
+    DataFrame load();  // Return the loaded DataFrame.
 
     // Constructors:
     DataLoader();  // Load hard-coded dummy dataset.

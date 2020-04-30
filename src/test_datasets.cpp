@@ -12,7 +12,7 @@ int main(){
         std::cout << "| ";
         for (int c = 0; c < df_test.width(); c++)
         {
-            double value = df_test.cell(r,c)->value();
+            double value = df_test.value(r,c);
             std::cout << value << " | ";
         }
         std::cout << "\n";
