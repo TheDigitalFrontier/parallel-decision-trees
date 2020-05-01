@@ -260,3 +260,27 @@ void TreeNode::updateDepths()
     if (this->left_ != nullptr ){ this->left_->updateDepths(); }
     if (this->right_ != nullptr ){ this->right_->updateDepths(); }
 }
+
+
+
+std::vector<TreeNode*> TreeNode::findLeaves()
+{
+    /**
+     * Get leaves in subtree rooted at this node.
+     */
+    std::vector<TreeNode*> results;
+    return this->findLeaves(results);
+}
+
+std::vector<TreeNode*> TreeNode::findLeaves(std::vector<TreeNode*> results)
+{
+    /**
+     * Get leaves in subtree rooted at this node: recursive helper for getLeaves().
+     */
+    // If this is a leaf, add to results:
+    if ((this->left_ == nullptr) and (this->right_ == nullptr)){ results.push_back(this); }
+    // (Otherwise): Recurse downward.
+    if (this->left_ != nullptr){ results = this->left_->findLeaves(results); }
+    if (this->right_ != nullptr){ results = this->right_->findLeaves(results); }
+    return results;
+}

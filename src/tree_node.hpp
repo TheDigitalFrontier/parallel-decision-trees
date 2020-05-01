@@ -55,6 +55,8 @@ public:
     void updateSizes();
     void updateHeights();
     void updateDepths();
+    std::vector<TreeNode*> findLeaves();
+    std::vector<TreeNode*> findLeaves(std::vector<TreeNode*> results);
 
 };
 

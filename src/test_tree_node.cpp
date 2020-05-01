@@ -26,5 +26,9 @@ int main(){
     std::cout << "Node4 depth: ";
     std::cout << node4.getDepth() << std::endl;
 
+    std::cout << "Count leaves: ";
+    std::vector<TreeNode*> leaves = node0.findLeaves();
+    std::cout << leaves.size() << std::endl;
+
     return 0;
 };
