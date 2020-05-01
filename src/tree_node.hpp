@@ -30,14 +30,14 @@ public:
     TreeNode();
 
     // Getters:
-    int getSize();
-    int getHeight();
-    int getDepth();
-    TreeNode * getParent();
-    TreeNode * getLeft();
-    TreeNode * getRight();
-    int getSplitFeature();
-    double getSplitThreshold();
+    int getSize() const;
+    int getHeight() const;
+    int getDepth() const;
+    TreeNode * getParent() const;
+    TreeNode * getLeft() const;
+    TreeNode * getRight() const;
+    int getSplitFeature() const;
+    double getSplitThreshold() const;
 
     // Setters:
     void setLeft(TreeNode *left);

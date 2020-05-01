@@ -59,7 +59,7 @@ TreeNode::TreeNode() : TreeNode(nullptr, nullptr, nullptr)
 
 // Getters:
 
-int TreeNode::getSize()
+int TreeNode::getSize() const
 {
     /**
      * Get number of nodes (including self) in subtree rooted at this node.
@@ -67,7 +67,7 @@ int TreeNode::getSize()
     return this->size_;
 }
 
-int TreeNode::getHeight()
+int TreeNode::getHeight() const
 {
     /**
      * Get height of subtree rooted at this node.
@@ -75,7 +75,7 @@ int TreeNode::getHeight()
     return this->height_;
 }
 
-int TreeNode::getDepth()
+int TreeNode::getDepth() const
 {
     /** 
      * Get distance between this node and the root (where root has depth zero).
@@ -83,7 +83,7 @@ int TreeNode::getDepth()
     return this->depth_;
 }
 
-TreeNode * TreeNode::getParent()
+TreeNode * TreeNode::getParent() const
 {
     /** 
      * Get pointer to parent node.
@@ -91,7 +91,7 @@ TreeNode * TreeNode::getParent()
     return this->parent_;
 }
 
-TreeNode * TreeNode::getLeft()
+TreeNode * TreeNode::getLeft() const
 {
     /** 
      * Get pointer to left child.
@@ -99,7 +99,7 @@ TreeNode * TreeNode::getLeft()
     return this->left_;
 }
 
-TreeNode * TreeNode::getRight()
+TreeNode * TreeNode::getRight() const
 {
     /** 
      * Get pointer to right child.
@@ -107,7 +107,7 @@ TreeNode * TreeNode::getRight()
     return this->right_;
 }
 
-int TreeNode::getSplitFeature()
+int TreeNode::getSplitFeature() const
 {
     /** 
      * Get index of splitting column.
@@ -115,7 +115,7 @@ int TreeNode::getSplitFeature()
     return this->split_feature_;
 }
 
-double TreeNode::getSplitThreshold()
+double TreeNode::getSplitThreshold() const
 {
     /** 
      * Get numberical splitting thresold.
