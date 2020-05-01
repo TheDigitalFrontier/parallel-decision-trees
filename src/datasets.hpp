@@ -26,7 +26,7 @@ public:
     // Utilities:
     void lock();  // Lock object to make it read-only.
     void addValue(double value);  // Add value to vector.
-    DataVector transpose() const;  // Returns a transposed copy of the DataVector.
+    DataVector* transpose() const;  // Returns a transposed copy of the DataVector.
     std::string to_string(bool new_line=true, int col_width=9) const;  // Return the DataVector as a string.
     void print(bool new_line=true, int col_width=9) const;  // Print the data vector.
 

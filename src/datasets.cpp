@@ -78,10 +78,20 @@ void DataVector::addValue(double value)
     this->size_ += 1;
 }
 
-
+DataVector* DataVector::transpose() const
+{
+    /** Returns a pointer to a new vector that is the transpose of this one. */
+    bool new_is_row = !this->is_row();
+    DataVector* new_vector = new DataVector(this->vector(),new_is_row);
+    return new_vector;
+}
 
 std::string DataVector::to_string(bool new_line, int col_width) const
 {
+    /**
+     * Returns a string representation (row or column) of the vector.
+     * Truncated or padded to the specified column width.
+     */
     std::string out = "";
     for (int i = 0; i < this->size(); i++)
     {
@@ -124,7 +134,27 @@ std::string DataVector::to_string(bool new_line, int col_width) const
 
 void DataVector::print(bool new_line, int col_width) const
 {
+    /**
+     * Prints a string representation (row or column) of the vector.
+     * Truncated or padded to the specified column width.
+     */
     std::cout << this->to_string(new_line, col_width);
+}
+
+
+/*
+ * DATA VECTOR - I/O :
+ */
+
+
+std::ostream& operator<<(std::ostream& os, const DataVector& datavector)
+{
+    /**
+     * Sends a string representation (row or column) of the vector to the output stream.
+     * Truncated or padded to the specified column width.
+     */
+    os << datavector.to_string(false);  // Don't add extra newline character.
+    return os;
 }
 
 
@@ -149,20 +179,6 @@ DataVector::DataVector(std::vector<double> vector, bool is_row)
     {
         this->addValue( vector[i] );
     }
-    //this->lock();
-}
-
-
-
-/*
- * DATA VECTOR - I/O :
- */
-
-
-std::ostream& operator<<(std::ostream& os, const DataVector& datavector)
-{
-    os << datavector.to_string(false);  // Don't add extra newline character.
-    return os;
 }
 
 
@@ -221,7 +237,6 @@ DataVector* DataFrame::col(int c) const
     {
         col->addValue( this->rows_[i]->value(c) );
     }
-    //column.lock();
     return col;
 }
 
@@ -282,7 +297,6 @@ void DataFrame::addRow(std::vector<double> vector)
     {
         row->addValue( vector[i] );
     }
-    //row.lock();
     this->rows_.push_back(row);
 }
 
@@ -313,6 +327,10 @@ void DataFrame::addCol(std::vector<double> vector)
 
 std::string DataFrame::to_string(bool new_line, int col_width) const
 {
+    /**
+     * Returns a string representation of the dataframe.
+     * Truncated or padded to the specified column width.
+     **/
     std::string out = "";
     for (int i = 0; i < this->length(); i++)
     {
@@ -328,7 +346,27 @@ std::string DataFrame::to_string(bool new_line, int col_width) const
 
 void DataFrame::print(bool new_line, int col_width) const
 {
+    /**
+     * Prints a string representation of the dataframe.
+     * Truncated or padded to the specified column width.
+     **/
     std::cout << this->to_string(new_line, col_width);
+}
+
+
+/*
+ * DATA FRAME - I/O :
+ */
+
+
+std::ostream& operator<<(std::ostream& os, const DataFrame& dataframe)
+{
+    /**
+     * Sends a string representation of the dataframe to the output stream.
+     * Truncated or padded to the specified column width.
+     **/
+    os << dataframe.to_string(false);  // Don't add extra newline character.
+    return os;
 }
 
 
@@ -357,22 +395,8 @@ DataFrame::DataFrame(std::vector<std::vector<double>> matrix)
     {
         assert (matrix[i].size()==this->width());
         DataVector* row = new DataVector(matrix[i],true);  // is_row==true.
-        //row->lock();
         this->addRow(row);
     }
-    //this->lock();
-}
-
-
-/*
- * DATA FRAME - I/O :
- */
-
-
-std::ostream& operator<<(std::ostream& os, const DataFrame& dataframe)
-{
-    os << dataframe.to_string(false);  // Don't add extra newline character.
-    return os;
 }
 
 
