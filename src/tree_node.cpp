@@ -77,6 +77,30 @@ TreeNode::TreeNode()
 
 // Getters:
 
+bool TreeNode::hasLeft() const
+{
+    /** Checks if node has left child. */
+    return (this->left_ != nullptr);
+}
+
+bool TreeNode::hasRight() const
+{
+    /** Checks if node has right child. */
+    return (this->right_ != nullptr);
+}
+
+bool TreeNode::isLeaf() const
+{
+    /** Checks if node is a leaf (i.e. has no children). */
+    return (!this->hasLeft()) and (!this->hasRight());
+}
+
+bool TreeNode::isRoot() const
+{
+    /** Checks if node is the root (i.e. has no parent). */
+    return (this->parent_ == nullptr);
+}
+
 int TreeNode::getSize() const
 {
     /**
@@ -208,13 +232,13 @@ TreeNode * TreeNode::findRoot()
     /**
      * Recursively find the the node with no parent.
      */
-    TreeNode *root;
-    root = this;
-    while ( root->parent_ != nullptr )
+    TreeNode *node;
+    node = this;
+    while ( !node->isRoot() )
     {
-        root = root->parent_;
+        node = node->parent_;
     }
-    return root;
+    return node;
 }
 
 void TreeNode::updateSizes()
@@ -223,12 +247,12 @@ void TreeNode::updateSizes()
      * Helper function for recursively updating node size.
      */
     // Recruse down:
-    if (this->left_ != nullptr ){ this->left_->updateSizes(); }
-    if (this->right_ != nullptr ){ this->right_->updateSizes(); }
+    if (this->hasLeft()){ this->left_->updateSizes(); }
+    if (this->hasRight()){ this->right_->updateSizes(); }
     // Update this node and return:
     this->size_ = 1;
-    if ( this->left_ != nullptr ){ this->size_ += this->left_->size_; }
-    if ( this->right_ != nullptr ){ this->size_ += this->right_->size_; }
+    if (this->hasLeft()){ this->size_ += this->left_->size_; }
+    if (this->hasRight()){ this->size_ += this->right_->size_; }
 }
 
 void TreeNode::updateHeights()
@@ -237,13 +261,13 @@ void TreeNode::updateHeights()
      * Helper function for recursively updating node size.
      */
     // Recruse down:
-    if (this->left_ != nullptr ){ this->left_->updateHeights(); }
-    if (this->right_ != nullptr ){ this->right_->updateHeights(); }
+    if (this->hasLeft()){ this->left_->updateHeights(); }
+    if (this->hasRight()){ this->right_->updateHeights(); }
     // Update this node and return:
     int left_height;
     int right_height;
-    if ( this->left_ != nullptr ){ left_height = this->left_->height_; } else { left_height = 0; }
-    if ( this->right_ != nullptr ){ right_height = this->right_->height_; } else { right_height = 0; }
+    if (this->hasLeft()){ left_height = this->left_->height_; } else { left_height = 0; }
+    if (this->hasRight()){ right_height = this->right_->height_; } else { right_height = 0; }
     this->height_ = std::max(left_height,right_height) + 1;
 }
 
@@ -254,11 +278,11 @@ void TreeNode::updateDepths()
      */
     // Update this node:
     int d;
-    if ( this->parent_ != nullptr ){ d = this->parent_->depth_ + 1; } else { d = 0; }
+    if (!this->isRoot()){ d = this->parent_->depth_ + 1; } else { d = 0; }
     this->depth_ = d;
     // Recruse down:
-    if (this->left_ != nullptr ){ this->left_->updateDepths(); }
-    if (this->right_ != nullptr ){ this->right_->updateDepths(); }
+    if (this->hasLeft()){ this->left_->updateDepths(); }
+    if (this->hasRight()){ this->right_->updateDepths(); }
 }
 
 
@@ -278,9 +302,9 @@ std::vector<TreeNode*> TreeNode::findLeaves(std::vector<TreeNode*> results)
      * Get leaves in subtree rooted at this node: recursive helper for getLeaves().
      */
     // If this is a leaf, add to results:
-    if ((this->left_ == nullptr) and (this->right_ == nullptr)){ results.push_back(this); }
+    if (this->isLeaf()){ results.push_back(this); }
     // (Otherwise): Recurse downward.
-    if (this->left_ != nullptr){ results = this->left_->findLeaves(results); }
-    if (this->right_ != nullptr){ results = this->right_->findLeaves(results); }
+    if (this->hasLeft()){ results = this->left_->findLeaves(results); }
+    if (this->hasRight()){ results = this->right_->findLeaves(results); }
     return results;
 }

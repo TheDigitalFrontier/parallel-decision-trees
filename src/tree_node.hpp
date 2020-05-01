@@ -33,6 +33,10 @@ public:
     TreeNode();
 
     // Getters:
+    bool hasLeft() const;
+    bool hasRight() const;
+    bool isLeaf() const;
+    bool isRoot() const;
     int getSize() const;
     int getHeight() const;
     int getDepth() const;
