@@ -42,7 +42,8 @@ int main(int argc, char** argv){
         {3.06407232,3.005305973,0},  
         {5.332441248,2.088626775,1}, 
         {6.922596716,1.77106367,1},  
-        {7.673756466,3.508563011,1}
+        {7.673756466,3.508563011,1},
+        {7.673756466,3.301233593,1}
     };
 
     printf("Rows: %lu\n", contrived_data.size());
@@ -67,7 +68,6 @@ int main(int argc, char** argv){
     int split_col = 0;
     double split_thresh = 3.1;
     printf("Splitting contrived dataset on column %d threshold %f\n", split_col, split_thresh);
-    //std::vector<std::vector<std::vector<double>>> dataset_splits = split_dataset(contrived_data, split_col, split_thresh);
     std::vector<dataframe> dataset_splits = split_dataset(contrived_data, split_col, split_thresh);
     dataframe left = dataset_splits[0];
     dataframe right = dataset_splits[1];
@@ -82,10 +82,22 @@ int main(int argc, char** argv){
     double gs = gini_index(left, right);
     printf("Gini: %f\n", gs);
 
+    // UNIT TEST gini_index on empty dataframe
+    std::vector<dataframe> empty_split = split_dataset(contrived_data, 0, 1.38807019);
+    std::cout << "\nLeft size: " << empty_split[0].size() << ", Right size:" << empty_split[1].size();
+    // check that get_column returns an empty datavec if an empty dataframe is given
+    datavec empty_col = get_column(empty_split[0], -1);
+    std::cout << "\nEmpty col size: " << empty_col.size(); 
+    // check that Gini works with empty dataframes
+    double gs_empty = gini_index(empty_split[0], empty_split[1]);
+    std::cout << "\nGini empty: " << gs_empty;
+
+    datavec split_conf = best_split(contrived_data, 5, gini_index);
+    std::cout << "\nBEST col ind: " << split_conf.front() << ", col val: " << split_conf[1] << ", Gini: " << split_conf.back();
+
     /* ---------- WRAP UP ---------- */
     // record end time
     get_time(&tend);
     // print results
     printf("\n\nDone in %Lg s\n", timespec_diff(tstart, tend));
 }
-
