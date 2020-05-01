@@ -15,7 +15,7 @@ DecisionTree::DecisionTree(TreeNode *root)
 
 // Getters:
 
-int DecisionTree::getSize()
+int DecisionTree::getSize() const
 {
     /**
      * Get the number of nodes in the tree.
@@ -28,7 +28,7 @@ int DecisionTree::getSize()
     }
 }
 
-int DecisionTree::getHeight()
+int DecisionTree::getHeight() const
 {
     /**
      * Get the height of the tree.
@@ -41,7 +41,7 @@ int DecisionTree::getHeight()
     }
 }
 
-TreeNode * DecisionTree::getRoot()
+TreeNode * DecisionTree::getRoot() const
 {
     /**
      * Get the pointer to the root node.

@@ -15,9 +15,9 @@ public:
     DecisionTree(TreeNode *root);
 
     // Getters:
-    int getSize();
-    int getHeight();
-    TreeNode * getRoot();
+    int getSize() const;
+    int getHeight() const;
+    TreeNode * getRoot() const;
 
     // Setters:
     void setRoot(TreeNode *root);
