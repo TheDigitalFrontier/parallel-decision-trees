@@ -78,6 +78,14 @@ void DataVector::addValue(double value)
     this->size_ += 1;
 }
 
+DataVector* DataVector::copy() const
+{
+    /** Returns a copy of the DataVector. */
+    bool new_is_row = this->is_row();
+    DataVector* new_vector = new DataVector(this->vector(),new_is_row);
+    return new_vector;
+}
+
 DataVector* DataVector::transpose() const
 {
     /** Returns a pointer to a new vector that is the transpose of this one. */
@@ -337,6 +345,13 @@ void DataFrame::addCol(std::vector<double> vector)
     DataVector* col = new DataVector(vector,false);  // is_row==false.
     // Add DataColumn to frame (and perform error-checking):
     this->addCol(col);
+}
+
+DataFrame DataFrame::copy() const
+{
+    /** Returns a copy of the DataFrame. */
+    DataFrame *new_frame = new DataFrame(this->matrix());
+    return *new_frame;
 }
 
 DataFrame DataFrame::transpose() const

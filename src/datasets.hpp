@@ -30,6 +30,7 @@ public:
     // Utilities:
     void lock();  // Lock object to make it read-only.
     void addValue(double value);  // Add value to vector.
+    DataVector* copy() const;  // Returns a copy of the DataVector.
     DataVector* transpose() const;  // Returns a transposed copy of the DataVector.
     std::string to_string(bool new_line=true, int col_width=9) const;  // Return the DataVector as a string.
     void print(bool new_line=true, int col_width=9) const;  // Print the data vector.
@@ -74,6 +75,7 @@ public:
     void addRow(std::vector<double> vector);  // Wrap the values in a DataRow and add its pointer to the list.
     void addCol(DataVector *col);  // Append the values each row in the list (from pointer).
     void addCol(std::vector<double> vector);  // Append the values to each row in the list.
+    DataFrame copy() const;  // Returns a copy of the DataFrame.
     DataFrame transpose() const;  // Returns a transposed copy of the DataFrame.
     std::string to_string(bool new_line=true, int col_width=9) const;  // Return the DataFrame as a string.
     void print(bool new_line=true, int col_width=9) const;  // Print the data frame.
