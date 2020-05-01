@@ -1,13 +1,45 @@
 #include "tree_node.hpp"
+#include "datasets.hpp"
 
 // Constructors:
 
-TreeNode::TreeNode(TreeNode *parent, TreeNode *left, TreeNode *right, int split_feature, double split_threshold)
+TreeNode::TreeNode(DataFrame dataframe)
+{
+    /** Build a TreeNode with only splitting attributes. */
+    this->parent_ = nullptr;
+    this->left_ = nullptr;
+    this->right_ = nullptr;
+    this->dataframe_ = dataframe;
+    //this->split_feature_ = NULL;
+    //this->split_threshold_ = NULL;
+    TreeNode *root = this->findRoot();
+    root->updateSizes();
+    root->updateHeights();
+    root->updateDepths();
+}
+
+TreeNode::TreeNode(DataFrame dataframe, int split_feature, double split_threshold)
+{
+    /** Build a TreeNode with only a dataframe. */
+    this->parent_ = nullptr;
+    this->left_ = nullptr;
+    this->right_ = nullptr;
+    this->dataframe_ = dataframe;
+    //this->split_feature_ = NULL;
+    //this->split_threshold_ = NULL;
+    TreeNode *root = this->findRoot();
+    root->updateSizes();
+    root->updateHeights();
+    root->updateDepths();
+}
+
+TreeNode::TreeNode(TreeNode *parent, TreeNode *left, TreeNode *right, DataFrame dataframe, int split_feature, double split_threshold)
 {
     /** Build a TreeNode with all attributes. */
     this->parent_ = parent;
     this->left_ = left;
     this->right_ = right;
+    this->dataframe_ = dataframe;
     this->split_feature_ = split_feature;
     this->split_threshold_ = split_threshold;
     TreeNode *root = this->findRoot();
@@ -22,6 +54,7 @@ TreeNode::TreeNode(TreeNode *parent, TreeNode *left, TreeNode *right)
     this->parent_ = parent;
     this->left_ = left;
     this->right_ = right;
+    //this->dataframe_ = NULL;
     //this->split_feature_ = NULL;
     //this->split_threshold_ = NULL;
     TreeNode *root = this->findRoot();
@@ -30,27 +63,12 @@ TreeNode::TreeNode(TreeNode *parent, TreeNode *left, TreeNode *right)
     root->updateDepths();
 }
 
-TreeNode::TreeNode(TreeNode *left, TreeNode *right) : TreeNode(nullptr, left, right)
-{
-    /** Build a TreeNode with only child nodes. */
-    TreeNode *root = this->findRoot();
-    root->updateSizes();
-    root->updateHeights();
-    root->updateDepths();
-}
-
-TreeNode::TreeNode(TreeNode *parent) : TreeNode(parent, nullptr, nullptr)
-{
-    /** Build a TreeNode with only a parent node. */
-    TreeNode *root = this->findRoot();
-    root->updateSizes();
-    root->updateHeights();
-    root->updateDepths();
-}
-
-TreeNode::TreeNode() : TreeNode(nullptr, nullptr, nullptr)
+TreeNode::TreeNode()
 {
     /** Build a TreeNode with null attributes. */
+    this->parent_ = nullptr;
+    this->left_ = nullptr;
+    this->right_ = nullptr;
     TreeNode *root = this->findRoot();
     root->updateSizes();
     root->updateHeights();
@@ -107,6 +125,14 @@ TreeNode * TreeNode::getRight() const
     return this->right_;
 }
 
+DataFrame TreeNode::getDataFrame() const
+{
+    /** 
+     * Get dataframe.
+     */
+    return this->dataframe_;
+}
+
 int TreeNode::getSplitFeature() const
 {
     /** 
@@ -149,6 +175,14 @@ void TreeNode::setRight(TreeNode *right)
     root->updateSizes();
     root->updateHeights();
     root->updateDepths();
+}
+
+void TreeNode::setDataFrame(DataFrame dataframe)
+{
+    /** 
+     * Set dataframe for splitting.
+     */
+    this->dataframe_ = dataframe;
 }
 
 void TreeNode::setSplitFeature(int split_feature)

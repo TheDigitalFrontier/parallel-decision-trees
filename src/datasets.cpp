@@ -419,9 +419,6 @@ DataFrame::DataFrame(std::vector<std::vector<double>> matrix)
     }
     for (int i = 0; i < matrix.size(); i++)
     {
-        std::cout << matrix[i].size() << std::endl;  // TEST
-        // std::cout << matrix[i].size() << std::endl;  // TEST
-        // std::cout << this->width() << std::endl;  // TEST
         assert (matrix[i].size()==this->width());
         DataVector* row = new DataVector(matrix[i],true);  // is_row==true.
         this->addRow(row);

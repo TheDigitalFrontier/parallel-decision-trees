@@ -1,15 +1,13 @@
 #include "decision_tree.hpp"
 #include "tree_node.hpp"
+#include "datasets.hpp"
 
 // Constructors:
 
-DecisionTree::DecisionTree()
+DecisionTree::DecisionTree(DataFrame dataframe)
 {
-    this->root_ = nullptr;
-}
-
-DecisionTree::DecisionTree(TreeNode *root)
-{
+    this->dataframe_ = dataframe;
+    TreeNode *root = new TreeNode(this->dataframe_);
     this->root_ = root;
 }
 
@@ -49,15 +47,15 @@ TreeNode * DecisionTree::getRoot() const
     return this->root_;
 }
 
-// Setters:
-
-void DecisionTree::setRoot(TreeNode *root)
+DataFrame DecisionTree::getDataFrame() const
 {
-    this->root_ = root;
-    this->root_->updateSizes();
-    this->root_->updateHeights();
-    this->root_->updateDepths();
+    /**
+     * Get the pointer to the dataframe.
+     */
+    return this->dataframe_;
 }
+
+// Setters:
 
 /*
     int main()

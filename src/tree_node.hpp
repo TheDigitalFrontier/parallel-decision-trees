@@ -1,6 +1,8 @@
 #ifndef TREE_NODE_HPP
 #define TREE_NODE_HPP
 
+#include "datasets.hpp"
+
 class TreeNode
 {
     /** 
@@ -17,16 +19,17 @@ private:
     TreeNode *parent_;  // Pointer to parent node.
     TreeNode *left_;  // Pointer to left child.
     TreeNode *right_;  // Pointer to right child.
+    DataFrame dataframe_;  // Data frame for splitting.
     int split_feature_;  // Index of splitting column.
     double split_threshold_;  // Numberical splitting thresold.
 
 public:
     
     // Constructors:
-    TreeNode(TreeNode *parent, TreeNode *left, TreeNode *right, int split_feature, double split_threshold);
+    TreeNode(DataFrame dataframe);
+    TreeNode(DataFrame dataframe, int split_feature, double split_threshold);
+    TreeNode(TreeNode *parent, TreeNode *left, TreeNode *right, DataFrame dataframe, int split_feature, double split_threshold);
     TreeNode(TreeNode *parent, TreeNode *left, TreeNode *right);
-    TreeNode(TreeNode *left, TreeNode *right);
-    TreeNode(TreeNode *parent);
     TreeNode();
 
     // Getters:
@@ -36,12 +39,14 @@ public:
     TreeNode * getParent() const;
     TreeNode * getLeft() const;
     TreeNode * getRight() const;
+    DataFrame getDataFrame() const;
     int getSplitFeature() const;
     double getSplitThreshold() const;
 
     // Setters:
     void setLeft(TreeNode *left);
     void setRight(TreeNode *right);
+    void setDataFrame(DataFrame dataframe);
     void setSplitFeature(int split_feature);
     void setSplitThreshold(double split_threshold);
 
