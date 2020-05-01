@@ -1,3 +1,6 @@
+#ifndef DATASETS_HPP
+#define DATASETS_HPP
+
 #include <vector>
 
 class DataVector
@@ -108,3 +111,5 @@ public:
     DataLoader(std::vector<std::vector<double>> matrix);
 
 };
+
+#endif
