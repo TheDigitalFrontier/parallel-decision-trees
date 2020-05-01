@@ -253,7 +253,7 @@ std::vector<std::vector<double>> DataFrame::matrix() const
     for (int i = 0; i < this->length(); i++)
     {
         std::vector<double> temp_vector;
-        for (int j = 0; j < this->length(); j++)
+        for (int j = 0; j < this->width(); j++)
         {
             temp_vector.push_back( this->value(i,j) );
         }
