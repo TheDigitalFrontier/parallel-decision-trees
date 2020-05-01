@@ -7,7 +7,7 @@
 
 
 /*
- * DATAVECTOR - ACCESSORS :
+ * DATA VECTOR - ACCESSORS :
  */
 
 
@@ -60,7 +60,7 @@ std::vector<double> DataVector::vector() const
 
 
 /*
- * DATAVECTOR - UTILITES :
+ * DATA VECTOR - UTILITES :
  */
 
 
@@ -79,8 +79,57 @@ void DataVector::addValue(double value)
 }
 
 
+
+std::string DataVector::to_string(bool new_line, int col_width) const
+{
+    std::string out = "";
+    for (int i = 0; i < this->size(); i++)
+    {
+        out += "| ";
+        double value = this->value(i);
+        std::string pad,val = "";
+        val = std::to_string(value);
+        // Add space to align negative sign:
+        if (value>=0)
+        {
+            val = ' '+val;
+        }
+        // Truncate if too long:
+        if (val.length()>col_width)
+        {
+            val = val.substr(0,col_width);
+        }
+        // Pad if too short:
+        if (val.length()<col_width)
+        {
+            pad.append(col_width-val.length(),' ');
+        }
+        // Append padding and value:
+        out += pad;
+        out += val;
+        if ((!this->is_row()) or (i==this->size()-1))
+        {
+            out += " |\n";
+        } else {
+            out += ' ';
+        }
+    }
+    // Add (optional) extra newline character:
+    if (new_line)
+    {
+        out += '\n';
+    }
+    return out;
+}   
+
+void DataVector::print(bool new_line, int col_width) const
+{
+    std::cout << this->to_string(new_line, col_width);
+}
+
+
 /*
- * DATAVECTOR - CONSTRUCTORS :
+ * DATA VECTOR - CONSTRUCTORS :
  */
 
 
@@ -95,12 +144,25 @@ DataVector::DataVector(std::vector<double> vector, bool is_row)
 {
     this->is_row_ = is_row;
     this->is_locked_ = false;
-    this->size_ = vector.size();
+    this->size_ = 0;
     for (int i = 0; i < vector.size(); i++)
     {
         this->addValue( vector[i] );
     }
     //this->lock();
+}
+
+
+
+/*
+ * DATA VECTOR - I/O :
+ */
+
+
+std::ostream& operator<<(std::ostream& os, const DataVector& datavector)
+{
+    os << datavector.to_string(false);  // Don't add extra newline character.
+    return os;
 }
 
 
@@ -142,10 +204,10 @@ DataVector* DataFrame::row(int r) const
     return this->rows_[ r ];
 }
 
-DataVector DataFrame::col(int c) const
+DataVector* DataFrame::col(int c) const
 {
     /** Get given column (constructed on the fly). */
-    DataVector column = DataVector(false);  // is_row==false.
+    DataVector* col = new DataVector(false);  // is_row==false.
     if (c>=0)
     {
         // Index from beginning (positive):
@@ -157,10 +219,10 @@ DataVector DataFrame::col(int c) const
     }
     for (int i = 0; i < this->length(); i++)
     {
-        column.addValue( this->rows_[i]->value(c) );
+        col->addValue( this->rows_[i]->value(c) );
     }
     //column.lock();
-    return &column;
+    return col;
 }
 
 double DataFrame::value(int r, int c) const
@@ -224,16 +286,16 @@ void DataFrame::addRow(std::vector<double> vector)
     this->rows_.push_back(row);
 }
 
-void DataFrame::addCol(DataVector col)
+void DataFrame::addCol(DataVector *col)
 {
     /** Append the values to each row in the list. */
     //assert (!this->is_locked());
-    assert (!col.is_row());
-    assert (col.size()==this->length());
+    assert (!col->is_row());
+    assert (col->size()==this->length());
     for (int i = 0; i < this->length(); i++)
     {
         assert (!this->rows_[i]->is_locked());
-        this->rows_[i]->addValue( col.value(i) );
+        this->rows_[i]->addValue( col->value(i) );
     }
 }
 
@@ -252,35 +314,9 @@ void DataFrame::addCol(std::vector<double> vector)
 std::string DataFrame::to_string(bool new_line, int col_width) const
 {
     std::string out = "";
-    for (int r = 0; r < this->length(); r++)
+    for (int i = 0; i < this->length(); i++)
     {
-        out += "| ";
-        for (int c = 0; c < this->width(); c++)
-        {
-            double value = this->value(r,c);
-            std::string pad,val = "";
-            val = std::to_string(value);
-            // Add space to align negative sign:
-            if (value>=0)
-            {
-                val = ' '+val;
-            }
-            // Truncate if too long:
-            if (val.length()>col_width)
-            {
-                val = val.substr(0,col_width);
-            }
-            // Pad if too short:
-            if (val.length()<col_width)
-            {
-                pad.append(col_width-val.length(),' ');
-            }
-            // Append padding and value:
-            out += pad;
-            out += val;
-            out += " | ";
-        }
-        out += '\n';
+        out += this->row(i)->to_string(false, col_width);  // new_line==false.
     }
     // Add (optional) extra newline character:
     if (new_line)
@@ -317,14 +353,26 @@ DataFrame::DataFrame(std::vector<std::vector<double>> matrix)
     } else {
         this->width_ = 0;
     }
-    for (int r = 0; r < this->length_; r++)
+    for (int i = 0; i < this->length_; i++)
     {
-        assert (matrix[r].size()==this->width());
-        DataVector* row = new DataVector(matrix[r],true);  // is_row==true.
+        assert (matrix[i].size()==this->width());
+        DataVector* row = new DataVector(matrix[i],true);  // is_row==true.
         //row->lock();
-        this->rows_.push_back(row);
+        this->addRow(row);
     }
     //this->lock();
+}
+
+
+/*
+ * DATA FRAME - I/O :
+ */
+
+
+std::ostream& operator<<(std::ostream& os, const DataFrame& dataframe)
+{
+    os << dataframe.to_string(false);  // Don't add extra newline character.
+    return os;
 }
 
 
@@ -372,15 +420,4 @@ DataLoader::DataLoader(std::vector<std::vector<double>> matrix)
 {
     /** Load dataset from vector of vectors. */
     this->dataframe_ = DataFrame(matrix);
-}
-
-
-/*
- *  INPUT/OUTPUT
- */
-
-std::ostream& operator<<(std::ostream& os, const DataFrame& dataframe)
-{
-    os << dataframe.to_string(false);  // Don't add extra newline character.
-    return os;
 }

@@ -26,6 +26,12 @@ public:
     // Utilities:
     void lock();  // Lock object to make it read-only.
     void addValue(double value);  // Add value to vector.
+    DataVector transpose() const;  // Returns a transposed copy of the DataVector.
+    std::string to_string(bool new_line=true, int col_width=9) const;  // Return the DataVector as a string.
+    void print(bool new_line=true, int col_width=9) const;  // Print the data vector.
+
+    // Overloaded operators:
+    friend std::ostream& operator<<(std::ostream& os, const DataVector& datavector);
 
     // Constructors:
     DataVector(bool is_row=true);
@@ -54,15 +60,15 @@ public:
     int width() const;  // Returns number of columns.
     bool is_locked() const;  // Checks if object is read-only.
     DataVector* row(int r) const;  // Get pointer to given row (stored internally).
-    DataVector col(int c) const;  // Get given column (constructed on the fly).
+    DataVector* col(int c) const;  // Get pointerto given column (constructed on the fly).
     double value(int r, int c) const;  // Get value in given row and column.
     std::vector<std::vector<double>> matrix() const;  // Get a copy of values as a vector of vectors of doubles.
 
     // Utilities:
     void lock();  // Lock object to make it read-only.
-    void addRow(DataVector *row);  // Append the pointer to the list of rows.
+    void addRow(DataVector *row);  // Append to the list of rows (as pointer).
     void addRow(std::vector<double> vector);  // Wrap the values in a DataRow and add its pointer to the list.
-    void addCol(DataVector col);  // Append the values to each row in the list.
+    void addCol(DataVector *col);  // Append the values each row in the list (from pointer).
     void addCol(std::vector<double> vector);  // Append the values to each row in the list.
     DataFrame transpose() const;  // Returns a transposed copy of the DataFrame.
     std::string to_string(bool new_line=true, int col_width=9) const;  // Return the DataFrame as a string.
