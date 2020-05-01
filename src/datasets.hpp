@@ -2,6 +2,7 @@
 #define DATASETS_HPP
 
 #include <vector>
+#include <string>
 
 class DataVector
 {
