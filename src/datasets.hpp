@@ -32,6 +32,7 @@ public:
     void addValue(double value);  // Add value to vector.
     DataVector* copy() const;  // Returns a copy of the DataVector.
     DataVector* transpose() const;  // Returns a transposed copy of the DataVector.
+    std::vector<DataVector*> split(double split_threshold, bool equal_goes_left=true) const;  // Retrurns a pair of vectors (value above and below threshold).
     std::string to_string(bool new_line=true, int col_width=9) const;  // Return the DataVector as a string.
     void print(bool new_line=true, int col_width=9) const;  // Print the data vector.
 
@@ -77,6 +78,7 @@ public:
     void addCol(std::vector<double> vector);  // Append the values to each row in the list.
     DataFrame copy() const;  // Returns a copy of the DataFrame.
     DataFrame transpose() const;  // Returns a transposed copy of the DataFrame.
+    std::vector<DataFrame*> split(int split_column, double split_threshold, bool equal_goes_left) const;  // Retrurns a pair of frames (value above and below threshold in specified column).
     std::string to_string(bool new_line=true, int col_width=9) const;  // Return the DataFrame as a string.
     void print(bool new_line=true, int col_width=9) const;  // Print the data frame.
 

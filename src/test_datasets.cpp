@@ -39,5 +39,17 @@ int main(){
     std::cout << "Print transpose of data frame:" << std::endl;
     DataFrame test_transpose_df = df_test.transpose();
     std::cout << test_transpose_df << std::endl;
+    
+    // Test splitting by threshold (vector):
+    std::cout << "Split last column with threshold 0.5 (transposed for better printing):" << std::endl;
+    std::vector<DataVector*> test_split_vector = df_test.col(-1)->split(0.5);
+    std::cout << "L: " << *test_split_vector[0]->transpose() << std::endl;
+    std::cout << "R: " << *test_split_vector[1]->transpose() << std::endl;
+    
+    // Test splitting by threshold (table):
+    std::cout << "Split table on first column with threshold 3.396562:" << std::endl;
+    std::vector<DataFrame*> test_split_table = df_test.split(0,3.396562,false);
+    std::cout << "L:\n" << *test_split_table[0] << std::endl;
+    std::cout << "R:\n" << *test_split_table[1] << std::endl;
 
 };
