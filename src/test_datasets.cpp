@@ -27,7 +27,12 @@ int main(){
     
     // Get transpose of first column:
     std::cout << "Print transpose of first column:" << std::endl;
-    DataVector* test_transpose = df_test.col(0)->transpose();
-    std::cout << *test_transpose << std::endl;
+    DataVector* test_transpose_col = df_test.col(0)->transpose();
+    std::cout << *test_transpose_col << std::endl;
+    
+    // Get transpose of data frame:
+    std::cout << "Print transpose of data frame:" << std::endl;
+    DataFrame test_transpose_df = df_test.transpose();
+    std::cout << test_transpose_df << std::endl;
 
 };

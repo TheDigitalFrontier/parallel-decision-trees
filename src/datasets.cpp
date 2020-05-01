@@ -73,7 +73,7 @@ void DataVector::lock()
 void DataVector::addValue(double value)
 {
     /** Adds a cell to a row. */
-    //assert (!this->is_locked());
+    assert (!this->is_locked());
     this->values_.push_back(value);
     this->size_ += 1;
 }
@@ -174,7 +174,7 @@ DataVector::DataVector(std::vector<double> vector, bool is_row)
 {
     this->is_row_ = is_row;
     this->is_locked_ = false;
-    this->size_ = 0;
+    this->size_ = 0;  // Wil be incremented as values are added.
     for (int i = 0; i < vector.size(); i++)
     {
         this->addValue( vector[i] );
@@ -281,48 +281,74 @@ void DataFrame::lock()
 void DataFrame::addRow(DataVector *row)
 {
     /** Append the pointer to the list of rows. */
-    //assert (!this->is_locked());
+    assert (!this->is_locked());
     assert (row->is_row());
-    assert (row->size()==this->width());
+    if (this->rows_.size()==0)
+    {
+        // If this is the first row, set dimensions:
+        this->width_ = row->size();  // Length will be incremented below.
+    } else {
+        // Otherwise, make sure it matches existing dimension.
+        assert (row->size()==this->width());
+    }
     this->rows_.push_back(row);
+    this->length_ += 1;
 }
 
 void DataFrame::addRow(std::vector<double> vector)
 {
     /** Wrap the values in a DataRow and add its pointer to the list. */
-    //assert (!this->is_locked());
-    assert (!vector.size()==this->width());
+    // Create DataVector (row):
     DataVector* row = new DataVector(true);  // is_row==true.
     for (int i = 0; i < this->width(); i++)
     {
         row->addValue( vector[i] );
     }
-    this->rows_.push_back(row);
+    // Add DataVector to frame (and perform error-checking):
+    this->addRow(row);
 }
 
 void DataFrame::addCol(DataVector *col)
 {
     /** Append the values to each row in the list. */
-    //assert (!this->is_locked());
+    assert (!this->is_locked());
     assert (!col->is_row());
     assert (col->size()==this->length());
+    if (this->rows_.size()==0)
+    {
+        // If this is the first column, set dimensions:
+        this->length_ = col->size();  // Width will be incremented below.
+    } else {
+        // Otherwise, make sure it matches existing dimension.
+        assert (col->size()==this->length());
+    }
     for (int i = 0; i < this->length(); i++)
     {
         assert (!this->rows_[i]->is_locked());
         this->rows_[i]->addValue( col->value(i) );
     }
+    this->width_ += 1;
 }
 
 void DataFrame::addCol(std::vector<double> vector)
 {
     /** Append the values to each row in the list. */
-    //assert (!this->is_locked());
-    assert (vector.size()==this->length());
-    for (int i = 0; i < this->length(); i++)
+    // Create DataVector (column):
+    DataVector* col = new DataVector(vector,false);  // is_row==false.
+    // Add DataColumn to frame (and perform error-checking):
+    this->addCol(col);
+}
+
+DataFrame DataFrame::transpose() const
+{
+    /** Returns a new dataframe that is the transpose of this one. */
+    DataFrame *new_frame = new DataFrame();
+    // Get each column, transpose it, and add it as a row in new frame:
+    for (int i = 0; i < this->width(); i++)
     {
-        assert (!this->rows_[i]->is_locked());
-        this->rows_[i]->addValue( vector[i] );
+        new_frame->addRow( this->col(i)->transpose() );
     }
+    return *new_frame;
 }
 
 std::string DataFrame::to_string(bool new_line, int col_width) const
@@ -385,14 +411,17 @@ DataFrame::DataFrame()
 DataFrame::DataFrame(std::vector<std::vector<double>> matrix)
 {
     this->is_locked_ = false;
-    this->length_ = matrix.size();
+    this->length_ = 0;  // Will be incremented below.
     if (matrix.size()>0){
         this->width_ = matrix[0].size();
     } else {
         this->width_ = 0;
     }
-    for (int i = 0; i < this->length_; i++)
+    for (int i = 0; i < matrix.size(); i++)
     {
+        std::cout << matrix[i].size() << std::endl;  // TEST
+        // std::cout << matrix[i].size() << std::endl;  // TEST
+        // std::cout << this->width() << std::endl;  // TEST
         assert (matrix[i].size()==this->width());
         DataVector* row = new DataVector(matrix[i],true);  // is_row==true.
         this->addRow(row);
