@@ -12,7 +12,16 @@ double LossFunction::misclassification_rate(DataVector y_true, DataVector y_pred
 {
     /** Returns the loss calculated with misclassification_rate. */
     double loss;
-    throw std::logic_error{"TO DO: implement misclassification_rate."};
+    int correct = 0;
+    int incorrect = 0;
+    for (int i = 0; i < y_true.size(); i++){
+        if (y_true.value(i) == y_pred.value(i)){
+            correct += 1;
+        } else {
+            incorrect += 1;
+        }
+    }
+    loss = 1.0*incorrect/(correct+incorrect);
     return loss;
 }
 
