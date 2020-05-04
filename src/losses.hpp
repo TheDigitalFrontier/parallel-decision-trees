@@ -59,6 +59,8 @@ public:
     int total_size() const; // The total number of instances.
     bool has_label(double label) const;  // Check if a label has been counted.
     int get_count(double label) const;  // Get counter value for specified label (coerced to integer).
+    DataVector* get_labels() const;  // Get DataVector of labels.
+    DataVector* get_values() const;  // Get DataVector of values.
     std::string to_string() const;  // Represent LabelCounter as string.
     void print() const;  // Print LabelCounter to standard output.
 

@@ -165,6 +165,35 @@ int LabelCounter::get_count(double label) const
     return counts_.at(key);
 }
 
+DataVector* LabelCounter::get_labels() const
+{
+    /** Get DataVector of labels. */
+    DataVector *labels = new DataVector(false);  // is_row==false.
+    std::map<int, int>::const_iterator it = this->counts_.begin();
+    while (it != this->counts_.end())
+    {
+        int key = it->first;
+        // int value = it->second;
+        labels->addValue(key);
+        it++;
+    }
+    return labels;
+}
+DataVector* LabelCounter::get_values() const
+{
+    /** Get DataVector of values. */
+    DataVector *values = new DataVector(false);  // is_row==false.
+    std::map<int, int>::const_iterator it = this->counts_.begin();
+    while (it != this->counts_.end())
+    {
+        // int key = it->first;
+        int value = it->second;
+        values->addValue(value);
+        it++;
+    }
+    return values;
+}
+
 std::string LabelCounter::to_string() const
 {
     /** Represent LabelCounter as string. */

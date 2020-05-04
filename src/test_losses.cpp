@@ -13,6 +13,10 @@ int main(){
     std::cout << "Total occurrences: " << label_counter1.total_size() << std::endl;
     std::cout << "Counts: " << label_counter1 << std::endl;
     std::cout << std::endl;
+    std::cout << "Labels: " + label_counter1.get_labels()->transpose()->to_string(false);
+    std::cout << "Values: " + label_counter1.get_values()->transpose()->to_string(false);
+    std::cout << "Counts: " << label_counter1 << std::endl;
+    std::cout << std::endl;
 
     std::cout << "Reset counter." << std::endl;
     label_counter1.reset();
