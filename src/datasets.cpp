@@ -58,6 +58,28 @@ std::vector<double> DataVector::vector() const
     return vector;
 }
 
+double DataVector::sum() const
+{
+    /** Returns the sum of the values in the vector. */
+    double sum = 0;
+    for (int i = 0; i < this->size(); i++)
+    {
+        sum += this->values_[i];
+    }
+    return sum;
+}
+
+double DataVector::mean() const
+{
+    /** Returns the mean of the values in the vector. */
+    double sum = 0;
+    for (int i = 0; i < this->size(); i++)
+    {
+        sum += this->values_[i];
+    }
+    return sum / this->size();
+}
+
 
 /*
  * DATA VECTOR - UTILITES :
@@ -293,6 +315,40 @@ std::vector<std::vector<double>> DataFrame::matrix() const
         matrix.push_back(temp_vector);
     }
     return matrix;
+}
+
+DataVector* DataFrame::sum(bool axis) const
+{
+    /**
+     * Returns a vector of the means down columns (axis==0) or across rows (axis==1).
+     * Returns a row if axis==0 and a column if axis==1.
+     */
+    DataVector *result;
+    if (axis==0) {
+        result = new DataVector(true);  // is_row==true.
+        for (int i = 0; i < this->width(); i++) { result->addValue( this->col(i)->sum() ); }
+    } else {
+        result = new DataVector(false);  // is_row==false.
+        for (int i = 0; i < this->length(); i++) { result->addValue( this->row(i)->sum() ); }
+    }
+    return result;
+}
+
+DataVector* DataFrame::mean(bool axis) const
+{
+    /**
+     * Returns a vector of the means down columns (axis==0) or across rows (axis==1).
+     * Returns a row if axis==0 and a column if axis==1.
+     */
+    DataVector *result;
+    if (axis==0) {
+        result = new DataVector(true);  // is_row==true.
+        for (int i = 0; i < this->width(); i++) { result->addValue( this->col(i)->mean() ); }
+    } else {
+        result = new DataVector(false);  // is_row==false.
+        for (int i = 0; i < this->length(); i++) { result->addValue( this->row(i)->mean() ); }
+    }
+    return result;
 }
 
 

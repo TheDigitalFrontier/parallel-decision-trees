@@ -51,5 +51,15 @@ int main(){
     std::vector<DataFrame*> test_split_table = df_test.split(0,3.396562,false);
     std::cout << "L:\n" << *test_split_table[0] << std::endl;
     std::cout << "R:\n" << *test_split_table[1] << std::endl;
+    
+    // Test sum and mean:
+    std::cout << "Get sum along row axis:" << std::endl;
+    std::cout << df_test.sum(0)->to_string();
+    std::cout << "Get sum along column axis:" << std::endl;
+    std::cout << df_test.sum(1)->to_string();
+    std::cout << "Get mean along row axis:" << std::endl;
+    std::cout << df_test.mean(0)->to_string();
+    std::cout << "Get mean along column axis:" << std::endl;
+    std::cout << df_test.mean(1)->to_string();
 
 };

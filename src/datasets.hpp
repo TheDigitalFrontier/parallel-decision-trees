@@ -26,6 +26,8 @@ public:
     bool is_locked() const;  // Checks if object is read-only.
     double value(int c) const;  // Get value in given position.
     std::vector<double> vector() const;  // Get a copy of values as a vector of doubles.
+    double sum() const;  // Returns the sum of the values in the vector.
+    double mean() const;  // Returns the mean of the values in the vector.
 
     // Utilities:
     void lock();  // Lock object to make it read-only.
@@ -69,6 +71,8 @@ public:
     DataVector* col(int c) const;  // Get pointerto given column (constructed on the fly).
     double value(int r, int c) const;  // Get value in given row and column.
     std::vector<std::vector<double>> matrix() const;  // Get a copy of values as a vector of vectors of doubles.
+    DataVector* sum(bool axis=0) const;  // Returns a vector of the means down columns (axis==0) or across rows (axis==1).
+    DataVector* mean(bool axis=0) const;  // Returns a vector of the means down columns (axis==0) or across rows (axis==1).
 
     // Utilities:
     void lock();  // Lock object to make it read-only.
