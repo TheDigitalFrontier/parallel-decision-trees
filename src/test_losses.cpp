@@ -7,11 +7,14 @@ int main(){
     std::cout << "Create label and add test labels." << std::endl;
     LabelCounter label_counter1 = LabelCounter();
     label_counter1.increment(333);
-    label_counter1.increment(22);
-    label_counter1.increment(22);
+    label_counter1.increment(20);
+    label_counter1.increment(20);
+    label_counter1.increment(21);
+    label_counter1.increment(21);
     std::cout << "Number of labels: " << label_counter1.size() << std::endl;
     std::cout << "Total occurrences: " << label_counter1.total_size() << std::endl;
     std::cout << "Counts: " << label_counter1 << std::endl;
+    std::cout << "Most frequent key: " << label_counter1.get_most_frequent() << std::endl;
     std::cout << std::endl;
     std::cout << "Labels: " + label_counter1.get_labels()->transpose()->to_string(false);
     std::cout << "Values: " + label_counter1.get_values()->transpose()->to_string(false);

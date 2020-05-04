@@ -165,6 +165,30 @@ int LabelCounter::get_count(double label) const
     return counts_.at(key);
 }
 
+double LabelCounter::get_most_frequent() const
+{
+    /** Get most common label (breaking ties in favor of smallest label). */
+    assert (this->size()>0);  // Not defined if counter is empty.
+    double most_freq_key;
+    int occurrences = 0;  // Number of occurrences of most frequent so far.
+    std::map<int, int>::const_iterator it = this->counts_.begin();
+    while (it != this->counts_.end())
+    {
+        int key = it->first;
+        int value = it->second;
+        if (value>occurrences)
+        {
+            most_freq_key = key;
+            occurrences = value;
+        } else if ((value==occurrences) and (key<most_freq_key)) {
+            most_freq_key = key;
+            occurrences = value;
+        }
+        it++;
+    }
+    return most_freq_key;
+}
+
 DataVector* LabelCounter::get_labels() const
 {
     /** Get DataVector of labels. */
