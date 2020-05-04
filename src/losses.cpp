@@ -227,10 +227,10 @@ std::string LabelCounter::to_string() const
     {
         int key = it->first;
         int value = it->second;
-        out += std::to_string(key) + " : " + std::to_string(value) + " ; ";
+        out += std::to_string(key) + ":" + std::to_string(value) + "; ";
         it++;
     }
-    out = out.substr(0,out.length()-2) + " .";
+    out = out.substr(0,out.length()-2) + ".";
     return out;
 }
 
