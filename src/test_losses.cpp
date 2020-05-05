@@ -50,6 +50,8 @@ int main(){
     std::cout << "Gini impurity ( 3/7*(1-3/7) + 4/7*(1-4/7) ): " + std::to_string(loss_gini) << std::endl;
     double loss_entropy = LossFunction("cross_entropy").calculate(labels);
     std::cout << "Binary cross-entropy ( -( 4/7*log2(4/7) + 3/7*log2(3/7) ) ): " + std::to_string(loss_entropy) << std::endl;
+    double loss_mse = LossFunction("mean_squared_error").calculate(labels);
+    std::cout << "Mean squared error ( ( 4 * (1-4/7)^2 + 3 * (0-4/7)^2 )/7 ): " + std::to_string(loss_mse) << std::endl;
     std::cout << std::endl;
     
     std::cout << "Calculate loss (test 2)." << std::endl;

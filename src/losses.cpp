@@ -75,6 +75,21 @@ double LossFunction::gini_impurity(DataVector *labels)
     return loss;
 }
 
+double LossFunction::mean_squared_error(DataVector *labels)
+{
+    /** Returns the loss calculated with gini_impurity. */
+    double prediction = labels->mean();
+    double loss = 0;
+    double error;
+    for (int i = 0; i < labels->size(); i++)
+    {
+        error = ( labels->value(i) - prediction );
+        loss += (error*error);
+    }
+    loss = 1.0*loss/labels->size();
+    return loss;
+}
+
 
 /**
  * LOSS FUNCTION - ACCESSORS :
@@ -103,6 +118,8 @@ double LossFunction::calculate(DataVector *labels)
         loss = this->cross_entropy(labels);
     } else if (this->method_=="gini_impurity") {
         loss = this->gini_impurity(labels);
+    } else if (this->method_=="mean_squared_error") {
+        loss = this->mean_squared_error(labels);
     }
     return loss;
 }
@@ -132,11 +149,11 @@ LossFunction::LossFunction(std::string method)
      *   gini_impurity
      * The loss will be minimized by the decision tree.
      */
-    if (method=="misclassification_error") {
+    if ( (method=="misclassification_error") or (method=="cross_entropy") or (method=="gini_impurity") ) {
+        // Loss functions for classification tasks.
         this->method_ = method;
-    } else if (method=="cross_entropy") {
-        this->method_ = method;
-    } else if (method=="gini_impurity") {
+    } else if ( (method=="mean_squared_error") ) {
+        // Loss functions for regression tasks.
         this->method_ = method;
     } else {
         throw std::invalid_argument( "Received invalid loss method: "+method );
