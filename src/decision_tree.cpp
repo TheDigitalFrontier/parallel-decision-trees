@@ -4,8 +4,9 @@
 
 // Constructors:
 
-DecisionTree::DecisionTree(DataFrame dataframe)
+DecisionTree::DecisionTree(DataFrame dataframe, bool regression)
 {
+    this->regression_ = regression;
     this->dataframe_ = dataframe;
     TreeNode *root = new TreeNode(this->dataframe_);
     this->root_ = root;
@@ -37,6 +38,12 @@ int DecisionTree::getHeight() const
     } else {
         return 0;
     }
+}
+
+bool DecisionTree::isRegressionTree() const
+{
+    /** Return true if regression tree and false if classification tree. */
+    return this->regression_;
 }
 
 TreeNode * DecisionTree::getRoot() const

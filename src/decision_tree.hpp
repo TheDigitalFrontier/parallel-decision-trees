@@ -9,17 +9,19 @@ class DecisionTree
 private:
 
     // Attributes:
+    bool regression_;  // Use regression==false for a classification tree.
     TreeNode *root_;
     DataFrame dataframe_;
 
 public:
 
     // Constructors:
-    DecisionTree(DataFrame dataframe);
+    DecisionTree(DataFrame dataframe, bool regression=false);
 
     // Getters:
     int getSize() const;
     int getHeight() const;
+    bool isRegressionTree() const;
     TreeNode * getRoot() const;
     DataFrame getDataFrame() const;
 
