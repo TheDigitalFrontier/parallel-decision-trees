@@ -32,9 +32,9 @@ double LossFunction::misclassification_error(DataVector *labels)
     return loss;
 }
 
-double LossFunction::binary_cross_entropy(DataVector *labels)
+double LossFunction::cross_entropy(DataVector *labels)
 {
-    /** Returns the loss calculated with binary_cross_entropy. */
+    /** Returns the loss calculated with cross_entropy. */
     double loss;
     LabelCounter label_counter = LabelCounter(labels);
     int sum_of_counts = label_counter.get_values()->sum();  // Get total number of labels.
@@ -48,11 +48,7 @@ double LossFunction::binary_cross_entropy(DataVector *labels)
         int label = labels_->value(i);
         int count = counts_->value(i);
         prop = 1.0*count/sum_of_counts;
-        if (label==predicted_label){
-            loss += log2(prop);
-        } else {
-            loss += log2(1-prop);
-        }
+        loss += prop * std::log2(prop);
     }
     loss = -loss;  // Negate the sum.
     delete labels_;
@@ -103,8 +99,8 @@ double LossFunction::calculate(DataVector *labels)
     double loss;
     if (this->method_=="misclassification_error") {
         loss = this->misclassification_error(labels);
-    } else if (this->method_=="binary_cross_entropy") {
-        loss = this->binary_cross_entropy(labels);
+    } else if (this->method_=="cross_entropy") {
+        loss = this->cross_entropy(labels);
     } else if (this->method_=="gini_impurity") {
         loss = this->gini_impurity(labels);
     }
@@ -132,13 +128,13 @@ LossFunction::LossFunction(std::string method)
     /**
      * Initialize a loss function with one of the specified methods:
      *   misclassification_error
-     *   binary_cross_entropy
+     *   cross_entropy
      *   gini_impurity
      * The loss will be minimized by the decision tree.
      */
     if (method=="misclassification_error") {
         this->method_ = method;
-    } else if (method=="binary_cross_entropy") {
+    } else if (method=="cross_entropy") {
         this->method_ = method;
     } else if (method=="gini_impurity") {
         this->method_ = method;

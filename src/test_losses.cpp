@@ -40,16 +40,24 @@ int main(){
     std::cout << "Counts: " << label_counter2 << std::endl;
     std::cout << std::endl;
     
-    std::cout << "Calculate loss." << std::endl;
+    std::cout << "Calculate loss (test 1)." << std::endl;
     DataVector labels = DataVector({1,0,1,0,1,1,0});
-    std::cout << labels << std::endl;
+    std::cout << labels << "Counts : " << LabelCounter(labels) << std::endl;
     LossFunction loss_func_misclass = LossFunction("misclassification_error");
     double loss_misclass = loss_func_misclass.calculate(labels);
     std::cout << "Misclassification rate ( 3/7 ): " + std::to_string(loss_misclass) << std::endl;
     double loss_gini = LossFunction("gini_impurity").calculate(labels);
     std::cout << "Gini impurity ( 3/7*(1-3/7) + 4/7*(1-4/7) ): " + std::to_string(loss_gini) << std::endl;
-    double loss_entropy = LossFunction("binary_cross_entropy").calculate(labels);
-    std::cout << "Binary cross-entropy ( -(log(4/7)+log(1-3/7)) ): " + std::to_string(loss_entropy) << std::endl;
+    double loss_entropy = LossFunction("cross_entropy").calculate(labels);
+    std::cout << "Binary cross-entropy ( -( 4/7*log2(4/7) + 3/7*log2(3/7) ) ): " + std::to_string(loss_entropy) << std::endl;
+    std::cout << std::endl;
+    
+    std::cout << "Calculate loss (test 2)." << std::endl;
+    DataVector labels2 = DataVector({1,1,1,1,1,2,2,2,2,2,2,2,2});
+    std::cout << labels2 << "Counts : " << LabelCounter(labels2) << std::endl;
+    double loss_entropy2 = LossFunction("cross_entropy").calculate(labels2);  // count(1)=5, count(2)=8.
+    std::cout << "Binary cross-entropy ( -( 5/13*log2(5/13) + 8/13*log2(8/13) ) ): " + std::to_string(loss_entropy2) << std::endl;
+    std::cout << std::endl;
 
     return 0;
 };
