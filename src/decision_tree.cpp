@@ -9,7 +9,10 @@
 
 // Constructors:
 
-DecisionTree::DecisionTree(DataFrame dataframe, bool regression, std::string loss, int mtry, int max_height, int max_leaves)
+DecisionTree::DecisionTree(
+    DataFrame dataframe, bool regression, std::string loss,
+    int mtry, int max_height, int max_leaves, int min_obs, double max_prop
+)
 {
     /**
      * Initialize a DecisionTree with given training set and hyperparameters.
@@ -19,11 +22,15 @@ DecisionTree::DecisionTree(DataFrame dataframe, bool regression, std::string los
      *    mtry       : Hyperparameter: Number of features to use at each split (or -1 for all in deterministic order; or 0 for sqrt(n_columns) ).
      *    max_height : Stopping condition: max height of tree (or -1 for no stopping on this condition).
      *    max_leaves : Stopping condition: max number of leaves (or -1 for no stopping on this condition).
+     *    min_obs    : Stopping condition: minimum number of observations in a leaf (or -1 for no stopping on this condition).
+     *    max_prop   : Stopping condition: maximum proportion of majority class in a leaf (or -1 for no stopping on this condition).
     */
     // Check inputs:
     assert ((dataframe.length()>0) and dataframe.width()>0);  // Need at least one row and column (plus class column).
     assert ((max_height==-1) or (max_height>=1));  // -1 indicates no max depth.
     assert ((max_leaves==-1) or (max_leaves>=1));  // -1 indicates no max leaves.
+    assert ((min_obs==-1) or (min_obs>=1));  // -1 indicates no min observation number.
+    assert ((max_prop==-1) or (max_prop>0));  // -1 indicates no max proportion.
     assert ((mtry>=-1) and (mtry<dataframe.width()));
     if (regression) {
         // Regression tree:
@@ -47,6 +54,8 @@ DecisionTree::DecisionTree(DataFrame dataframe, bool regression, std::string los
     this->mtry_ = mtry;
     this->max_height_ = max_height;
     this->max_leaves_ = max_leaves;
+    this->min_obs_ = min_obs;
+    this->max_prop_ = max_prop;
     // Initialize:
     TreeNode *root = new TreeNode(this->dataframe_);
     this->root_ = root;
@@ -202,14 +211,19 @@ void DecisionTree::fit_(TreeNode* node)
 {
     DataFrame dataframe = node->getDataFrame();
     LabelCounter label_counter = LabelCounter(dataframe.col(-1));
+    double proportion = label_counter.get_values()->max()/label_counter.size();
     if ( label_counter.size()==1 ) {
         ;  // Prune if there is only one class left.
+    } else if ( dataframe.length()<2 ) {
+        ;  // Prune if there is not enough data to split.
     } else if ( (this->max_height_!=-1) and (node->getDepth()+1>=this->max_height_) ) { 
         ;  // Prune if adding children would exceed max depth:
     } else if ( (this->max_leaves_!=-1) and (this->num_leaves_+1>=this->max_leaves_) ) { 
         ;  // Prune if adding children would exceed max leaves:
-    } else if ( dataframe.length()<2 ) {
-        ;  // Prune if there is not enough data to split.
+    } else if ( (this->min_obs_!=-1) and (dataframe.length()<=this->min_obs_) ) {
+        ;  // Prune if node is below minimum leave size.
+    } else if ( (this->max_prop_!=-1) and (  proportion>=this->max_prop_) ) {
+        ;  // Prune if proportion of majority label is above threshold.
     } else {
         // Find best split at this node:
         std::pair<int,double> split = this->findBestSplit(node);

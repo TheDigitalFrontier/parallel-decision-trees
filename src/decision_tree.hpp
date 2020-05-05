@@ -18,6 +18,8 @@ private:
     int mtry_;  // Hyperparameter: Number of features to use at each split (or -1 for all in deterministic order; or 0 for sqrt(n_columns) ).
     int max_height_;  // Stopping condition: max height of tree.
     int max_leaves_;  // Stopping condition: max number of leaves.
+    int min_obs_;  // Stopping condition: minimum number of observations in a leaf.
+    int max_prop_;  // Stopping condition: minimum proportion of majority class in a leaf.
     int num_leaves_;  // State variable: Number of leaves currently in tree.
     int num_features_;  // State variable: Number of features in dataset.
     std::vector<TreeNode*> leaves_;  // State variables: List of leaves.
@@ -31,7 +33,10 @@ private:
 public:
 
     // Constructors:
-    DecisionTree(DataFrame dataframe, bool regression, std::string loss, int mtry=-1, int max_height=-1, int max_leaves=-1);
+    DecisionTree(
+        DataFrame dataframe, bool regression, std::string loss, int mtry=-1, 
+        int max_height=-1, int max_leaves=-1, int min_obs=-1, double max_prop=-1
+    );
 
     // Getters:
     int getSize() const;  // Number of nodes in tree.
