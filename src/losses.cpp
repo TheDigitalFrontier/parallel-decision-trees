@@ -119,7 +119,6 @@ LossFunction::LossFunction(std::string method)
     } else {
         throw std::invalid_argument( "Received invalid loss method: "+method );
     }
-
 }
 
 
