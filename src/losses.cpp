@@ -3,8 +3,9 @@
 #include <iostream>
 #include <stdexcept>
 #include <algorithm>
-#include <assert.h>
+#include <cmath>
 #include <math.h>
+#include <assert.h>
 
 
 /**

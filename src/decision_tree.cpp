@@ -2,9 +2,10 @@
 #include "tree_node.hpp"
 #include "datasets.hpp"
 #include "losses.hpp"
+#include <cmath>  // std::floor.
+#include <math.h>  // std::sqrt.
 #include <algorithm>  // std::sort.
 #include <assert.h>
-#include <math.h>  // std::sqrt.
 #include <time.h>  // std::time.
 
 // Constructors:
