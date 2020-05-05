@@ -36,7 +36,27 @@ double LossFunction::binary_cross_entropy(DataVector labels)
 {
     /** Returns the loss calculated with binary_cross_entropy. */
     double loss;
-    throw std::logic_error{"TO DO: implement binary_cross_entropy."};
+    LabelCounter label_counter = LabelCounter(labels);
+    int sum_of_counts = label_counter.get_values()->sum();  // Get total number of labels.
+    assert (sum_of_counts==labels.size());
+    int predicted_label = label_counter.get_most_frequent();
+    DataVector *labels_ = label_counter.get_labels();  // Get labels.
+    DataVector *counts_ = label_counter.get_values();  // Get count for each label.
+    double prop;  // Temporary variable to store proportion of current class.
+    for (int i = 0; i < counts_->size(); i++)
+    {
+        int label = labels_->value(i);
+        int count = counts_->value(i);
+        prop = 1.0*count/sum_of_counts;
+        if (label==predicted_label){
+            loss += log2(prop);
+        } else {
+            loss += log2(1-prop);
+        }
+    }
+    loss = -loss;  // Negate the sum.
+    delete labels_;
+    delete counts_;
     return loss;
 }
 

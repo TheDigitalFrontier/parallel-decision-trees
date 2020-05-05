@@ -49,7 +49,7 @@ int main(){
     double loss_gini = LossFunction("gini_impurity").calculate(labels);
     std::cout << "Gini impurity ( 3/7*(1-3/7) + 4/7*(1-4/7) ): " + std::to_string(loss_gini) << std::endl;
     double loss_entropy = LossFunction("binary_cross_entropy").calculate(labels);
-    std::cout << "Binary cross-entropy: " + std::to_string(loss_entropy) << std::endl;
+    std::cout << "Binary cross-entropy ( -(log(4/7)+log(1-3/7)) ): " + std::to_string(loss_entropy) << std::endl;
 
     return 0;
 };
