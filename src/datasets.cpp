@@ -1,6 +1,7 @@
 #include "datasets.hpp"
 #include <assert.h>
 #include <math.h>
+#include <cmath>
 #include <iostream>
 #include <iomanip>
 #include <vector>
