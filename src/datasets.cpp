@@ -58,6 +58,34 @@ std::vector<double> DataVector::vector() const
     return vector;
 }
 
+double DataVector::min() const
+{
+    /** Returns the min of the values in the vector. */
+    assert (this->size()>0);
+    double min = this->values_[0];
+    double val;
+    for (int i = 0; i < this->size(); i++)
+    {
+        val = this->values_[i];
+        if (val<min) { min = val; }
+    }
+    return min;
+}
+
+double DataVector::max() const
+{
+    /** Returns the min of the values in the vector. */
+    assert (this->size()>0);
+    double max = this->values_[0];
+    double val;
+    for (int i = 0; i < this->size(); i++)
+    {
+        val = this->values_[i];
+        if (val>max) { max = val; }
+    }
+    return max;
+}
+
 double DataVector::sum() const
 {
     /** Returns the sum of the values in the vector. */
@@ -315,6 +343,40 @@ std::vector<std::vector<double>> DataFrame::matrix() const
         matrix.push_back(temp_vector);
     }
     return matrix;
+}
+
+DataVector* DataFrame::min(bool axis) const
+{
+    /**
+     * Returns a vector of the min down columns (axis==0) or across rows (axis==1).
+     * Returns a row if axis==0 and a column if axis==1.
+     */
+    DataVector *result;
+    if (axis==0) {
+        result = new DataVector(true);  // is_row==true.
+        for (int i = 0; i < this->width(); i++) { result->addValue( this->col(i)->min() ); }
+    } else {
+        result = new DataVector(false);  // is_row==false.
+        for (int i = 0; i < this->length(); i++) { result->addValue( this->row(i)->min() ); }
+    }
+    return result;
+}
+
+DataVector* DataFrame::max(bool axis) const
+{
+    /**
+     * Returns a vector of the max down columns (axis==0) or across rows (axis==1).
+     * Returns a row if axis==0 and a column if axis==1.
+     */
+    DataVector *result;
+    if (axis==0) {
+        result = new DataVector(true);  // is_row==true.
+        for (int i = 0; i < this->width(); i++) { result->addValue( this->col(i)->max() ); }
+    } else {
+        result = new DataVector(false);  // is_row==false.
+        for (int i = 0; i < this->length(); i++) { result->addValue( this->row(i)->max() ); }
+    }
+    return result;
 }
 
 DataVector* DataFrame::sum(bool axis) const

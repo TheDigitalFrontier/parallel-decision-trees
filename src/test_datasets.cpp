@@ -52,7 +52,15 @@ int main(){
     std::cout << "L:\n" << *test_split_table[0] << std::endl;
     std::cout << "R:\n" << *test_split_table[1] << std::endl;
     
-    // Test sum and mean:
+    // Test min, max, sum, mean:
+    std::cout << "Get min along row axis:" << std::endl;
+    std::cout << df_test.min(0)->to_string();
+    std::cout << "Get min along column axis:" << std::endl;
+    std::cout << df_test.min(1)->to_string();
+    std::cout << "Get max along row axis:" << std::endl;
+    std::cout << df_test.max(0)->to_string();
+    std::cout << "Get max along column axis:" << std::endl;
+    std::cout << df_test.max(1)->to_string();
     std::cout << "Get sum along row axis:" << std::endl;
     std::cout << df_test.sum(0)->to_string();
     std::cout << "Get sum along column axis:" << std::endl;
