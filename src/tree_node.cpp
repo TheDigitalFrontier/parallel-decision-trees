@@ -1,5 +1,6 @@
 #include "tree_node.hpp"
 #include "datasets.hpp"
+#include <assert.h>
 
 // Constructors:
 
@@ -10,6 +11,7 @@ TreeNode::TreeNode(DataFrame dataframe)
     this->left_ = nullptr;
     this->right_ = nullptr;
     this->dataframe_ = dataframe;
+    this->has_split_ = false;
     //this->split_feature_ = NULL;
     //this->split_threshold_ = NULL;
     TreeNode *root = this->findRoot();
@@ -25,6 +27,7 @@ TreeNode::TreeNode(DataFrame dataframe, int split_feature, double split_threshol
     this->left_ = nullptr;
     this->right_ = nullptr;
     this->dataframe_ = dataframe;
+    this->has_split_ = false;
     //this->split_feature_ = NULL;
     //this->split_threshold_ = NULL;
     TreeNode *root = this->findRoot();
@@ -40,6 +43,7 @@ TreeNode::TreeNode(TreeNode *parent, TreeNode *left, TreeNode *right, DataFrame 
     this->left_ = left;
     this->right_ = right;
     this->dataframe_ = dataframe;
+    this->has_split_ = true;
     this->split_feature_ = split_feature;
     this->split_threshold_ = split_threshold;
     TreeNode *root = this->findRoot();
@@ -55,6 +59,7 @@ TreeNode::TreeNode(TreeNode *parent, TreeNode *left, TreeNode *right)
     this->left_ = left;
     this->right_ = right;
     //this->dataframe_ = NULL;
+    this->has_split_ = false;
     //this->split_feature_ = NULL;
     //this->split_threshold_ = NULL;
     TreeNode *root = this->findRoot();
@@ -69,6 +74,7 @@ TreeNode::TreeNode()
     this->parent_ = nullptr;
     this->left_ = nullptr;
     this->right_ = nullptr;
+    this->has_split_ = false;
     TreeNode *root = this->findRoot();
     root->updateSizes();
     root->updateHeights();
@@ -76,6 +82,12 @@ TreeNode::TreeNode()
 }
 
 // Getters:
+
+bool TreeNode::hasSplit() const
+{
+    /** Checks if splitting values have been set. */
+    return (this->has_split_);
+}
 
 bool TreeNode::hasLeft() const
 {
@@ -162,6 +174,7 @@ int TreeNode::getSplitFeature() const
     /** 
      * Get index of splitting column.
      */
+    assert (this->has_split_);
     return this->split_feature_;
 }
 
@@ -170,6 +183,7 @@ double TreeNode::getSplitThreshold() const
     /** 
      * Get numberical splitting thresold.
      */
+    assert (this->has_split_);
     return this->split_threshold_;
 }
 
@@ -214,6 +228,7 @@ void TreeNode::setSplitFeature(int split_feature)
     /** 
      * Set index of splitting column.
      */
+    this->has_split_ = true;
     this->split_feature_ = split_feature;
 }
 
@@ -222,6 +237,7 @@ void TreeNode::setSplitThreshold(double split_threshold)
     /** 
      * Set numberical splitting thresold.
      */
+    this->has_split_ = true;
     this->split_threshold_ = split_threshold;
 }
 

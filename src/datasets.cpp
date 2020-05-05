@@ -58,6 +58,28 @@ std::vector<double> DataVector::vector() const
     return vector;
 }
 
+double DataVector::sum() const
+{
+    /** Returns the sum of the values in the vector. */
+    double sum = 0;
+    for (int i = 0; i < this->size(); i++)
+    {
+        sum += this->values_[i];
+    }
+    return sum;
+}
+
+double DataVector::mean() const
+{
+    /** Returns the mean of the values in the vector. */
+    double sum = 0;
+    for (int i = 0; i < this->size(); i++)
+    {
+        sum += this->values_[i];
+    }
+    return sum / this->size();
+}
+
 
 /*
  * DATA VECTOR - UTILITES :
@@ -92,6 +114,31 @@ DataVector* DataVector::transpose() const
     bool new_is_row = !this->is_row();
     DataVector* new_vector = new DataVector(this->vector(),new_is_row);
     return new_vector;
+}
+
+std::vector<DataVector*> DataVector::split(double split_threshold, bool equal_goes_left) const
+{
+    /**
+     * Retrurns a pair of vectors (value above and below split_threshold).
+     * Values equal to the threshold go left if equal_goes_left==true and right otherwise.
+     */
+    DataVector* left = new DataVector(this->is_row());
+    DataVector* right = new DataVector(this->is_row());
+    for (int i = 0; i < this->size(); i++)
+    {
+        double split_val = this->value(i);
+        if (split_val<split_threshold) {
+            left->addValue(split_val);
+        } else if (split_val>split_threshold) {
+            right->addValue(split_val);
+        } else if (equal_goes_left) {
+            left->addValue(split_val);
+        } else if (!equal_goes_left) {
+            right->addValue(split_val);
+        }
+    }
+    std::vector<DataVector*> results = { left, right };
+    return results;
 }
 
 std::string DataVector::to_string(bool new_line, int col_width) const
@@ -270,6 +317,40 @@ std::vector<std::vector<double>> DataFrame::matrix() const
     return matrix;
 }
 
+DataVector* DataFrame::sum(bool axis) const
+{
+    /**
+     * Returns a vector of the means down columns (axis==0) or across rows (axis==1).
+     * Returns a row if axis==0 and a column if axis==1.
+     */
+    DataVector *result;
+    if (axis==0) {
+        result = new DataVector(true);  // is_row==true.
+        for (int i = 0; i < this->width(); i++) { result->addValue( this->col(i)->sum() ); }
+    } else {
+        result = new DataVector(false);  // is_row==false.
+        for (int i = 0; i < this->length(); i++) { result->addValue( this->row(i)->sum() ); }
+    }
+    return result;
+}
+
+DataVector* DataFrame::mean(bool axis) const
+{
+    /**
+     * Returns a vector of the means down columns (axis==0) or across rows (axis==1).
+     * Returns a row if axis==0 and a column if axis==1.
+     */
+    DataVector *result;
+    if (axis==0) {
+        result = new DataVector(true);  // is_row==true.
+        for (int i = 0; i < this->width(); i++) { result->addValue( this->col(i)->mean() ); }
+    } else {
+        result = new DataVector(false);  // is_row==false.
+        for (int i = 0; i < this->length(); i++) { result->addValue( this->row(i)->mean() ); }
+    }
+    return result;
+}
+
 
 /*
  * DATA FRAME - UTILITES :
@@ -364,6 +445,32 @@ DataFrame DataFrame::transpose() const
         new_frame->addRow( this->col(i)->transpose() );
     }
     return *new_frame;
+}
+
+std::vector<DataFrame*> DataFrame::split(int split_column, double split_threshold, bool equal_goes_left) const
+{
+    /**
+     * Retrurns a pair of tables (value above and below split_threshold in specified column).
+     * Values equal to the threshold go left if equal_goes_left==true and right otherwise.
+     */
+    DataFrame* left = new DataFrame();
+    DataFrame* right = new DataFrame();
+    for (int i = 0; i < this->length(); i++)
+    {
+        DataVector* row = this->row(i);
+        double split_val = row->value(split_column);
+        if (split_val<split_threshold) {
+            left->addRow(row);
+        } else if (split_val>split_threshold) {
+            right->addRow(row);
+        } else if (equal_goes_left) {
+            left->addRow(row);
+        } else if (!equal_goes_left) {
+            right->addRow(row);
+        }
+    }
+    std::vector<DataFrame*> results = { left, right };
+    return results;
 }
 
 std::string DataFrame::to_string(bool new_line, int col_width) const

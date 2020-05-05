@@ -20,6 +20,7 @@ private:
     TreeNode *left_;  // Pointer to left child.
     TreeNode *right_;  // Pointer to right child.
     DataFrame dataframe_;  // Data frame for splitting.
+    bool has_split_;  // Flag indicating whether splitting values have been set.
     int split_feature_;  // Index of splitting column.
     double split_threshold_;  // Numberical splitting thresold.
 
@@ -33,6 +34,7 @@ public:
     TreeNode();
 
     // Getters:
+    bool hasSplit() const;
     bool hasLeft() const;
     bool hasRight() const;
     bool isLeaf() const;
