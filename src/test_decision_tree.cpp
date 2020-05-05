@@ -12,7 +12,7 @@ int main(){
     test_data.print();
     
     std::cout << "Building test classification tree." << std::endl;
-    DecisionTree test_tree = DecisionTree(test_data,false,"gini_impurity",-1,8,8);
+    DecisionTree test_tree = DecisionTree(test_data,false,"gini_impurity",-1,-1,-1,-1,-1);
     std::cout << "Size (before fitting) : " + std::to_string(test_tree.getSize()) << std::endl;
     test_tree.fit();
     std::cout << "Size (after fitting) : " + std::to_string(test_tree.getSize()) << std::endl;

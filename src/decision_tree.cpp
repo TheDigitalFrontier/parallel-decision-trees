@@ -233,16 +233,21 @@ void DecisionTree::fit_(TreeNode* node)
         node->setSplitThreshold(split_threshold);
         // Apply best split at this node:
         this->num_leaves_ += 1;  // Each split causes net addition of 1 leaf.
-        std::vector<DataFrame*> left_right = dataframe.split(split_feature,split_threshold,true);  // equal_goes_left=true.
-        DataFrame *left_data = left_right[0];
-        DataFrame *right_data = left_right[1];
-        TreeNode *left_child = new TreeNode(*left_data);
-        TreeNode *right_child = new TreeNode(*right_data);
-        node->setLeft(left_child);
-        node->setRight(right_child);
-        // Recurse to (new) children:
-        this->fit_(left_child);
-        this->fit_(right_child);
+        std::vector<DataFrame*> dataset_splits = dataframe.split(split_feature,split_threshold,true);  // equal_goes_left=true.
+        DataFrame *left_data = dataset_splits[0];
+        DataFrame *right_data = dataset_splits[1];
+        // If split produces two non-empty dataframes, recurse to (new) children:
+        if ( (left_data->length()>0) and (right_data->length()>0) ) {
+            TreeNode *left_child = new TreeNode(*left_data);
+            TreeNode *right_child = new TreeNode(*right_data);
+            node->setLeft(left_child);
+            node->setRight(right_child);
+            // Recurse to (new) children:
+            this->fit_(left_child);
+            this->fit_(right_child);
+        } else {
+            ;  // Prune if best split does not actually split the dataset.
+        }
     }
 }
 
