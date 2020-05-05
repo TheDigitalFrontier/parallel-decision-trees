@@ -45,16 +45,17 @@ double LossFunction::gini_impurity(DataVector labels)
     /** Returns the loss calculated with gini_impurity. */
     double loss = 0;
     LabelCounter label_counter = LabelCounter(labels);
-    int total_labels = label_counter.get_values()->sum();  // Get total number of labels.
-    assert (label_counter.get_values()->sum()==labels.size());
-    //int prediction = label_counter.get_most_frequent();
-    DataVector &counts = *label_counter.get_values();  // Get count for each label (don't actually need the label).
+    int sum_of_counts = label_counter.get_values()->sum();  // Get total number of labels.
+    assert (sum_of_counts==labels.size());
+    //int predicted_label = label_counter.get_most_frequent();
+    DataVector *counts_ = label_counter.get_values();  // Get count for each label (don't actually need the label).
     double prop;  // Temporary variable to store proportion of current class.
-    for (int i = 0; i < counts.size(); i++)
+    for (int i = 0; i < counts_->size(); i++)
     {
-        prop = 1.0*counts.value(i)/total_labels;
+        prop = 1.0*counts_->value(i)/sum_of_counts;
         loss += prop*(1-prop);
     }
+    delete counts_;
     return loss;
 }
 
