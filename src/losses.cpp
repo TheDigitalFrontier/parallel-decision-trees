@@ -12,7 +12,7 @@
  */
 
 
-double LossFunction::misclassification_error(DataVector labels)
+double LossFunction::misclassification_error(DataVector *labels)
 {
     /** Returns the loss calculated with misclassification_error. */
     double loss;
@@ -20,9 +20,9 @@ double LossFunction::misclassification_error(DataVector labels)
     int prediction = label_counter.get_most_frequent();
     int correct = 0;
     int incorrect = 0;
-    for (int i = 0; i < labels.size(); i++)
+    for (int i = 0; i < labels->size(); i++)
     {
-        if (labels.value(i) == prediction) {
+        if (labels->value(i) == prediction) {
             correct += 1;
         } else {
             incorrect += 1;
@@ -32,13 +32,13 @@ double LossFunction::misclassification_error(DataVector labels)
     return loss;
 }
 
-double LossFunction::binary_cross_entropy(DataVector labels)
+double LossFunction::binary_cross_entropy(DataVector *labels)
 {
     /** Returns the loss calculated with binary_cross_entropy. */
     double loss;
     LabelCounter label_counter = LabelCounter(labels);
     int sum_of_counts = label_counter.get_values()->sum();  // Get total number of labels.
-    assert (sum_of_counts==labels.size());
+    assert (sum_of_counts==labels->size());
     int predicted_label = label_counter.get_most_frequent();
     DataVector *labels_ = label_counter.get_labels();  // Get labels.
     DataVector *counts_ = label_counter.get_values();  // Get count for each label.
@@ -60,13 +60,13 @@ double LossFunction::binary_cross_entropy(DataVector labels)
     return loss;
 }
 
-double LossFunction::gini_impurity(DataVector labels)
+double LossFunction::gini_impurity(DataVector *labels)
 {
     /** Returns the loss calculated with gini_impurity. */
     double loss = 0;
     LabelCounter label_counter = LabelCounter(labels);
     int sum_of_counts = label_counter.get_values()->sum();  // Get total number of labels.
-    assert (sum_of_counts==labels.size());
+    assert (sum_of_counts==labels->size());
     //int predicted_label = label_counter.get_most_frequent();
     DataVector *counts_ = label_counter.get_values();  // Get count for each label (don't actually need the label).
     double prop;  // Temporary variable to store proportion of current class.
@@ -97,9 +97,9 @@ std::string LossFunction::method()
  */
 
 
-double LossFunction::calculate(DataVector labels)
+double LossFunction::calculate(DataVector *labels)
 {
-    assert (labels.size()>0);  // Loss is undefined for empty list.
+    assert (labels->size()>0);  // Loss is undefined for empty list.
     double loss;
     if (this->method_=="misclassification_error") {
         loss = this->misclassification_error(labels);
@@ -109,6 +109,11 @@ double LossFunction::calculate(DataVector labels)
         loss = this->gini_impurity(labels);
     }
     return loss;
+}
+
+double LossFunction::calculate(DataVector labels)
+{
+    return this->calculate(&labels);
 }
 
 
