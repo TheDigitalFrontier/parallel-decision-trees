@@ -44,28 +44,17 @@ double LossFunction::gini_impurity(DataVector labels)
 {
     /** Returns the loss calculated with gini_impurity. */
     double loss = 0;
-    //// Find unique class labels
-    //std::vector<double> classes;
-    //for (int i = 0; i < y_true.size(); i++)
-    //{
-    //    classes.push_back(y_true.value(i));  // Add all values from y_true.
-    //    classes.push_back(y_pred.value(i));  // Add all values from y_pred.
-    //}
-    //sort(classes.begin(), classes.end());
-    //classes.erase(unique(classes.begin(), classes.end()), classes.end());
-    //// For each class in set of unique class labels, calculate proportion and add to Gini:
-    //double prop;
-    //for(double& cur_class : classes){  // for-each
-    //    // If class1 is not empty, iterate through it (perfect split means one df empty)
-    //    if (class1.size() > 0){
-    //        prop = double(std::count(class1.begin(), class1.end(), cur_class)) / class1.size();
-    //        gini += (prop * (1.0 - prop));
-    //    }
-    //    if (class2.size() > 0){
-    //        prop = double(std::count(class2.begin(), class2.end(), cur_class)) / class2.size();
-    //        gini += (prop * (1 - prop));
-    //    }
-    //}
+    LabelCounter label_counter = LabelCounter(labels);
+    int total_labels = label_counter.get_values()->sum();  // Get total number of labels.
+    assert (label_counter.get_values()->sum()==labels.size());
+    //int prediction = label_counter.get_most_frequent();
+    DataVector &counts = *label_counter.get_values();  // Get count for each label (don't actually need the label).
+    double prop;  // Temporary variable to store proportion of current class.
+    for (int i = 0; i < counts.size(); i++)
+    {
+        prop = 1.0*counts.value(i)/total_labels;
+        loss += prop*(1-prop);
+    }
     return loss;
 }
 
