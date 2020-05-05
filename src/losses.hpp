@@ -18,7 +18,7 @@ private:
 
     // Utilities:
     double misclassification_error(DataVector *labels);
-    double binary_cross_entropy(DataVector *labels);
+    double cross_entropy(DataVector *labels);
     double gini_impurity(DataVector *labels);
 
 public:
