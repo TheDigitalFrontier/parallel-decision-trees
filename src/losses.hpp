@@ -17,9 +17,9 @@ private:
     std::string method_;  // The loss type.
 
     // Utilities:
-    double misclassification_rate(DataVector y_true, DataVector y_pred);
-    double binary_cross_entropy(DataVector y_true, DataVector y_pred);
-    double gini_impurity(DataVector y_true, DataVector y_pred);
+    double misclassification_error(DataVector labels);
+    double binary_cross_entropy(DataVector labels);
+    double gini_impurity(DataVector labels);
 
 public:
 
@@ -27,7 +27,7 @@ public:
     std::string method();
 
     // Utilities:
-    double calculate(DataVector y_true, DataVector y_pred);
+    double calculate(DataVector labels);
 
     // Overloaded operators:
 

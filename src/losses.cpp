@@ -12,15 +12,17 @@
  */
 
 
-double LossFunction::misclassification_rate(DataVector y_true, DataVector y_pred)
+double LossFunction::misclassification_error(DataVector labels)
 {
-    /** Returns the loss calculated with misclassification_rate. */
+    /** Returns the loss calculated with misclassification_error. */
     double loss;
+    LabelCounter label_counter = LabelCounter(labels);
+    int prediction = label_counter.get_most_frequent();
     int correct = 0;
     int incorrect = 0;
-    for (int i = 0; i < y_true.size(); i++)
+    for (int i = 0; i < labels.size(); i++)
     {
-        if (y_true.value(i) == y_pred.value(i)){
+        if (labels.value(i) == prediction) {
             correct += 1;
         } else {
             incorrect += 1;
@@ -30,7 +32,7 @@ double LossFunction::misclassification_rate(DataVector y_true, DataVector y_pred
     return loss;
 }
 
-double LossFunction::binary_cross_entropy(DataVector y_true, DataVector y_pred)
+double LossFunction::binary_cross_entropy(DataVector labels)
 {
     /** Returns the loss calculated with binary_cross_entropy. */
     double loss;
@@ -38,7 +40,7 @@ double LossFunction::binary_cross_entropy(DataVector y_true, DataVector y_pred)
     return loss;
 }
 
-double LossFunction::gini_impurity(DataVector y_true, DataVector y_pred)
+double LossFunction::gini_impurity(DataVector labels)
 {
     /** Returns the loss calculated with gini_impurity. */
     double loss = 0;
@@ -85,17 +87,16 @@ std::string LossFunction::method()
  */
 
 
-double LossFunction::calculate(DataVector y_true, DataVector y_pred)
+double LossFunction::calculate(DataVector labels)
 {
-    assert (y_true.size()==y_pred.size());
-    assert (y_true.size()>0);
+    assert (labels.size()>0);  // Loss is undefined for empty list.
     double loss;
-    if (this->method_=="misclassification_rate") {
-        loss = this->misclassification_rate(y_true,y_pred);
+    if (this->method_=="misclassification_error") {
+        loss = this->misclassification_error(labels);
     } else if (this->method_=="binary_cross_entropy") {
-        loss = this->binary_cross_entropy(y_true,y_pred);
+        loss = this->binary_cross_entropy(labels);
     } else if (this->method_=="gini_impurity") {
-        loss = this->gini_impurity(y_true,y_pred);
+        loss = this->gini_impurity(labels);
     }
     return loss;
 }
@@ -115,12 +116,12 @@ LossFunction::LossFunction(std::string method)
 {
     /**
      * Initialize a loss function with one of the specified methods:
-     *   misclassification_rate
+     *   misclassification_error
      *   binary_cross_entropy
      *   gini_impurity
      * The loss will be minimized by the decision tree.
      */
-    if (method=="misclassification_rate") {
+    if (method=="misclassification_error") {
         this->method_ = method;
     } else if (method=="binary_cross_entropy") {
         this->method_ = method;

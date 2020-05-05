@@ -40,13 +40,16 @@ int main(){
     std::cout << "Counts: " << label_counter2 << std::endl;
     std::cout << std::endl;
     
-    std::cout << "Calculate loss (with itself)." << std::endl;
-    DataVector y_true = *test_data.col(-1);
-    DataVector y_pred = *test_data.col(-1);
-    std::cout << y_true << std::endl;
-    LossFunction loss_func = LossFunction("gini_impurity");
-    double test_loss = loss_func.calculate(y_true,y_pred);
-    std::cout << test_loss << std::endl;
+    std::cout << "Calculate loss." << std::endl;
+    DataVector labels = DataVector({1,0,1,0,1,1,0});
+    std::cout << labels << std::endl;
+    LossFunction loss_func_misclass = LossFunction("misclassification_error");
+    double loss_misclass = loss_func_misclass.calculate(labels);
+    std::cout << "Misclassification rate ( 3/7 ): " + std::to_string(loss_misclass) << std::endl;
+    double loss_gini = LossFunction("gini_impurity").calculate(labels);
+    std::cout << "Gini impurity ( 3/7*(1-3/7) + 4/7*(1-4/7) ): " + std::to_string(loss_gini) << std::endl;
+    double loss_entropy = LossFunction("binary_cross_entropy").calculate(labels);
+    std::cout << "Binary cross-entropy: " + std::to_string(loss_entropy) << std::endl;
 
     return 0;
 };
