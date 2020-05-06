@@ -34,10 +34,14 @@ int main(){
     for (int i = 0; i < tree_leaves.size(); i++)
     {
         leaf = tree_leaves[i];
-        std::cout << "After splitting on column "+std::to_string(leaf->getParent()->getSplitFeature())+" ";
-        std::cout << "at value "+std::to_string(leaf->getParent()->getSplitThreshold())+" -- ";
-        std::cout << "leaf "+std::to_string(i+1)+" :";
-        std::cout << std::endl;
+        if (leaf->isRoot()) {
+            std::cout << "At root node";
+        } else {
+            std::cout << "After splitting on column "+std::to_string(leaf->getParent()->getSplitFeature())+" ";
+            std::cout << "at value "+std::to_string(leaf->getParent()->getSplitThreshold());
+            
+        }
+        std::cout << " -- leaf "+std::to_string(i+1)+" :" << std::endl;
         std::cout << tree_leaves[i]->getDataFrame() << std::endl;
     }
     
