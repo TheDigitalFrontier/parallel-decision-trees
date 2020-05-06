@@ -519,16 +519,16 @@ DataFrame DataFrame::sample(int nrow, int seed) const{
     // Draw row indices from uniform distribution
     std::uniform_int_distribution<> distr(0, this->length()-1);
     // Create new empty DataFrame
-    DataFrame *new_frame = new DataFrame();
+    DataFrame new_frame = DataFrame();
     // pull random rows (as pointers, not copies) until full
-    while (new_frame->length() < nrow)
+    while (new_frame.length() < nrow)
     {
         // get random row index with replacement
         int rand_row = distr(eng);
         // get pointer to that row in original dataframe and store in bootstrap
-        new_frame->addRow(this->row(rand_row));
+        new_frame.addRow(this->row(rand_row));
     }
-    return *new_frame;
+    return new_frame;
 }
 
 DataFrame DataFrame::transpose() const
