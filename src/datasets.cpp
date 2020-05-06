@@ -647,8 +647,7 @@ DataFrame::DataFrame(std::vector<std::vector<double>> matrix)
     for (int i = 0; i < matrix.size(); i++)
     {
         assert (matrix[i].size()==this->width());
-        DataVector* row = new DataVector(matrix[i],true);  // is_row==true.
-        this->addRow(row);
+        this->addRow(matrix[i]);
     }
 }
 
