@@ -20,6 +20,7 @@ private:
     double misclassification_error(DataVector *labels);
     double cross_entropy(DataVector *labels);
     double gini_impurity(DataVector *labels);
+    double mean_squared_error(DataVector *labels);
 
 public:
 

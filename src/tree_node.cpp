@@ -174,7 +174,7 @@ int TreeNode::getSplitFeature() const
     /** 
      * Get index of splitting column.
      */
-    assert (this->has_split_);
+    assert (this->hasSplit());
     return this->split_feature_;
 }
 
@@ -183,7 +183,7 @@ double TreeNode::getSplitThreshold() const
     /** 
      * Get numberical splitting thresold.
      */
-    assert (this->has_split_);
+    assert (this->hasSplit());
     return this->split_threshold_;
 }
 
