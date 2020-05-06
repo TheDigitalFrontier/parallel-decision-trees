@@ -130,11 +130,11 @@ void DataVector::addValue(double value)
     this->size_ += 1;
 }
 
-DataVector* DataVector::copy() const
+DataVector DataVector::copy() const
 {
     /** Returns a copy of the DataVector. */
     bool new_is_row = this->is_row();
-    DataVector* new_vector = new DataVector(this->vector(),new_is_row);
+    DataVector new_vector = DataVector(this->vector(),new_is_row);
     return new_vector;
 }
 

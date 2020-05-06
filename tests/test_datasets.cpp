@@ -23,8 +23,8 @@ int main(){
 
     // Get copy of last column:
     std::cout << "Print last column:" << std::endl;
-    DataVector* test_col = df_test.col(-1)->copy();
-    std::cout << *test_col << std::endl;
+    DataVector test_col = df_test.col(-1)->copy();
+    std::cout << test_col << std::endl;
     
     // Get transpose of first column:
     std::cout << "Print transpose of first column:" << std::endl;
