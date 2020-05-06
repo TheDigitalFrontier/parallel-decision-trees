@@ -146,28 +146,28 @@ DataVector* DataVector::transpose() const
     return new_vector;
 }
 
-std::vector<DataVector*> DataVector::split(double split_threshold, bool equal_goes_left) const
+std::vector<DataVector> DataVector::split(double split_threshold, bool equal_goes_left) const
 {
     /**
      * Retrurns a pair of vectors (value above and below split_threshold).
      * Values equal to the threshold go left if equal_goes_left==true and right otherwise.
      */
-    DataVector* left = new DataVector(this->is_row());
-    DataVector* right = new DataVector(this->is_row());
+    DataVector left = DataVector(this->is_row());
+    DataVector right = DataVector(this->is_row());
     for (int i = 0; i < this->size(); i++)
     {
         double split_val = this->value(i);
         if (split_val<split_threshold) {
-            left->addValue(split_val);
+            left.addValue(split_val);
         } else if (split_val>split_threshold) {
-            right->addValue(split_val);
+            right.addValue(split_val);
         } else if (equal_goes_left) {
-            left->addValue(split_val);
+            left.addValue(split_val);
         } else if (!equal_goes_left) {
-            right->addValue(split_val);
+            right.addValue(split_val);
         }
     }
-    std::vector<DataVector*> results = { left, right };
+    std::vector<DataVector> results = { left, right };
     return results;
 }
 
