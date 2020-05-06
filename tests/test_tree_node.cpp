@@ -1,6 +1,6 @@
 #include <iostream>
-#include "tree_node.cpp"
-#include "datasets.cpp"
+#include "../src/tree_node.cpp"
+#include "../src/datasets.cpp"
 
 int main(){
 

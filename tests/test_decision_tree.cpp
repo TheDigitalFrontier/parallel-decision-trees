@@ -1,8 +1,8 @@
 #include <iostream>
-#include "tree_node.cpp"
-#include "decision_tree.cpp"
-#include "datasets.cpp"
-#include "losses.cpp"
+#include "../src/tree_node.cpp"
+#include "../src/decision_tree.cpp"
+#include "../src/datasets.cpp"
+#include "../src/losses.cpp"
 
 int main(){
 

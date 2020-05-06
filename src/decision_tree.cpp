@@ -291,8 +291,9 @@ std::pair<int,double> DecisionTree::findBestSplit(TreeNode *node) const
         // For each unique column value, try that col and val as split, get score:
         for (int j = 0; j < col_vals.size()-1; j++){
             double val = col_vals[j];  // Don't split on last value (because it will produce empty `right`).
+            // But splitting on first value works as <= means left won't be empty
             // Split dataset using current column and threshold, score, and update if best:
-            std::vector<DataFrame*> dataset_splits = dataframe.split(shuf_inds[i], val, true); // equal_goes_left=true.
+            std::vector<DataFrame*> dataset_splits = dataframe.split(col, val, true); // equal_goes_left=true.
             loss = this->calculateSplitLoss(dataset_splits[0],dataset_splits[1]);
             // std::cout << "    " << col << ", " << val << ", " << loss << std::endl;  // TEST
             if ((first_pass) or (loss<best_loss)){

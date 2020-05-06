@@ -513,7 +513,7 @@ DataFrame DataFrame::transpose() const
 std::vector<DataFrame*> DataFrame::split(int split_column, double split_threshold, bool equal_goes_left) const
 {
     /**
-     * Retrurns a pair of tables (value above and below split_threshold in specified column).
+     * Returns a pair of tables (value above and below split_threshold in specified column).
      * Values equal to the threshold go left if equal_goes_left==true and right otherwise.
      */
     DataFrame* left = new DataFrame();
