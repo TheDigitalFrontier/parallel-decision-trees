@@ -317,7 +317,7 @@ void DecisionTree::fit_(TreeNode* node)
 {
     DataFrame dataframe = node->getDataFrame();
     LabelCounter label_counter = LabelCounter(dataframe.col(-1));
-    double proportion = label_counter.get_values()->max()/label_counter.size();
+    double proportion = label_counter.get_values().max()/label_counter.size();
     if ( label_counter.size()==1 ) {
         return;  // Prune if there is only one class left.
     } else if ( dataframe.length()<2 ) {

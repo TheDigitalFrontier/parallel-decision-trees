@@ -62,8 +62,8 @@ public:
     bool has_label(double label) const;  // Check if a label has been counted.
     int get_count(double label) const;  // Get counter value for specified label (coerced to integer).
     double get_most_frequent() const;  // Get most common label (breaking ties in favor of smallest label).
-    DataVector* get_labels() const;  // Get DataVector of labels.
-    DataVector* get_values() const;  // Get DataVector of values.
+    DataVector get_labels() const;  // Get DataVector of labels.
+    DataVector get_values() const;  // Get DataVector of values.
     std::string to_string() const;  // Represent LabelCounter as string.
     void print() const;  // Print LabelCounter to standard output.
 
