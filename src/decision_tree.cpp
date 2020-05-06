@@ -192,7 +192,7 @@ std::string DecisionTree::to_string() const
             if (this->isRegressionTree()){
                 // Regression tree:
                 out += "mean value: ";
-                out += std::to_string(node->getDataFrame().col(-1)->mean());
+                out += std::to_string(node->getDataFrame().col(-1).mean());
             } else {
                 // Classification tree:
                 out += "majority class: ";
@@ -285,7 +285,7 @@ std::pair<int,double> DecisionTree::findBestSplit(TreeNode *node) const
     // Explore possible splits:
     for (int i = 0; i < m; i++){
         col = shuf_inds[i];
-        std::vector<double> col_vals = dataframe.col(col)->vector();
+        std::vector<double> col_vals = dataframe.col(col).vector();
         // Remove duplicates:
         std::sort(col_vals.begin(), col_vals.end());
         col_vals.erase(std::unique(col_vals.begin(), col_vals.end()), col_vals.end());
@@ -385,7 +385,7 @@ double DecisionTree::predict_(DataVector* observation) const
     double prediction;
     if (this->isRegressionTree()) {
         // Regression tree: Predict mean of training data at terminal node:
-        prediction = node->getDataFrame().col(-1)->mean();
+        prediction = node->getDataFrame().col(-1).mean();
     } else {
         // Classification tree: Predict majority class of training data at terminal node:
         prediction = LabelCounter(node->getDataFrame().col(-1)).get_most_frequent();

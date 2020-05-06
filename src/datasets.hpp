@@ -70,7 +70,7 @@ public:
     int width() const;  // Returns number of columns.
     bool is_locked() const;  // Checks if object is read-only.
     DataVector* row(int r) const;  // Get pointer to given row (stored internally).
-    DataVector* col(int c) const;  // Get pointerto given column (constructed on the fly).
+    DataVector col(int c) const;  // Get given column (constructed on the fly).
     double value(int r, int c) const;  // Get value in given row and column.
     std::vector<std::vector<double>> matrix() const;  // Get a copy of values as a vector of vectors of doubles.
     DataVector min(bool axis=0) const;  // Returns a vector of the min down columns (axis==0) or across rows (axis==1).

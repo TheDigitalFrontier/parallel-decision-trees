@@ -23,12 +23,12 @@ int main(){
 
     // Get copy of last column:
     std::cout << "Print last column:" << std::endl;
-    DataVector test_col = df_test.col(-1)->copy();
+    DataVector test_col = df_test.col(-1).copy();
     std::cout << test_col << std::endl;
     
     // Get transpose of first column:
     std::cout << "Print transpose of first column:" << std::endl;
-    DataVector test_transpose_col = df_test.col(0)->transpose();
+    DataVector test_transpose_col = df_test.col(0).transpose();
     std::cout << test_transpose_col << std::endl;
     
     // Get copy of data frame:
@@ -43,7 +43,7 @@ int main(){
     
     // Test splitting by threshold (vector):
     std::cout << "Split last column with threshold 0.5 (transposed for better printing):" << std::endl;
-    std::vector<DataVector> test_split_vector = df_test.col(-1)->split(0.5);
+    std::vector<DataVector> test_split_vector = df_test.col(-1).split(0.5);
     std::cout << "L: " << test_split_vector[0].transpose() << std::endl;
     std::cout << "R: " << test_split_vector[1].transpose() << std::endl;
     

@@ -305,10 +305,10 @@ DataVector* DataFrame::row(int r) const
     return this->rows_[ r ];
 }
 
-DataVector* DataFrame::col(int c) const
+DataVector DataFrame::col(int c) const
 {
     /** Get given column (constructed on the fly). */
-    DataVector* col = new DataVector(false);  // is_row==false.
+    DataVector col = DataVector(false);  // is_row==false.
     if (c>=0)
     {
         // Index from beginning (positive):
@@ -320,7 +320,7 @@ DataVector* DataFrame::col(int c) const
     }
     for (int i = 0; i < this->length(); i++)
     {
-        col->addValue( this->rows_[i]->value(c) );
+        col.addValue( this->rows_[i]->value(c) );
     }
     return col;
 }
@@ -356,7 +356,7 @@ DataVector DataFrame::min(bool axis) const
     DataVector result;
     if (axis==0) {
         result = DataVector(true);  // is_row==true.
-        for (int i = 0; i < this->width(); i++) { result.addValue( this->col(i)->min() ); }
+        for (int i = 0; i < this->width(); i++) { result.addValue( this->col(i).min() ); }
     } else {
         result = DataVector(false);  // is_row==false.
         for (int i = 0; i < this->length(); i++) { result.addValue( this->row(i)->min() ); }
@@ -373,7 +373,7 @@ DataVector DataFrame::max(bool axis) const
     DataVector result;
     if (axis==0) {
         result = DataVector(true);  // is_row==true.
-        for (int i = 0; i < this->width(); i++) { result.addValue( this->col(i)->max() ); }
+        for (int i = 0; i < this->width(); i++) { result.addValue( this->col(i).max() ); }
     } else {
         result = DataVector(false);  // is_row==false.
         for (int i = 0; i < this->length(); i++) { result.addValue( this->row(i)->max() ); }
@@ -390,7 +390,7 @@ DataVector DataFrame::sum(bool axis) const
     DataVector result;
     if (axis==0) {
         result = DataVector(true);  // is_row==true.
-        for (int i = 0; i < this->width(); i++) { result.addValue( this->col(i)->sum() ); }
+        for (int i = 0; i < this->width(); i++) { result.addValue( this->col(i).sum() ); }
     } else {
         result = DataVector(false);  // is_row==false.
         for (int i = 0; i < this->length(); i++) { result.addValue( this->row(i)->sum() ); }
@@ -407,7 +407,7 @@ DataVector DataFrame::mean(bool axis) const
     DataVector result;
     if (axis==0) {
         result = DataVector(true);  // is_row==true.
-        for (int i = 0; i < this->width(); i++) { result.addValue( this->col(i)->mean() ); }
+        for (int i = 0; i < this->width(); i++) { result.addValue( this->col(i).mean() ); }
     } else {
         result = DataVector(false);  // is_row==false.
         for (int i = 0; i < this->length(); i++) { result.addValue( this->row(i)->mean() ); }
@@ -547,7 +547,7 @@ DataFrame DataFrame::transpose() const
     // Get each column, transpose it, and add it as a row in new frame:
     for (int i = 0; i < this->width(); i++)
     {
-        new_frame.addRow(this->col(i)->transpose().vector());
+        new_frame.addRow(this->col(i).transpose().vector());
     }
     return new_frame;
 }
