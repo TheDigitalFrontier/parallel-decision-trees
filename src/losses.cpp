@@ -13,7 +13,7 @@
  */
 
 
-double LossFunction::misclassification_error(DataVector *labels)
+double LossFunction::misclassification_error(DataVector labels)
 {
     /** Returns the loss calculated with misclassification_error. */
     double loss;
@@ -33,7 +33,7 @@ double LossFunction::misclassification_error(DataVector *labels)
     return loss;
 }
 
-double LossFunction::cross_entropy(DataVector *labels)
+double LossFunction::cross_entropy(DataVector labels)
 {
     /** Returns the loss calculated with cross_entropy. */
     double loss;
@@ -55,7 +55,7 @@ double LossFunction::cross_entropy(DataVector *labels)
     return loss;
 }
 
-double LossFunction::gini_impurity(DataVector *labels)
+double LossFunction::gini_impurity(DataVector labels)
 {
     /** Returns the loss calculated with gini_impurity. */
     double loss = 0;
@@ -73,7 +73,7 @@ double LossFunction::gini_impurity(DataVector *labels)
     return loss;
 }
 
-double LossFunction::mean_squared_error(DataVector *labels)
+double LossFunction::mean_squared_error(DataVector labels)
 {
     /** Returns the mean squared error of a set of labels, assuming most common is used as prediction. */
     double prediction = labels.mean();
@@ -106,7 +106,7 @@ std::string LossFunction::method()
  */
 
 
-double LossFunction::calculate(DataVector *labels)
+double LossFunction::calculate(DataVector labels)
 {
     assert (labels.size()>0);  // Loss is undefined for empty list.
     double loss;
@@ -122,9 +122,9 @@ double LossFunction::calculate(DataVector *labels)
     return loss;
 }
 
-double LossFunction::calculate(DataVector labels)
+double LossFunction::calculate(DataVector *labels)
 {
-    return this->calculate(&labels);
+    return this->calculate(*labels);
 }
 
 
@@ -312,10 +312,7 @@ void LabelCounter::increment(DataVector labels)
 void LabelCounter::increment(DataVector *labels)
 {
     /** Increment counter for a vector (pointer) of labels. */
-    for (int i = 0; i < labels->size(); i++)
-    {
-        this->increment( labels->value(i) );
-    }
+    this->increment( *labels );
 }
 
 

@@ -17,10 +17,10 @@ private:
     std::string method_;  // The loss type.
 
     // Utilities:
-    double misclassification_error(DataVector *labels);
-    double cross_entropy(DataVector *labels);
-    double gini_impurity(DataVector *labels);
-    double mean_squared_error(DataVector *labels);
+    double misclassification_error(DataVector labels);
+    double cross_entropy(DataVector labels);
+    double gini_impurity(DataVector labels);
+    double mean_squared_error(DataVector labels);
 
 public:
 
@@ -28,8 +28,8 @@ public:
     std::string method();
 
     // Utilities:
-    double calculate(DataVector *labels);
     double calculate(DataVector labels);
+    double calculate(DataVector *labels);
 
     // Overloaded operators:
 
