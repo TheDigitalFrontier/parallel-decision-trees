@@ -46,7 +46,7 @@ DecisionTree::DecisionTree(
         }
     } else {
         // Classification tree:
-        if ( (loss=="misclassification_error") or (loss=="binary_cross_entropy") or (loss=="gini_impurity") ) {
+        if ( (loss=="misclassification_error") or (loss=="cross_entropy") or (loss=="gini_impurity") ) {
             ; // pass.
         } else {
             throw std::invalid_argument( "Received invalid loss method for classification tree: "+loss );
