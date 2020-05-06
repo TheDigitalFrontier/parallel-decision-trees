@@ -294,8 +294,8 @@ std::pair<int,double> DecisionTree::findBestSplit(TreeNode *node) const
             double val = col_vals[j];  // Don't split on last value (because it will produce empty `right`).
             // But splitting on first value works as <= means left won't be empty
             // Split dataset using current column and threshold, score, and update if best:
-            std::vector<DataFrame*> dataset_splits = dataframe.split(col, val, true); // equal_goes_left=true.
-            loss = this->calculateSplitLoss(dataset_splits[0],dataset_splits[1]);
+            std::vector<DataFrame> dataset_splits = dataframe.split(col, val, true); // equal_goes_left=true.
+            loss = this->calculateSplitLoss(&dataset_splits[0],&dataset_splits[1]);
             // std::cout << "    " << col << ", " << val << ", " << loss << std::endl;  // TEST
             if ((first_pass) or (loss<best_loss)){
                 first_pass = false;
@@ -338,16 +338,16 @@ void DecisionTree::fit_(TreeNode* node)
     node->setSplitFeature(split_feature);
     node->setSplitThreshold(split_threshold);
     // Calculate results of best split:
-    std::vector<DataFrame*> dataset_splits = dataframe.split(split_feature,split_threshold,true);  // equal_goes_left=true.
-    DataFrame *left_data = dataset_splits[0];
-    DataFrame *right_data = dataset_splits[1];
-    if ( (left_data->length()==0) or (right_data->length()==0) ) {
+    std::vector<DataFrame> dataset_splits = dataframe.split(split_feature,split_threshold,true);  // equal_goes_left=true.
+    DataFrame left_data = dataset_splits[0];
+    DataFrame right_data = dataset_splits[1];
+    if ( (left_data.length()==0) or (right_data.length()==0) ) {
         return;  // Prune if best split does not actually split the dataset.
     }
     // If split produces two non-empty dataframes, recurse to (new) children:
     this->num_leaves_ += 1;  // Each split causes net addition of 1 leaf.
-    TreeNode *left_child = new TreeNode(*left_data);
-    TreeNode *right_child = new TreeNode(*right_data);
+    TreeNode *left_child = new TreeNode(left_data);
+    TreeNode *right_child = new TreeNode(right_data);
     node->setLeft(left_child);
     node->setRight(right_child);
     // Recurse to (new) children:

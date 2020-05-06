@@ -49,9 +49,9 @@ int main(){
     
     // Test splitting by threshold (table):
     std::cout << "Split table on first column with threshold 3.396562:" << std::endl;
-    std::vector<DataFrame*> test_split_table = df_test.split(0,3.396562,false);
-    std::cout << "L:\n" << *test_split_table[0] << std::endl;
-    std::cout << "R:\n" << *test_split_table[1] << std::endl;
+    std::vector<DataFrame> test_split_table = df_test.split(0,3.396562,false);
+    std::cout << "L:\n" << test_split_table[0] << std::endl;
+    std::cout << "R:\n" << test_split_table[1] << std::endl;
     
     // Test min, max, sum, mean:
     std::cout << "Get min along row axis:" << std::endl;

@@ -87,7 +87,7 @@ public:
     DataFrame sample(int nrow = -1, int seed = -1) const; // Samples
     DataFrame copy(bool deep=false) const;  // Returns a copy of the DataFrame.
     DataFrame transpose() const;  // Returns a transposed copy of the DataFrame.
-    std::vector<DataFrame*> split(int split_column, double split_threshold, bool equal_goes_left=true) const;  // Returns a pair of frames (value above and below threshold in specified column).
+    std::vector<DataFrame> split(int split_column, double split_threshold, bool equal_goes_left=true) const;  // Returns a pair of frames (value above and below threshold in specified column).
     std::string to_string(bool new_line=true, int col_width=9) const;  // Return the DataFrame as a string.
     void print(bool new_line=true, int col_width=9) const;  // Print the data frame.
 

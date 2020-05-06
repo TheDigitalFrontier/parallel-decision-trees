@@ -552,29 +552,29 @@ DataFrame DataFrame::transpose() const
     return new_frame;
 }
 
-std::vector<DataFrame*> DataFrame::split(int split_column, double split_threshold, bool equal_goes_left) const
+std::vector<DataFrame> DataFrame::split(int split_column, double split_threshold, bool equal_goes_left) const
 {
     /**
      * Returns a pair of tables (value above and below split_threshold in specified column).
      * Values equal to the threshold go left if equal_goes_left==true and right otherwise.
      */
-    DataFrame* left = new DataFrame();
-    DataFrame* right = new DataFrame();
+    DataFrame left = DataFrame();
+    DataFrame right = DataFrame();
     for (int i = 0; i < this->length(); i++)
     {
         DataVector* row = this->row(i);
         double split_val = row->value(split_column);
         if (split_val<split_threshold) {
-            left->addRow(row);
+            left.addRow(row);
         } else if (split_val>split_threshold) {
-            right->addRow(row);
+            right.addRow(row);
         } else if (equal_goes_left) {
-            left->addRow(row);
+            left.addRow(row);
         } else if (!equal_goes_left) {
-            right->addRow(row);
+            right.addRow(row);
         }
     }
-    std::vector<DataFrame*> results = { left, right };
+    std::vector<DataFrame> results = { left, right };
     return results;
 }
 
