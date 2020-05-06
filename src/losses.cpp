@@ -78,7 +78,7 @@ double LossFunction::gini_impurity(DataVector *labels)
 
 double LossFunction::mean_squared_error(DataVector *labels)
 {
-    /** Returns the loss calculated with gini_impurity. */
+    /** Returns the mean squared error of a set of labels, assuming most common is used as prediction. */
     double prediction = labels->mean();
     double loss = 0;
     double error;

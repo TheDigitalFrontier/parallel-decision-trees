@@ -510,7 +510,7 @@ DataFrame DataFrame::transpose() const
     return *new_frame;
 }
 
-std::vector<DataFrame*> DataFrame::split(int split_column, double split_threshold, bool equal_goes_left = true) const
+std::vector<DataFrame*> DataFrame::split(int split_column, double split_threshold, bool equal_goes_left) const
 {
     /**
      * Returns a pair of tables (value above and below split_threshold in specified column).
