@@ -73,10 +73,10 @@ public:
     DataVector* col(int c) const;  // Get pointerto given column (constructed on the fly).
     double value(int r, int c) const;  // Get value in given row and column.
     std::vector<std::vector<double>> matrix() const;  // Get a copy of values as a vector of vectors of doubles.
-    DataVector* min(bool axis=0) const;  // Returns a vector of the min down columns (axis==0) or across rows (axis==1).
-    DataVector* max(bool axis=0) const;  // Returns a vector of the max down columns (axis==0) or across rows (axis==1).
-    DataVector* sum(bool axis=0) const;  // Returns a vector of the means down columns (axis==0) or across rows (axis==1).
-    DataVector* mean(bool axis=0) const;  // Returns a vector of the means down columns (axis==0) or across rows (axis==1).
+    DataVector min(bool axis=0) const;  // Returns a vector of the min down columns (axis==0) or across rows (axis==1).
+    DataVector max(bool axis=0) const;  // Returns a vector of the max down columns (axis==0) or across rows (axis==1).
+    DataVector sum(bool axis=0) const;  // Returns a vector of the means down columns (axis==0) or across rows (axis==1).
+    DataVector mean(bool axis=0) const;  // Returns a vector of the means down columns (axis==0) or across rows (axis==1).
 
     // Utilities:
     void lock();  // Lock object to make it read-only.

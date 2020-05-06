@@ -55,21 +55,21 @@ int main(){
     
     // Test min, max, sum, mean:
     std::cout << "Get min along row axis:" << std::endl;
-    std::cout << df_test.min(0)->to_string();
+    std::cout << df_test.min(0).to_string();
     std::cout << "Get min along column axis:" << std::endl;
-    std::cout << df_test.min(1)->to_string();
+    std::cout << df_test.min(1).to_string();
     std::cout << "Get max along row axis:" << std::endl;
-    std::cout << df_test.max(0)->to_string();
+    std::cout << df_test.max(0).to_string();
     std::cout << "Get max along column axis:" << std::endl;
-    std::cout << df_test.max(1)->to_string();
+    std::cout << df_test.max(1).to_string();
     std::cout << "Get sum along row axis:" << std::endl;
-    std::cout << df_test.sum(0)->to_string();
+    std::cout << df_test.sum(0).to_string();
     std::cout << "Get sum along column axis:" << std::endl;
-    std::cout << df_test.sum(1)->to_string();
+    std::cout << df_test.sum(1).to_string();
     std::cout << "Get mean along row axis:" << std::endl;
-    std::cout << df_test.mean(0)->to_string();
+    std::cout << df_test.mean(0).to_string();
     std::cout << "Get mean along column axis:" << std::endl;
-    std::cout << df_test.mean(1)->to_string();
+    std::cout << df_test.mean(1).to_string();
 
     // Bootstrap a sample and print, optionally specifying 5 rows and seed 1337
     std::cout << "Bootstrap and print dataframe:" << std::endl;

@@ -347,70 +347,70 @@ std::vector<std::vector<double>> DataFrame::matrix() const
     return matrix;
 }
 
-DataVector* DataFrame::min(bool axis) const
+DataVector DataFrame::min(bool axis) const
 {
     /**
      * Returns a vector of the min down columns (axis==0) or across rows (axis==1).
      * Returns a row if axis==0 and a column if axis==1.
      */
-    DataVector *result;
+    DataVector result;
     if (axis==0) {
-        result = new DataVector(true);  // is_row==true.
-        for (int i = 0; i < this->width(); i++) { result->addValue( this->col(i)->min() ); }
+        result = DataVector(true);  // is_row==true.
+        for (int i = 0; i < this->width(); i++) { result.addValue( this->col(i)->min() ); }
     } else {
-        result = new DataVector(false);  // is_row==false.
-        for (int i = 0; i < this->length(); i++) { result->addValue( this->row(i)->min() ); }
+        result = DataVector(false);  // is_row==false.
+        for (int i = 0; i < this->length(); i++) { result.addValue( this->row(i)->min() ); }
     }
     return result;
 }
 
-DataVector* DataFrame::max(bool axis) const
+DataVector DataFrame::max(bool axis) const
 {
     /**
      * Returns a vector of the max down columns (axis==0) or across rows (axis==1).
      * Returns a row if axis==0 and a column if axis==1.
      */
-    DataVector *result;
+    DataVector result;
     if (axis==0) {
-        result = new DataVector(true);  // is_row==true.
-        for (int i = 0; i < this->width(); i++) { result->addValue( this->col(i)->max() ); }
+        result = DataVector(true);  // is_row==true.
+        for (int i = 0; i < this->width(); i++) { result.addValue( this->col(i)->max() ); }
     } else {
-        result = new DataVector(false);  // is_row==false.
-        for (int i = 0; i < this->length(); i++) { result->addValue( this->row(i)->max() ); }
+        result = DataVector(false);  // is_row==false.
+        for (int i = 0; i < this->length(); i++) { result.addValue( this->row(i)->max() ); }
     }
     return result;
 }
 
-DataVector* DataFrame::sum(bool axis) const
+DataVector DataFrame::sum(bool axis) const
 {
     /**
      * Returns a vector of the means down columns (axis==0) or across rows (axis==1).
      * Returns a row if axis==0 and a column if axis==1.
      */
-    DataVector *result;
+    DataVector result;
     if (axis==0) {
-        result = new DataVector(true);  // is_row==true.
-        for (int i = 0; i < this->width(); i++) { result->addValue( this->col(i)->sum() ); }
+        result = DataVector(true);  // is_row==true.
+        for (int i = 0; i < this->width(); i++) { result.addValue( this->col(i)->sum() ); }
     } else {
-        result = new DataVector(false);  // is_row==false.
-        for (int i = 0; i < this->length(); i++) { result->addValue( this->row(i)->sum() ); }
+        result = DataVector(false);  // is_row==false.
+        for (int i = 0; i < this->length(); i++) { result.addValue( this->row(i)->sum() ); }
     }
     return result;
 }
 
-DataVector* DataFrame::mean(bool axis) const
+DataVector DataFrame::mean(bool axis) const
 {
     /**
      * Returns a vector of the means down columns (axis==0) or across rows (axis==1).
      * Returns a row if axis==0 and a column if axis==1.
      */
-    DataVector *result;
+    DataVector result;
     if (axis==0) {
-        result = new DataVector(true);  // is_row==true.
-        for (int i = 0; i < this->width(); i++) { result->addValue( this->col(i)->mean() ); }
+        result = DataVector(true);  // is_row==true.
+        for (int i = 0; i < this->width(); i++) { result.addValue( this->col(i)->mean() ); }
     } else {
-        result = new DataVector(false);  // is_row==false.
-        for (int i = 0; i < this->length(); i++) { result->addValue( this->row(i)->mean() ); }
+        result = DataVector(false);  // is_row==false.
+        for (int i = 0; i < this->length(); i++) { result.addValue( this->row(i)->mean() ); }
     }
     return result;
 }
