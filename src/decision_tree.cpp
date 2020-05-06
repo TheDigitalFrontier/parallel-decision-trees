@@ -395,7 +395,7 @@ double DecisionTree::predict_(DataVector* observation) const
 DataVector DecisionTree::predict(DataFrame* testdata) const
 {
     /** Perform prediction sequentially on each observation and collect a vector of predictions. */
-    DataVector *predictions = new DataVector(false);  // is_row=false.
+    DataVector predictions = DataVector(false);  // is_row=false.
     // Make sure tree has been fitted before prediction:
     assert (this->isFitted());
     // Make sure dataframe has the correct number of features (or one extra column with labels).
@@ -404,9 +404,9 @@ DataVector DecisionTree::predict(DataFrame* testdata) const
     {
         DataVector* observation = testdata->row(i);
         double prediction = this->predict_(observation);
-        predictions->addValue(prediction);
+        predictions.addValue(prediction);
     }
-    return *predictions;
+    return predictions;
 }
 
 /*
