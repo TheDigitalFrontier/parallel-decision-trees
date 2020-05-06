@@ -1,5 +1,6 @@
 #include <iostream>
 #include "../src/datasets.cpp"
+#include <random>
 
 
 int main(){
@@ -70,4 +71,8 @@ int main(){
     std::cout << "Get mean along column axis:" << std::endl;
     std::cout << df_test.mean(1)->to_string();
 
+    // Bootstrap a sample and print, optionally specifying 5 rows and seed 1337
+    std::cout << "Bootstrap and print dataframe:" << std::endl;
+    DataFrame df_boot = df_test.sample(5, 1337);
+    df_boot.print(4);
 };
