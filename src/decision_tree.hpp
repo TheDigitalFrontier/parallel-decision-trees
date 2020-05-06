@@ -48,6 +48,11 @@ public:
     TreeNode * getRoot() const;  // Root node in tree.
     std::vector<TreeNode*> getLeaves();  // Get leaves.
     DataFrame getDataFrame() const;  // Training data.
+    std::string to_string() const;  // Return the DecisionTree as a string.
+    void print() const;  // Print the DecisionTree.
+
+    // Overloaded operators:
+    friend std::ostream& operator<<(std::ostream& os, const DecisionTree& tree);
 
     // Setters:
 

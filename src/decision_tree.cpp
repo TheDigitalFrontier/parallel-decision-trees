@@ -3,6 +3,7 @@
 #include "datasets.hpp"
 #include "losses.hpp"
 #include <algorithm>  // std::sort.
+#include <stack>  // std::stack.
 #include <assert.h>
 #include <math.h>  // std::sqrt.
 #include <time.h>  // std::time.
@@ -31,6 +32,8 @@ DecisionTree::DecisionTree(
     assert ((max_leaves==-1) or (max_leaves>=1));  // -1 indicates no max leaves.
     assert ((min_obs==-1) or (min_obs>=1));  // -1 indicates no min observation number.
     assert ((max_prop==-1) or (max_prop>0));  // -1 indicates no max proportion.
+    assert ((max_prop==-1) or (max_prop<=1));  // Proportion cannot be larger than 1.
+    assert ((max_prop==-1) or (!regression));  // Proportion is only defined for classification, not regression.
     assert ((mtry>=-1) and (mtry<dataframe.width()));
     if (regression) {
         // Regression tree:
@@ -125,6 +128,94 @@ DataFrame DecisionTree::getDataFrame() const
      * Get the pointer to the dataframe.
      */
     return this->dataframe_;
+}
+
+std::string DecisionTree::to_string() const
+{
+    /** Return the DecisionTree as a string. */
+    int indent = 4;
+    std::string out = "";
+    if (this->isRegressionTree()) {
+        out += "REGRESSION TREE : ";
+    } else {
+        out += "CLASSIFICATION TREE : ";
+    }
+    out += std::to_string(this->getSize()) + " nodes; ";
+    out += std::to_string(this->num_leaves_) + " leaves; ";
+    out += "height: " + std::to_string(this->getHeight()) + " : ";
+    out += "\n";
+    // Prepare stack of nodes to process:
+    //   Each pair has a node and an integer representing type (0==root; -1==left; +1==right).
+    std::stack<std::pair<int,TreeNode*>> stk;
+    int type = 0;
+    TreeNode* node = this->getRoot();
+    std::pair<int,TreeNode*> pr = std::make_pair(type,node);
+    stk.push(pr);
+    while (stk.size()>0)
+    {
+        // Get top element, then remove it:
+        pr = stk.top();
+        stk.pop();
+        type = pr.first;
+        node = pr.second;
+        // Add children (if they exist) to be processed next:
+        if (node->hasRight()) { stk.push(std::make_pair(1,node->getRight())); }
+        if (node->hasLeft()) { stk.push(std::make_pair(-1,node->getLeft())); }
+        // Add this node to string:
+        out.append(indent,' ');
+        for (int i = 0; i < node->getDepth(); i++)
+        {
+            out.append(indent,' ');
+        }
+        //  Add node text:
+        if (type==-1) {
+            out += "(L) ";
+        } else if (type==1) {
+            out += "(R) ";
+        } else {
+            out += "(-) ";
+        }
+        if (node->hasSplit()) {
+            out += "Intermediate node with ";
+            out += std::to_string(node->getDataFrame().length());
+            out += " observation(s); split on column ";
+            out += std::to_string(node->getSplitFeature());
+            out += " with threshold ";
+            out += std::to_string(node->getSplitThreshold());
+            out += " .";
+        } else {
+            out += "LEAF NODE WITH ";
+            out += std::to_string(node->getDataFrame().length());
+            out += " OBSERVATION(S); ";
+            if (this->isRegressionTree()){
+                // Regression tree:
+                out += "mean value: ";
+                out += std::to_string(node->getDataFrame().col(-1)->mean());
+            } else {
+                // Classification tree:
+                out += "majority class: ";
+                out += std::to_string(LabelCounter(node->getDataFrame().col(-1)).get_most_frequent());
+            }
+            out += " .";
+        }
+        out += "\n";
+    }
+    return out;
+}
+
+void DecisionTree::print() const
+{
+    /** Print the DecisionTree. */
+    std::cout << this->to_string() << std::endl;
+}
+
+// Overloaded operators:
+
+std::ostream& operator<<(std::ostream& os, const DecisionTree& tree)
+{
+    /** Print the DecisionTree to stream */
+    os << tree.to_string();
+    return os;
 }
 
 // Setters:
