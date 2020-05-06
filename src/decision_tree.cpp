@@ -301,7 +301,10 @@ DataVector DecisionTree::predict(DataFrame* testdata) const
 {
     /** Perform prediction sequentially on each observation and collect a vector of predictions. */
     DataVector *predictions = new DataVector(false);  // is_row=false.
+    // Make sure tree has been fitted before prediction:
     assert (this->isFitted());
+    // Make sure dataframe has the correct number of features (or one extra column with labels).
+    assert ( (testdata->width()==this->num_features_) or (testdata->width()==this->num_features_+1) );
     for (int i = 0; i < testdata->length(); i++)
     {
         DataVector* observation = testdata->row(i);
