@@ -186,7 +186,8 @@ std::pair<int,double> DecisionTree::findBestSplit(TreeNode *node) const
         }
     }
     // Initialize temporary variables:
-    int best_column, col = -1;
+    bool first_pass = true;
+    int best_column, col;
     double best_threshold, best_loss, loss;
     // Explore possible splits:
     for (int i = 0; i < m; i++){
@@ -201,7 +202,8 @@ std::pair<int,double> DecisionTree::findBestSplit(TreeNode *node) const
             // Split dataset using current column and threshold, score, and update if best:
             std::vector<DataFrame*> dataset_splits = dataframe.split(shuf_inds[i], val, true); // equal_goes_left=true.
             loss = this->calculateSplitLoss(dataset_splits[0],dataset_splits[1]);
-            if ((best_column==-1) or (loss<best_loss)){
+            if ((first_pass) or (loss<best_loss)){
+                first_pass = false;
                 best_column = col;
                 best_threshold = val;
                 best_loss = loss;
