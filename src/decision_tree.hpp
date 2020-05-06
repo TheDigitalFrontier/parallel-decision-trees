@@ -23,9 +23,11 @@ private:
     int num_leaves_;  // State variable: Number of leaves currently in tree.
     int num_features_;  // State variable: Number of features in dataset.
     std::vector<TreeNode*> leaves_;  // State variables: List of leaves.
+    bool fitted_;  // State variable: Flag indicated whether or not the tree has been trained.
 
     // Utilities:
     void fit_(TreeNode* node);  // Helper function to perform fitting recursively.
+    double predict_(DataVector* observation) const;  // Helper function to perform prediction on a single observation.
     std::pair<int,double> findBestSplit(TreeNode *node) const;  // Find best split at this node.
     double calculateLoss(DataFrame* dataframe) const;  // Calculate loss before split.
     double calculateSplitLoss(DataFrame* left_dataframe, DataFrame* right_dataframe) const;  // Calculate loss on split dataset.
@@ -42,6 +44,7 @@ public:
     int getSize() const;  // Number of nodes in tree.
     int getHeight() const;  // Height of tree.
     bool isRegressionTree() const;  // Type of tree (classification or regression).
+    bool isFitted() const;  // Indicates whether the tree has been fitted on training data.
     TreeNode * getRoot() const;  // Root node in tree.
     std::vector<TreeNode*> getLeaves();  // Get leaves.
     DataFrame getDataFrame() const;  // Training data.
@@ -50,6 +53,7 @@ public:
 
     // Utilities:
     void fit();  // Perform fitting recursively (using fit_ helper).
+    DataVector predict(DataFrame* testdata) const;  // Perform prediction sequentially on each observation.
 
 };
 

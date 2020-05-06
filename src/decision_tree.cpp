@@ -62,6 +62,7 @@ DecisionTree::DecisionTree(
     this->num_leaves_ = 1;
     this->num_features_ = dataframe.width()-1;  // Number of columns, excluding label column.
     this->leaves_ = {this->root_};
+    this->fitted_ = false;
 }
 
 // Getters:
@@ -90,6 +91,12 @@ int DecisionTree::getHeight() const
     } else {
         return 0;
     }
+}
+
+bool DecisionTree::isFitted() const
+{
+    /** Return true if tree has been trained and false otherwise. */
+    return this->fitted_;
 }
 
 bool DecisionTree::isRegressionTree() const
@@ -257,6 +264,49 @@ void DecisionTree::fit()
     fit_(this->root_);
     // Update list of leaves:
     this->leaves_ = this->root_->findLeaves();
+    this->fitted_ = true;
+}
+
+double DecisionTree::predict_(DataVector* observation) const
+{
+    /** Helper function to perform prediction on a single observation. */
+    TreeNode* node = this->root_;
+    // Starting at root node, traverse tree while going left or right according to trained splitting criteria:
+    while (!node->isLeaf())
+    {
+        int split_feature = node->getSplitFeature();
+        double split_threshold = node->getSplitThreshold();
+        if ( observation->value(split_feature) <= split_threshold ){
+            assert (node->hasLeft());  // A non-leaf node should have both left and right children.
+            node = node->getLeft();
+        } else {
+            assert (node->hasRight());  // A non-leaf node should have both left and right children.
+            node = node->getRight();
+        }
+    }
+    // Make prediction based on whichever leaf is reached by the traversal:
+    double prediction;
+    if (this->isRegressionTree()) {
+        // Regression tree: Predict mean of training data at terminal node:
+        prediction = node->getDataFrame().col(-1)->mean();
+    } else {
+        // Classification tree: Predict majority class of training data at terminal node:
+        prediction = LabelCounter(node->getDataFrame().col(-1)).get_most_frequent();
+    }
+    return prediction;
+}
+DataVector DecisionTree::predict(DataFrame* testdata) const
+{
+    /** Perform prediction sequentially on each observation and collect a vector of predictions. */
+    DataVector *predictions = new DataVector(false);  // is_row=false.
+    assert (this->isFitted());
+    for (int i = 0; i < testdata->length(); i++)
+    {
+        DataVector* observation = testdata->row(i);
+        double prediction = this->predict_(observation);
+        predictions->addValue(prediction);
+    }
+    return *predictions;
 }
 
 /*
