@@ -492,11 +492,20 @@ void DataFrame::addCol(std::vector<double> vector)
     this->addCol(col);
 }
 
-DataFrame DataFrame::copy() const
+DataFrame DataFrame::copy(bool deep) const
 {
-    /** Returns a copy of the DataFrame. */
-    DataFrame *new_frame = new DataFrame(this->matrix());
-    return *new_frame;
+    /** Returns a copy of the DataFrame. (If deep=true, also copies each row.) */
+    DataFrame new_frame;
+    if (deep){
+        new_frame = DataFrame(this->matrix());
+    } else {
+        new_frame = DataFrame();
+        for (int i = 0; i < this->length(); i++)
+        {
+            new_frame.addRow(this->row(i));
+        }
+    }
+    return new_frame;
 }
 
 DataFrame DataFrame::sample(int nrow, int seed) const{
