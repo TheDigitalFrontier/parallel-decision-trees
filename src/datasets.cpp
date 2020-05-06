@@ -461,24 +461,24 @@ void DataFrame::addRow(std::vector<double> vector)
     this->addRow(row);
 }
 
-void DataFrame::addCol(DataVector *col)
+void DataFrame::addCol(DataVector col)
 {
     /** Append the values to each row in the list. */
     assert (!this->is_locked());
-    assert (!col->is_row());
-    assert (col->size()==this->length());
+    assert (!col.is_row());
+    assert (col.size()==this->length());
     if (this->rows_.size()==0)
     {
         // If this is the first column, set dimensions:
-        this->length_ = col->size();  // Width will be incremented below.
+        this->length_ = col.size();  // Width will be incremented below.
     } else {
         // Otherwise, make sure it matches existing dimension.
-        assert (col->size()==this->length());
+        assert (col.size()==this->length());
     }
     for (int i = 0; i < this->length(); i++)
     {
         assert (!this->rows_[i]->is_locked());
-        this->rows_[i]->addValue( col->value(i) );
+        this->rows_[i]->addValue( col.value(i) );
     }
     this->width_ += 1;
 }
@@ -487,7 +487,7 @@ void DataFrame::addCol(std::vector<double> vector)
 {
     /** Append the values to each row in the list. */
     // Create DataVector (column):
-    DataVector* col = new DataVector(vector,false);  // is_row==false.
+    DataVector col = DataVector(vector,false);  // is_row==false.
     // Add DataColumn to frame (and perform error-checking):
     this->addCol(col);
 }

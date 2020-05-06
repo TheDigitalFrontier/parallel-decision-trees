@@ -82,7 +82,7 @@ public:
     void lock();  // Lock object to make it read-only.
     void addRow(DataVector *row);  // Append to the list of rows (as pointer).
     void addRow(std::vector<double> vector);  // Wrap the values in a DataRow and add its pointer to the list.
-    void addCol(DataVector *col);  // Append the values each row in the list (from pointer).
+    void addCol(DataVector col);  // Append the values each row in the lists.
     void addCol(std::vector<double> vector);  // Append the values to each row in the list.
     DataFrame sample(int nrow = -1, int seed = -1) const; // Samples
     DataFrame copy(bool deep=false) const;  // Returns a copy of the DataFrame.
