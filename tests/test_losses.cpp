@@ -1,6 +1,6 @@
 #include <iostream>
-#include "losses.cpp"
-#include "datasets.cpp"
+#include "../src/losses.cpp"
+#include "../src/datasets.cpp"
 
 int main(){
 
