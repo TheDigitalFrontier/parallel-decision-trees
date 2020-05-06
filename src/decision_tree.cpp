@@ -2,6 +2,7 @@
 #include "tree_node.hpp"
 #include "datasets.hpp"
 #include "losses.hpp"
+#include <iostream>
 #include <cmath>  // std::floor.
 #include <math.h>  // std::sqrt.
 #include <algorithm>  // std::sort.
