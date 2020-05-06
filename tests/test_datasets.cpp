@@ -28,8 +28,8 @@ int main(){
     
     // Get transpose of first column:
     std::cout << "Print transpose of first column:" << std::endl;
-    DataVector* test_transpose_col = df_test.col(0)->transpose();
-    std::cout << *test_transpose_col << std::endl;
+    DataVector test_transpose_col = df_test.col(0)->transpose();
+    std::cout << test_transpose_col << std::endl;
     
     // Get copy of data frame:
     std::cout << "Print copy of data frame:" << std::endl;

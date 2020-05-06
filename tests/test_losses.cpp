@@ -16,8 +16,8 @@ int main(){
     std::cout << "Counts: " << label_counter1 << std::endl;
     std::cout << "Most frequent key: " << label_counter1.get_most_frequent() << std::endl;
     std::cout << std::endl;
-    std::cout << "Labels: " + label_counter1.get_labels()->transpose()->to_string(false);
-    std::cout << "Values: " + label_counter1.get_values()->transpose()->to_string(false);
+    std::cout << "Labels: " + label_counter1.get_labels()->transpose().to_string(false);
+    std::cout << "Values: " + label_counter1.get_values()->transpose().to_string(false);
     std::cout << "Counts: " << label_counter1 << std::endl;
     std::cout << std::endl;
 

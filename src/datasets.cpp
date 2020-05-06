@@ -138,11 +138,11 @@ DataVector* DataVector::copy() const
     return new_vector;
 }
 
-DataVector* DataVector::transpose() const
+DataVector DataVector::transpose() const
 {
     /** Returns a pointer to a new vector that is the transpose of this one. */
     bool new_is_row = !this->is_row();
-    DataVector* new_vector = new DataVector(this->vector(),new_is_row);
+    DataVector new_vector = DataVector(this->vector(),new_is_row);
     return new_vector;
 }
 
@@ -547,7 +547,7 @@ DataFrame DataFrame::transpose() const
     // Get each column, transpose it, and add it as a row in new frame:
     for (int i = 0; i < this->width(); i++)
     {
-        new_frame.addRow( this->col(i)->transpose() );
+        new_frame.addRow(this->col(i)->transpose().vector());
     }
     return new_frame;
 }
