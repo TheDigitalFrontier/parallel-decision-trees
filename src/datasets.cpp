@@ -543,13 +543,13 @@ DataFrame DataFrame::sample(int nrow, int seed) const{
 DataFrame DataFrame::transpose() const
 {
     /** Returns a new dataframe that is the transpose of this one. */
-    DataFrame *new_frame = new DataFrame();
+    DataFrame new_frame = DataFrame();
     // Get each column, transpose it, and add it as a row in new frame:
     for (int i = 0; i < this->width(); i++)
     {
-        new_frame->addRow( this->col(i)->transpose() );
+        new_frame.addRow( this->col(i)->transpose() );
     }
-    return *new_frame;
+    return new_frame;
 }
 
 std::vector<DataFrame*> DataFrame::split(int split_column, double split_threshold, bool equal_goes_left) const
