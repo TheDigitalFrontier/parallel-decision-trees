@@ -10,20 +10,22 @@ int main(){
     //DataLoader training_loader = DataLoader();
     //DataFrame training_data = training_loader.load();
     DataFrame training_data = DataFrame({
-        {2.232, 2.456, 1},
-        {2.277, 8.735, 2},
-        {2.965, 6.846, 2},
-        {2.252, 6.452, 2},
-        {2.222, 9.944, 2},
-        {2.322, 8.747, 2},
-        {2.552, 7.833, 2},
-        {2.242, 9.941, 2},
-        {6.201, 6.452, 3},
-        {7.403, 9.944, 3},
-        {8.720, 8.747, 3},
-        {6.804, 9.941, 3},
-        {6.201, 9.452, 3},
-        {8.403, 3.944, 4},
+        {2.232, 2.456, 2.000, 0},
+        {2.232, 2.456, 3.000, 1},
+        {2.277, 8.735, 3.000, 2},
+        {2.965, 6.846, 3.000, 2},
+        {2.252, 6.452, 3.000, 2},
+        {2.222, 9.944, 3.000, 2},
+        {2.322, 8.747, 3.000, 2},
+        {2.322, 7.667, 3.000, 2},
+        {6.201, 6.342, 3.000, 3},
+        {6.201, 7.442, 3.000, 3},
+        {7.403, 9.944, 3.000, 3},
+        {8.720, 8.747, 3.000, 3},
+        {6.804, 9.941, 3.000, 3},
+        {6.201, 9.452, 3.000, 3},
+        {8.403, 3.944, 3.000, 4},
+        {8.403, 3.944, 4.000, 5},
     });
     training_data.print();
     
@@ -50,17 +52,17 @@ int main(){
     
     std::cout << "Perform prediction on new data." << std::endl;
     DataFrame *test_data = new DataFrame({
-        {2.0, 0.0},  // Expected: 1.
-        {2.0, 1.0},  // Expected: 1.
-        {2.0, 2.0},  // Expected: 1.
-        {2.0, 7.0},  // Expected: 2.
-        {2.0, 8.0},  // Expected: 2.
-        {2.0, 9.0},  // Expected: 2.
-        {7.0, 7.0},  // Expected: 3.
-        {7.0, 8.0},  // Expected: 3.
-        {7.0, 9.0},  // Expected: 3.
-        {7.0, 1.0},  // Expected: 4.
-        {7.0, 2.0},  // Expected: 4.
+        {2.0, 0.0, 3.0},  // Expected: 1.
+        {2.0, 1.0, 3.0},  // Expected: 1.
+        {2.0, 2.0, 3.0},  // Expected: 1.
+        {2.0, 7.0, 3.0},  // Expected: 2.
+        {2.0, 8.0, 3.0},  // Expected: 2.
+        {2.0, 9.0, 3.0},  // Expected: 2.
+        {7.0, 7.0, 3.0},  // Expected: 3.
+        {7.0, 8.0, 3.0},  // Expected: 3.
+        {7.0, 9.0, 3.0},  // Expected: 3.
+        {7.0, 1.0, 3.0},  // Expected: 4.
+        {7.0, 2.0, 3.0},  // Expected: 4.
     });
     DataVector test_predictions = classification_tree.predict(test_data);
     delete test_data;  // Remove dataframe from heap.
