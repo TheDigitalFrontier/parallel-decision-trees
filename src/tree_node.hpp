@@ -5,9 +5,9 @@
 
 class TreeNode
 {
-    /** 
+    /**
      * An basic data structure representing a node in a decision tree.
-     * Includes functionality for implementing decisions. 
+     * Includes functionality for implementing decisions.
      * */
 
 private:
@@ -22,10 +22,10 @@ private:
     DataFrame dataframe_;  // Data frame for splitting.
     bool has_split_;  // Flag indicating whether splitting values have been set.
     int split_feature_;  // Index of splitting column.
-    double split_threshold_;  // Numberical splitting thresold.
+    double split_threshold_;  // Numerical splitting threshold.
 
 public:
-    
+
     // Constructors:
     TreeNode(DataFrame dataframe);
     TreeNode(DataFrame dataframe, int split_feature, double split_threshold);

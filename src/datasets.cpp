@@ -151,7 +151,7 @@ DataVector DataVector::transpose() const
 std::vector<DataVector> DataVector::split(double split_threshold, bool equal_goes_left) const
 {
     /**
-     * Retrurns a pair of vectors (value above and below split_threshold).
+     * Returns a pair of vectors (value above and below split_threshold).
      * Values equal to the threshold go left if equal_goes_left==true and right otherwise.
      */
     DataVector left = DataVector(this->is_row());
@@ -217,7 +217,7 @@ std::string DataVector::to_string(bool new_line, int col_width) const
         out += '\n';
     }
     return out;
-}   
+}
 
 void DataVector::print(bool new_line, int col_width) const
 {
@@ -579,6 +579,45 @@ std::vector<DataFrame> DataFrame::split(int split_column, double split_threshold
     return results;
 }
 
+std::vector<DataFrame> DataFrame::train_test_split(double split_pct) const
+{
+    /**
+     * Returns a pair of train/test tables (sized using split_pct).
+     * Calculates table sizes from val_split percent.
+     */
+
+    assert (split_pct >= 0 && split_pct <= 1)
+
+    // length of dataframe. assert non-empty.
+    nrows = this->length();
+    assert(nrows > 0);
+
+    // length of train dataframe
+    int len_train = int (nrows * split_pct) // Always rounds down
+
+    // length of test dataframe
+    int len_test = int (nrows - len_train)
+
+    // initialize new dataframes
+    DataFrame left = DataFrame();  // Train
+    DataFrame right = DataFrame(); // Test
+
+    for (int i = 0; i < nrows; i++)
+    {
+        DataVector* row = this->row(i);
+        if (i < len_train) {
+            left.addRow(row);
+        } else if (i >= len_train) {
+            right.addRow(row);
+    }
+
+    // validate test size
+    assert (right.size()==len_test);
+
+    std::vector<DataFrame> results = { left, right };
+    return results;
+}
+
 std::string DataFrame::to_string(bool new_line, int col_width) const
 {
     /**
@@ -596,7 +635,7 @@ std::string DataFrame::to_string(bool new_line, int col_width) const
         out += '\n';
     }
     return out;
-}   
+}
 
 void DataFrame::print(bool new_line, int col_width) const
 {
@@ -678,15 +717,15 @@ DataLoader::DataLoader()
 {
     /** Load hard-coded dummy dataset. */
     std::vector<std::vector<double>> matrix = {
-        {2.7810836,2.550537003,0}, 
+        {2.7810836,2.550537003,0},
         {1.465489372,2.362125076,0},
-        {7.627531214,2.759262235,1}, 
+        {7.627531214,2.759262235,1},
         {3.396561688,4.400293529,0},
-        {8.675418651,-0.242068655,1}, 
-        {1.38807019,1.850220317,0}, 
-        {3.06407232,3.005305973,0},  
-        {5.332441248,2.088626775,1}, 
-        {6.922596716,1.77106367,1},  
+        {8.675418651,-0.242068655,1},
+        {1.38807019,1.850220317,0},
+        {3.06407232,3.005305973,0},
+        {5.332441248,2.088626775,1},
+        {6.922596716,1.77106367,1},
         {7.673756466,3.508563011,1},
         {7.673756466,3.301233593,1}
     };
@@ -746,7 +785,7 @@ DataLoader::DataLoader(std::string filename)
 
     }
 
-    else std::cout << "Unable to open file"; 
+    else std::cout << "Unable to open file";
 
 }
 
@@ -781,4 +820,3 @@ SeedGenerator::SeedGenerator(int meta_seed)
     assert (meta_seed>=-1);
     this->meta_seed_ = meta_seed;
 }
-
