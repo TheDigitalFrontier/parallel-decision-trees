@@ -51,7 +51,7 @@ int main(){
     }
     
     std::cout << "Perform prediction on new data." << std::endl;
-    DataFrame *test_data = new DataFrame({
+    DataFrame test_data = DataFrame({
         {2.0, 0.0, 3.0},  // Expected: 1.
         {2.0, 1.0, 3.0},  // Expected: 1.
         {2.0, 2.0, 3.0},  // Expected: 1.
@@ -64,8 +64,7 @@ int main(){
         {7.0, 1.0, 3.0},  // Expected: 4.
         {7.0, 2.0, 3.0},  // Expected: 4.
     });
-    DataVector test_predictions = classification_tree.predict(test_data);
-    delete test_data;  // Remove dataframe from heap.
+    DataVector test_predictions = classification_tree.predict(&test_data);
     std::cout << "Predictions :" << std::endl;
     std::cout << test_predictions << std::endl;
 

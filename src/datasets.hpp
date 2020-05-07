@@ -34,9 +34,9 @@ public:
     // Utilities:
     void lock();  // Lock object to make it read-only.
     void addValue(double value);  // Add value to vector.
-    DataVector* copy() const;  // Returns a copy of the DataVector.
-    DataVector* transpose() const;  // Returns a transposed copy of the DataVector.
-    std::vector<DataVector*> split(double split_threshold, bool equal_goes_left=true) const;  // Returns a pair of vectors (value above and below threshold).
+    DataVector copy() const;  // Returns a copy of the DataVector.
+    DataVector transpose() const;  // Returns a transposed copy of the DataVector.
+    std::vector<DataVector> split(double split_threshold, bool equal_goes_left=true) const;  // Returns a pair of vectors (value above and below threshold).
     std::string to_string(bool new_line=true, int col_width=9) const;  // Return the DataVector as a string.
     void print(bool new_line=true, int col_width=9) const;  // Print the data vector.
 
@@ -70,24 +70,24 @@ public:
     int width() const;  // Returns number of columns.
     bool is_locked() const;  // Checks if object is read-only.
     DataVector* row(int r) const;  // Get pointer to given row (stored internally).
-    DataVector* col(int c) const;  // Get pointerto given column (constructed on the fly).
+    DataVector col(int c) const;  // Get given column (constructed on the fly).
     double value(int r, int c) const;  // Get value in given row and column.
     std::vector<std::vector<double>> matrix() const;  // Get a copy of values as a vector of vectors of doubles.
-    DataVector* min(bool axis=0) const;  // Returns a vector of the min down columns (axis==0) or across rows (axis==1).
-    DataVector* max(bool axis=0) const;  // Returns a vector of the max down columns (axis==0) or across rows (axis==1).
-    DataVector* sum(bool axis=0) const;  // Returns a vector of the means down columns (axis==0) or across rows (axis==1).
-    DataVector* mean(bool axis=0) const;  // Returns a vector of the means down columns (axis==0) or across rows (axis==1).
+    DataVector min(bool axis=0) const;  // Returns a vector of the min down columns (axis==0) or across rows (axis==1).
+    DataVector max(bool axis=0) const;  // Returns a vector of the max down columns (axis==0) or across rows (axis==1).
+    DataVector sum(bool axis=0) const;  // Returns a vector of the means down columns (axis==0) or across rows (axis==1).
+    DataVector mean(bool axis=0) const;  // Returns a vector of the means down columns (axis==0) or across rows (axis==1).
 
     // Utilities:
     void lock();  // Lock object to make it read-only.
     void addRow(DataVector *row);  // Append to the list of rows (as pointer).
     void addRow(std::vector<double> vector);  // Wrap the values in a DataRow and add its pointer to the list.
-    void addCol(DataVector *col);  // Append the values each row in the list (from pointer).
+    void addCol(DataVector col);  // Append the values each row in the lists.
     void addCol(std::vector<double> vector);  // Append the values to each row in the list.
-    DataFrame copy() const;  // Returns a copy of the DataFrame.
     DataFrame sample(int nrow = -1, int seed = -1) const; // Samples
+    DataFrame copy(bool deep=false) const;  // Returns a copy of the DataFrame.
     DataFrame transpose() const;  // Returns a transposed copy of the DataFrame.
-    std::vector<DataFrame*> split(int split_column, double split_threshold, bool equal_goes_left=true) const;  // Returns a pair of frames (value above and below threshold in specified column).
+    std::vector<DataFrame> split(int split_column, double split_threshold, bool equal_goes_left=true) const;  // Returns a pair of frames (value above and below threshold in specified column).
     std::string to_string(bool new_line=true, int col_width=9) const;  // Return the DataFrame as a string.
     void print(bool new_line=true, int col_width=9) const;  // Print the data frame.
 

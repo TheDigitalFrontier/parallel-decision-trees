@@ -196,7 +196,7 @@ std::string DecisionTree::to_string() const
             if (this->isRegressionTree()){
                 // Regression tree:
                 out += "mean value: ";
-                out += std::to_string(node->getDataFrame().col(-1)->mean());
+                out += std::to_string(node->getDataFrame().col(-1).mean());
             } else {
                 // Classification tree:
                 out += "majority class: ";
@@ -289,7 +289,7 @@ std::pair<int,double> DecisionTree::findBestSplit(TreeNode *node) const
     // Explore possible splits:
     for (int i = 0; i < m; i++){
         col = shuf_inds[i];
-        std::vector<double> col_vals = dataframe.col(col)->vector();
+        std::vector<double> col_vals = dataframe.col(col).vector();
         // Remove duplicates:
         std::sort(col_vals.begin(), col_vals.end());
         col_vals.erase(std::unique(col_vals.begin(), col_vals.end()), col_vals.end());
@@ -298,8 +298,8 @@ std::pair<int,double> DecisionTree::findBestSplit(TreeNode *node) const
             double val = col_vals[j];  // Don't split on last value (because it will produce empty `right`).
             // But splitting on first value works as <= means left won't be empty
             // Split dataset using current column and threshold, score, and update if best:
-            std::vector<DataFrame*> dataset_splits = dataframe.split(col, val, true); // equal_goes_left=true.
-            loss = this->calculateSplitLoss(dataset_splits[0],dataset_splits[1]);
+            std::vector<DataFrame> dataset_splits = dataframe.split(col, val, true); // equal_goes_left=true.
+            loss = this->calculateSplitLoss(&dataset_splits[0],&dataset_splits[1]);
             // std::cout << "    " << col << ", " << val << ", " << loss << std::endl;  // TEST
             if ((first_pass) or (loss<best_loss)){
                 first_pass = false;
@@ -321,7 +321,7 @@ void DecisionTree::fit_(TreeNode* node)
 {
     DataFrame dataframe = node->getDataFrame();
     LabelCounter label_counter = LabelCounter(dataframe.col(-1));
-    double proportion = label_counter.get_values()->max()/label_counter.size();
+    double proportion = label_counter.get_values().max()/label_counter.size();
     if ( label_counter.size()==1 ) {
         return;  // Prune if there is only one class left.
     } else if ( dataframe.length()<2 ) {
@@ -342,16 +342,16 @@ void DecisionTree::fit_(TreeNode* node)
     node->setSplitFeature(split_feature);
     node->setSplitThreshold(split_threshold);
     // Calculate results of best split:
-    std::vector<DataFrame*> dataset_splits = dataframe.split(split_feature,split_threshold,true);  // equal_goes_left=true.
-    DataFrame *left_data = dataset_splits[0];
-    DataFrame *right_data = dataset_splits[1];
-    if ( (left_data->length()==0) or (right_data->length()==0) ) {
+    std::vector<DataFrame> dataset_splits = dataframe.split(split_feature,split_threshold,true);  // equal_goes_left=true.
+    DataFrame left_data = dataset_splits[0];
+    DataFrame right_data = dataset_splits[1];
+    if ( (left_data.length()==0) or (right_data.length()==0) ) {
         return;  // Prune if best split does not actually split the dataset.
     }
     // If split produces two non-empty dataframes, recurse to (new) children:
     this->num_leaves_ += 1;  // Each split causes net addition of 1 leaf.
-    TreeNode *left_child = new TreeNode(*left_data);
-    TreeNode *right_child = new TreeNode(*right_data);
+    TreeNode *left_child = new TreeNode(left_data);
+    TreeNode *right_child = new TreeNode(right_data);
     node->setLeft(left_child);
     node->setRight(right_child);
     // Recurse to (new) children:
@@ -389,7 +389,7 @@ double DecisionTree::predict_(DataVector* observation) const
     double prediction;
     if (this->isRegressionTree()) {
         // Regression tree: Predict mean of training data at terminal node:
-        prediction = node->getDataFrame().col(-1)->mean();
+        prediction = node->getDataFrame().col(-1).mean();
     } else {
         // Classification tree: Predict majority class of training data at terminal node:
         prediction = LabelCounter(node->getDataFrame().col(-1)).get_most_frequent();
@@ -399,7 +399,7 @@ double DecisionTree::predict_(DataVector* observation) const
 DataVector DecisionTree::predict(DataFrame* testdata) const
 {
     /** Perform prediction sequentially on each observation and collect a vector of predictions. */
-    DataVector *predictions = new DataVector(false);  // is_row=false.
+    DataVector predictions = DataVector(false);  // is_row=false.
     // Make sure tree has been fitted before prediction:
     assert (this->isFitted());
     // Make sure dataframe has the correct number of features (or one extra column with labels).
@@ -408,9 +408,9 @@ DataVector DecisionTree::predict(DataFrame* testdata) const
     {
         DataVector* observation = testdata->row(i);
         double prediction = this->predict_(observation);
-        predictions->addValue(prediction);
+        predictions.addValue(prediction);
     }
-    return *predictions;
+    return predictions;
 }
 
 /*
