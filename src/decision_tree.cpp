@@ -2,6 +2,7 @@
 #include "tree_node.hpp"
 #include "datasets.hpp"
 #include "losses.hpp"
+#include <iostream>
 #include <cmath>  // std::floor.
 #include <math.h>  // std::sqrt.
 #include <algorithm>  // std::sort.
@@ -45,7 +46,7 @@ DecisionTree::DecisionTree(
         }
     } else {
         // Classification tree:
-        if ( (loss=="misclassification_error") or (loss=="binary_cross_entropy") or (loss=="gini_impurity") ) {
+        if ( (loss=="misclassification_error") or (loss=="cross_entropy") or (loss=="gini_impurity") ) {
             ; // pass.
         } else {
             throw std::invalid_argument( "Received invalid loss method for classification tree: "+loss );
@@ -318,42 +319,40 @@ void DecisionTree::fit_(TreeNode* node)
     LabelCounter label_counter = LabelCounter(dataframe.col(-1));
     double proportion = label_counter.get_values()->max()/label_counter.size();
     if ( label_counter.size()==1 ) {
-        ;  // Prune if there is only one class left.
+        return;  // Prune if there is only one class left.
     } else if ( dataframe.length()<2 ) {
-        ;  // Prune if there is not enough data to split.
+        return;  // Prune if there is not enough data to split.
     } else if ( (this->max_height_!=-1) and (node->getDepth()+1>=this->max_height_) ) { 
-        ;  // Prune if adding children would exceed max depth:
+        return;  // Prune if adding children would exceed max depth:
     } else if ( (this->max_leaves_!=-1) and (this->num_leaves_+1>=this->max_leaves_) ) { 
-        ;  // Prune if adding children would exceed max leaves:
+        return;  // Prune if adding children would exceed max leaves:
     } else if ( (this->min_obs_!=-1) and (dataframe.length()<=this->min_obs_) ) {
-        ;  // Prune if node is below minimum leave size.
+        return;  // Prune if node is below minimum leave size.
     } else if ( (this->max_prop_!=-1) and (  proportion>=this->max_prop_) ) {
-        ;  // Prune if proportion of majority label is above threshold.
-    } else {
-        // Find best split at this node:
-        std::pair<int,double> split = this->findBestSplit(node);
-        int split_feature = split.first;
-        double split_threshold = split.second;
-        node->setSplitFeature(split_feature);
-        node->setSplitThreshold(split_threshold);
-        // Apply best split at this node:
-        this->num_leaves_ += 1;  // Each split causes net addition of 1 leaf.
-        std::vector<DataFrame*> dataset_splits = dataframe.split(split_feature,split_threshold,true);  // equal_goes_left=true.
-        DataFrame *left_data = dataset_splits[0];
-        DataFrame *right_data = dataset_splits[1];
-        // If split produces two non-empty dataframes, recurse to (new) children:
-        if ( (left_data->length()>0) and (right_data->length()>0) ) {
-            TreeNode *left_child = new TreeNode(*left_data);
-            TreeNode *right_child = new TreeNode(*right_data);
-            node->setLeft(left_child);
-            node->setRight(right_child);
-            // Recurse to (new) children:
-            this->fit_(left_child);
-            this->fit_(right_child);
-        } else {
-            ;  // Prune if best split does not actually split the dataset.
-        }
+        return;  // Prune if proportion of majority label is above threshold.
     }
+    // Find best split at this node:
+    std::pair<int,double> split = this->findBestSplit(node);
+    int split_feature = split.first;
+    double split_threshold = split.second;
+    node->setSplitFeature(split_feature);
+    node->setSplitThreshold(split_threshold);
+    // Calculate results of best split:
+    std::vector<DataFrame*> dataset_splits = dataframe.split(split_feature,split_threshold,true);  // equal_goes_left=true.
+    DataFrame *left_data = dataset_splits[0];
+    DataFrame *right_data = dataset_splits[1];
+    if ( (left_data->length()==0) or (right_data->length()==0) ) {
+        return;  // Prune if best split does not actually split the dataset.
+    }
+    // If split produces two non-empty dataframes, recurse to (new) children:
+    this->num_leaves_ += 1;  // Each split causes net addition of 1 leaf.
+    TreeNode *left_child = new TreeNode(*left_data);
+    TreeNode *right_child = new TreeNode(*right_data);
+    node->setLeft(left_child);
+    node->setRight(right_child);
+    // Recurse to (new) children:
+    this->fit_(left_child);
+    this->fit_(right_child);
 }
 
 void DecisionTree::fit()

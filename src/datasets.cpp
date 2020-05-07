@@ -5,6 +5,7 @@
 #include <iostream>
 #include <iomanip>
 #include <vector>
+#include <random>
 
 
 /*
@@ -496,6 +497,38 @@ DataFrame DataFrame::copy() const
     /** Returns a copy of the DataFrame. */
     DataFrame *new_frame = new DataFrame(this->matrix());
     return *new_frame;
+}
+
+DataFrame DataFrame::sample(int nrow, int seed) const{
+    // Set random seed for reproducibility if specified
+    if (seed == -1){
+        // obtain a random number from hardware
+        std::random_device rd;
+        seed = rd();
+    }else{
+        assert(seed >= 0);
+    }
+    // number of rows to pull
+    if (nrow == -1){
+        nrow = this->length();
+    }else{
+        assert(nrow > 0);
+    }
+    // Seed the generator
+    std::mt19937 eng(seed);
+    // Draw row indices from uniform distribution
+    std::uniform_int_distribution<> distr(0, this->length()-1);
+    // Create new empty DataFrame
+    DataFrame new_frame = DataFrame();
+    // pull random rows (as pointers, not copies) until full
+    while (new_frame.length() < nrow)
+    {
+        // get random row index with replacement
+        int rand_row = distr(eng);
+        // get pointer to that row in original dataframe and store in bootstrap
+        new_frame.addRow(this->row(rand_row));
+    }
+    return new_frame;
 }
 
 DataFrame DataFrame::transpose() const

@@ -194,6 +194,9 @@ void TreeNode::setLeft(TreeNode *left)
     /** 
      * Set pointer to left child.
      */
+    // Unlink any existing child:
+    if ( this->left_ != nullptr ) { this->left_ ->parent_ = nullptr; }
+    // Add then new child and link it:
     this->left_ = left;
     left->parent_ = this;
     TreeNode *root = this->findRoot();
@@ -207,6 +210,9 @@ void TreeNode::setRight(TreeNode *right)
     /** 
      * Set pointer to right child.
      */
+    // Unlink any existing child:
+    if ( this->right_ != nullptr ) { this->right_->parent_ = nullptr; }
+    // Add then new child and link it:
     this->right_ = right;
     right->parent_ = this;
     TreeNode *root = this->findRoot();
