@@ -132,44 +132,44 @@ void DataVector::addValue(double value)
     this->size_ += 1;
 }
 
-DataVector* DataVector::copy() const
+DataVector DataVector::copy() const
 {
     /** Returns a copy of the DataVector. */
     bool new_is_row = this->is_row();
-    DataVector* new_vector = new DataVector(this->vector(),new_is_row);
+    DataVector new_vector = DataVector(this->vector(),new_is_row);
     return new_vector;
 }
 
-DataVector* DataVector::transpose() const
+DataVector DataVector::transpose() const
 {
     /** Returns a pointer to a new vector that is the transpose of this one. */
     bool new_is_row = !this->is_row();
-    DataVector* new_vector = new DataVector(this->vector(),new_is_row);
+    DataVector new_vector = DataVector(this->vector(),new_is_row);
     return new_vector;
 }
 
-std::vector<DataVector*> DataVector::split(double split_threshold, bool equal_goes_left) const
+std::vector<DataVector> DataVector::split(double split_threshold, bool equal_goes_left) const
 {
     /**
      * Retrurns a pair of vectors (value above and below split_threshold).
      * Values equal to the threshold go left if equal_goes_left==true and right otherwise.
      */
-    DataVector* left = new DataVector(this->is_row());
-    DataVector* right = new DataVector(this->is_row());
+    DataVector left = DataVector(this->is_row());
+    DataVector right = DataVector(this->is_row());
     for (int i = 0; i < this->size(); i++)
     {
         double split_val = this->value(i);
         if (split_val<split_threshold) {
-            left->addValue(split_val);
+            left.addValue(split_val);
         } else if (split_val>split_threshold) {
-            right->addValue(split_val);
+            right.addValue(split_val);
         } else if (equal_goes_left) {
-            left->addValue(split_val);
+            left.addValue(split_val);
         } else if (!equal_goes_left) {
-            right->addValue(split_val);
+            right.addValue(split_val);
         }
     }
-    std::vector<DataVector*> results = { left, right };
+    std::vector<DataVector> results = { left, right };
     return results;
 }
 
@@ -307,10 +307,10 @@ DataVector* DataFrame::row(int r) const
     return this->rows_[ r ];
 }
 
-DataVector* DataFrame::col(int c) const
+DataVector DataFrame::col(int c) const
 {
     /** Get given column (constructed on the fly). */
-    DataVector* col = new DataVector(false);  // is_row==false.
+    DataVector col = DataVector(false);  // is_row==false.
     if (c>=0)
     {
         // Index from beginning (positive):
@@ -322,7 +322,7 @@ DataVector* DataFrame::col(int c) const
     }
     for (int i = 0; i < this->length(); i++)
     {
-        col->addValue( this->rows_[i]->value(c) );
+        col.addValue( this->rows_[i]->value(c) );
     }
     return col;
 }
@@ -349,70 +349,70 @@ std::vector<std::vector<double>> DataFrame::matrix() const
     return matrix;
 }
 
-DataVector* DataFrame::min(bool axis) const
+DataVector DataFrame::min(bool axis) const
 {
     /**
      * Returns a vector of the min down columns (axis==0) or across rows (axis==1).
      * Returns a row if axis==0 and a column if axis==1.
      */
-    DataVector *result;
+    DataVector result;
     if (axis==0) {
-        result = new DataVector(true);  // is_row==true.
-        for (int i = 0; i < this->width(); i++) { result->addValue( this->col(i)->min() ); }
+        result = DataVector(true);  // is_row==true.
+        for (int i = 0; i < this->width(); i++) { result.addValue( this->col(i).min() ); }
     } else {
-        result = new DataVector(false);  // is_row==false.
-        for (int i = 0; i < this->length(); i++) { result->addValue( this->row(i)->min() ); }
+        result = DataVector(false);  // is_row==false.
+        for (int i = 0; i < this->length(); i++) { result.addValue( this->row(i)->min() ); }
     }
     return result;
 }
 
-DataVector* DataFrame::max(bool axis) const
+DataVector DataFrame::max(bool axis) const
 {
     /**
      * Returns a vector of the max down columns (axis==0) or across rows (axis==1).
      * Returns a row if axis==0 and a column if axis==1.
      */
-    DataVector *result;
+    DataVector result;
     if (axis==0) {
-        result = new DataVector(true);  // is_row==true.
-        for (int i = 0; i < this->width(); i++) { result->addValue( this->col(i)->max() ); }
+        result = DataVector(true);  // is_row==true.
+        for (int i = 0; i < this->width(); i++) { result.addValue( this->col(i).max() ); }
     } else {
-        result = new DataVector(false);  // is_row==false.
-        for (int i = 0; i < this->length(); i++) { result->addValue( this->row(i)->max() ); }
+        result = DataVector(false);  // is_row==false.
+        for (int i = 0; i < this->length(); i++) { result.addValue( this->row(i)->max() ); }
     }
     return result;
 }
 
-DataVector* DataFrame::sum(bool axis) const
+DataVector DataFrame::sum(bool axis) const
 {
     /**
      * Returns a vector of the means down columns (axis==0) or across rows (axis==1).
      * Returns a row if axis==0 and a column if axis==1.
      */
-    DataVector *result;
+    DataVector result;
     if (axis==0) {
-        result = new DataVector(true);  // is_row==true.
-        for (int i = 0; i < this->width(); i++) { result->addValue( this->col(i)->sum() ); }
+        result = DataVector(true);  // is_row==true.
+        for (int i = 0; i < this->width(); i++) { result.addValue( this->col(i).sum() ); }
     } else {
-        result = new DataVector(false);  // is_row==false.
-        for (int i = 0; i < this->length(); i++) { result->addValue( this->row(i)->sum() ); }
+        result = DataVector(false);  // is_row==false.
+        for (int i = 0; i < this->length(); i++) { result.addValue( this->row(i)->sum() ); }
     }
     return result;
 }
 
-DataVector* DataFrame::mean(bool axis) const
+DataVector DataFrame::mean(bool axis) const
 {
     /**
      * Returns a vector of the means down columns (axis==0) or across rows (axis==1).
      * Returns a row if axis==0 and a column if axis==1.
      */
-    DataVector *result;
+    DataVector result;
     if (axis==0) {
-        result = new DataVector(true);  // is_row==true.
-        for (int i = 0; i < this->width(); i++) { result->addValue( this->col(i)->mean() ); }
+        result = DataVector(true);  // is_row==true.
+        for (int i = 0; i < this->width(); i++) { result.addValue( this->col(i).mean() ); }
     } else {
-        result = new DataVector(false);  // is_row==false.
-        for (int i = 0; i < this->length(); i++) { result->addValue( this->row(i)->mean() ); }
+        result = DataVector(false);  // is_row==false.
+        for (int i = 0; i < this->length(); i++) { result.addValue( this->row(i)->mean() ); }
     }
     return result;
 }
@@ -463,24 +463,24 @@ void DataFrame::addRow(std::vector<double> vector)
     this->addRow(row);
 }
 
-void DataFrame::addCol(DataVector *col)
+void DataFrame::addCol(DataVector col)
 {
     /** Append the values to each row in the list. */
     assert (!this->is_locked());
-    assert (!col->is_row());
-    assert (col->size()==this->length());
+    assert (!col.is_row());
+    assert (col.size()==this->length());
     if (this->rows_.size()==0)
     {
         // If this is the first column, set dimensions:
-        this->length_ = col->size();  // Width will be incremented below.
+        this->length_ = col.size();  // Width will be incremented below.
     } else {
         // Otherwise, make sure it matches existing dimension.
-        assert (col->size()==this->length());
+        assert (col.size()==this->length());
     }
     for (int i = 0; i < this->length(); i++)
     {
         assert (!this->rows_[i]->is_locked());
-        this->rows_[i]->addValue( col->value(i) );
+        this->rows_[i]->addValue( col.value(i) );
     }
     this->width_ += 1;
 }
@@ -489,16 +489,25 @@ void DataFrame::addCol(std::vector<double> vector)
 {
     /** Append the values to each row in the list. */
     // Create DataVector (column):
-    DataVector* col = new DataVector(vector,false);  // is_row==false.
+    DataVector col = DataVector(vector,false);  // is_row==false.
     // Add DataColumn to frame (and perform error-checking):
     this->addCol(col);
 }
 
-DataFrame DataFrame::copy() const
+DataFrame DataFrame::copy(bool deep) const
 {
-    /** Returns a copy of the DataFrame. */
-    DataFrame *new_frame = new DataFrame(this->matrix());
-    return *new_frame;
+    /** Returns a copy of the DataFrame. (If deep=true, also copies each row.) */
+    DataFrame new_frame;
+    if (deep){
+        new_frame = DataFrame(this->matrix());
+    } else {
+        new_frame = DataFrame();
+        for (int i = 0; i < this->length(); i++)
+        {
+            new_frame.addRow(this->row(i));
+        }
+    }
+    return new_frame;
 }
 
 DataFrame DataFrame::sample(int nrow, int seed) const{
@@ -536,38 +545,38 @@ DataFrame DataFrame::sample(int nrow, int seed) const{
 DataFrame DataFrame::transpose() const
 {
     /** Returns a new dataframe that is the transpose of this one. */
-    DataFrame *new_frame = new DataFrame();
+    DataFrame new_frame = DataFrame();
     // Get each column, transpose it, and add it as a row in new frame:
     for (int i = 0; i < this->width(); i++)
     {
-        new_frame->addRow( this->col(i)->transpose() );
+        new_frame.addRow(this->col(i).transpose().vector());
     }
-    return *new_frame;
+    return new_frame;
 }
 
-std::vector<DataFrame*> DataFrame::split(int split_column, double split_threshold, bool equal_goes_left) const
+std::vector<DataFrame> DataFrame::split(int split_column, double split_threshold, bool equal_goes_left) const
 {
     /**
      * Returns a pair of tables (value above and below split_threshold in specified column).
      * Values equal to the threshold go left if equal_goes_left==true and right otherwise.
      */
-    DataFrame* left = new DataFrame();
-    DataFrame* right = new DataFrame();
+    DataFrame left = DataFrame();
+    DataFrame right = DataFrame();
     for (int i = 0; i < this->length(); i++)
     {
         DataVector* row = this->row(i);
         double split_val = row->value(split_column);
         if (split_val<split_threshold) {
-            left->addRow(row);
+            left.addRow(row);
         } else if (split_val>split_threshold) {
-            right->addRow(row);
+            right.addRow(row);
         } else if (equal_goes_left) {
-            left->addRow(row);
+            left.addRow(row);
         } else if (!equal_goes_left) {
-            right->addRow(row);
+            right.addRow(row);
         }
     }
-    std::vector<DataFrame*> results = { left, right };
+    std::vector<DataFrame> results = { left, right };
     return results;
 }
 
@@ -640,8 +649,7 @@ DataFrame::DataFrame(std::vector<std::vector<double>> matrix)
     for (int i = 0; i < matrix.size(); i++)
     {
         assert (matrix[i].size()==this->width());
-        DataVector* row = new DataVector(matrix[i],true);  // is_row==true.
-        this->addRow(row);
+        this->addRow(matrix[i]);
     }
 }
 
