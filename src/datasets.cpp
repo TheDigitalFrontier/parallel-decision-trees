@@ -3,6 +3,8 @@
 #include <math.h>
 #include <cmath>
 #include <iostream>
+#include <fstream>
+#include <sstream>
 #include <iomanip>
 #include <vector>
 #include <random>
@@ -688,4 +690,55 @@ DataLoader::DataLoader(std::vector<std::vector<double>> matrix)
 {
     /** Load dataset from vector of vectors. */
     this->dataframe_ = DataFrame(matrix);
+}
+
+DataLoader::DataLoader(std::string filename)
+{
+    /** Load dataset from CSV file at filename */
+    std::string line;
+    std::ifstream myfile(filename); // Open file as a stream
+
+    // Check whether file is open
+    if (myfile.is_open())
+    {
+        std::vector<std::vector<double>> df = {}; // Initialize a matrix
+        std::vector<double> newrow; // Initialize a vector
+
+        // Grab line from file stream
+        while (std::getline(myfile, line))
+        {
+            newrow = {};
+
+            // Create a string stream for current line
+            std::stringstream line_stream(line);
+
+            // Check whether line stream still has remaining elements
+            while (line_stream.good()) {
+
+                // Save column value as string
+                std::string column_value;
+                std::getline(line_stream, column_value, ',');
+
+                // Convert column value to double
+                double column_val;
+                column_val = std::stod(column_value);
+
+                // Append column value to vector
+                newrow.push_back(column_val);
+
+            }
+
+            // Append vector to matrix
+            df.push_back(newrow);
+
+        }
+
+        // Save matrix as DataFrame
+        this->dataframe_ = df;
+        myfile.close();
+
+    }
+
+    else std::cout << "Unable to open file"; 
+
 }

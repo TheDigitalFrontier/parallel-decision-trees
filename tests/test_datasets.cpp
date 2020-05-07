@@ -8,6 +8,9 @@ int main(){
     DataLoader df_test_loader = DataLoader();  // Load test data.
     DataFrame df_test = df_test_loader.load();
 
+    DataLoader csv_loader = DataLoader("../data/sonar.all-data_temp.csv");  // Load CSV test data.
+    DataFrame csv_test = csv_loader.load();
+
     // Print as print method:
     std::cout << "Print test dataframe (with print method):" << std::endl;
     df_test.print(4);  // Optionally specify colwidth (truncates if too long).
