@@ -43,6 +43,14 @@ int main(){
     std::cout << "Print transpose of data frame:" << std::endl;
     DataFrame test_transpose_df = df_test.transpose();
     std::cout << test_transpose_df << std::endl;
+
+    // Test adding column to empty df:
+    std::cout << "Test adding column to empty df:" << std::endl;
+    DataFrame df = DataFrame();
+    DataVector col = DataVector({1,2,3},false);
+    col.print();
+    df.addCol(&col);
+    df.print();
     
     // Test splitting by threshold (vector):
     std::cout << "Split last column with threshold 0.5 (transposed for better printing):" << std::endl;

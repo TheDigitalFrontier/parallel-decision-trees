@@ -467,16 +467,15 @@ void DataFrame::addCol(DataVector col)
 {
     /** Append the values to each row in the list. */
     assert (!this->is_locked());
-    assert (!col.is_row());
-    assert (col.size()==this->length());
+    assert (!col->is_row());
+    // If dataframe is empty, initialize empty rows:
     if (this->rows_.size()==0)
     {
-        // If this is the first column, set dimensions:
-        this->length_ = col.size();  // Width will be incremented below.
-    } else {
-        // Otherwise, make sure it matches existing dimension.
-        assert (col.size()==this->length());
+        std::vector<double> empty_row = {};
+        for (int i = 0; i < col->size(); i++) { this->addRow(empty_row); }
     }
+    // Verify dimensions:
+    assert (col->size()==this->length());
     for (int i = 0; i < this->length(); i++)
     {
         assert (!this->rows_[i]->is_locked());
@@ -750,3 +749,36 @@ DataLoader::DataLoader(std::string filename)
     else std::cout << "Unable to open file"; 
 
 }
+
+/*
+ * SEED GENERATOR - UTILITES :
+ */
+
+int SeedGenerator::new_seed()
+{
+    /**
+     * Obtain a new non-negative integer seed
+     * (returns -1 if SeedGenerator is in non-deterministic mode).
+     */
+    if (this->meta_seed_==-1) {
+        return -1;
+    } else {
+        return -1;  // PLACEHOLDER.
+    }
+}
+
+/*
+ * SEED GENERATOR - CONSTRUCTORS :
+ */
+
+SeedGenerator::SeedGenerator(int meta_seed)
+{
+    /**
+     * Construct a SeedGenerator to obtain pseudo-random seeds.
+     * Set meta_seed to -1 for non-deterministic sequence,
+     * or non-negative for repeatable sequence.
+     */
+    assert (meta_seed>=-1);
+    this->meta_seed_ = meta_seed;
+}
+
