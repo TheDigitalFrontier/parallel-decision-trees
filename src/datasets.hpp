@@ -127,4 +127,27 @@ public:
 
 };
 
+class SeedGenerator
+{
+    /** An object that generates pseudorandom seeds. */
+
+private:
+
+    // Attributes:
+    int meta_seed_;
+
+    // Utilities:
+
+public:
+
+    // Accessors:
+
+    // Utilities:
+    int new_seed();
+
+    // Constructors:
+    SeedGenerator(int meta_seed=-1);
+
+};
+
 #endif

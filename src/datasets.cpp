@@ -741,3 +741,28 @@ DataLoader::DataLoader(std::string filename)
     else std::cout << "Unable to open file"; 
 
 }
+
+/*
+ * SEED GENERATOR - UTILITES :
+ */
+
+int SeedGenerator::new_seed()
+{
+    return -1;  // PLACEHOLDER.
+}
+
+/*
+ * SEED GENERATOR - CONSTRUCTORS :
+ */
+
+SeedGenerator::SeedGenerator(int meta_seed)
+{
+    /**
+     * Construct a SeedGenerator to obtain pseudo-random seeds.
+     * Set meta_seed to -1 for non-deterministic sequence,
+     * or non-negative for repeatable sequence.
+     */
+    assert (meta_seed>=-1);
+    this->meta_seed_ = meta_seed;
+}
+
