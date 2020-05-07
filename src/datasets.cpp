@@ -748,7 +748,15 @@ DataLoader::DataLoader(std::string filename)
 
 int SeedGenerator::new_seed()
 {
-    return -1;  // PLACEHOLDER.
+    /**
+     * Obtain a new non-negative integer seed
+     * (returns -1 if SeedGenerator is in non-deterministic mode).
+     */
+    if (this->meta_seed_==-1) {
+        return -1;
+    } else {
+        return -1;  // PLACEHOLDER.
+    }
 }
 
 /*
