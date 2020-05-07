@@ -24,6 +24,8 @@ private:
     int num_features_;  // State variable: Number of features in dataset.
     std::vector<TreeNode*> leaves_;  // State variables: List of leaves.
     bool fitted_;  // State variable: Flag indicated whether or not the tree has been trained.
+    int seed_;  // Metaseed for random seed generator.
+    SeedGenerator seed_gen;  // Random seed generator.
 
     // Utilities:
     void fit_(TreeNode* node);  // Helper function to perform fitting recursively.
@@ -37,7 +39,7 @@ public:
     // Constructors:
     DecisionTree(
         DataFrame dataframe, bool regression, std::string loss, int mtry=-1, 
-        int max_height=-1, int max_leaves=-1, int min_obs=-1, double max_prop=-1
+        int max_height=-1, int max_leaves=-1, int min_obs=-1, double max_prop=-1, int seed=-1
     );
 
     // Getters:

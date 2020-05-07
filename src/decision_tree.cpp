@@ -14,7 +14,7 @@
 
 DecisionTree::DecisionTree(
     DataFrame dataframe, bool regression, std::string loss,
-    int mtry, int max_height, int max_leaves, int min_obs, double max_prop
+    int mtry, int max_height, int max_leaves, int min_obs, double max_prop, int seed
 )
 {
     /**
@@ -27,6 +27,7 @@ DecisionTree::DecisionTree(
      *    max_leaves : Stopping condition: max number of leaves (or -1 for no stopping on this condition).
      *    min_obs    : Stopping condition: minimum number of observations in a leaf (or -1 for no stopping on this condition).
      *    max_prop   : Stopping condition: maximum proportion of majority class in a leaf (or -1 for no stopping on this condition).
+     *    seed       : Non-negative seed (for repeatable results), or -1 (for non-deterministic sequence).
     */
     // Check inputs:
     assert ((dataframe.length()>0) and dataframe.width()>0);  // Need at least one row and column (plus class column).
@@ -37,6 +38,7 @@ DecisionTree::DecisionTree(
     assert ((max_prop==-1) or (max_prop<=1));  // Proportion cannot be larger than 1.
     assert ((max_prop==-1) or (!regression));  // Proportion is only defined for classification, not regression.
     assert ((mtry>=-1) and (mtry<dataframe.width()));
+    assert (seed>=-1);  // Verify random seed.
     if (regression) {
         // Regression tree:
         if ( (loss=="mean_squared_error") ) {
@@ -61,6 +63,7 @@ DecisionTree::DecisionTree(
     this->max_leaves_ = max_leaves;
     this->min_obs_ = min_obs;
     this->max_prop_ = max_prop;
+    this->seed_ = seed;
     // Initialize:
     TreeNode *root = new TreeNode(this->dataframe_);
     this->root_ = root;
@@ -68,6 +71,7 @@ DecisionTree::DecisionTree(
     this->num_features_ = dataframe.width()-1;  // Number of columns, excluding label column.
     this->leaves_ = {this->root_};
     this->fitted_ = false;
+    this->seed_gen = SeedGenerator(this->seed_);
 }
 
 // Getters:
