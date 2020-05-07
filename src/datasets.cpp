@@ -467,15 +467,15 @@ void DataFrame::addCol(DataVector col)
 {
     /** Append the values to each row in the list. */
     assert (!this->is_locked());
-    assert (!col->is_row());
+    assert (!col.is_row());
     // If dataframe is empty, initialize empty rows:
     if (this->rows_.size()==0)
     {
         std::vector<double> empty_row = {};
-        for (int i = 0; i < col->size(); i++) { this->addRow(empty_row); }
+        for (int i = 0; i < col.size(); i++) { this->addRow(empty_row); }
     }
     // Verify dimensions:
-    assert (col->size()==this->length());
+    assert (col.size()==this->length());
     for (int i = 0; i < this->length(); i++)
     {
         assert (!this->rows_[i]->is_locked());
