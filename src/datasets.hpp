@@ -123,6 +123,7 @@ public:
     // Constructors:
     DataLoader();  // Load hard-coded dummy dataset.
     DataLoader(std::vector<std::vector<double>> matrix);
+    DataLoader(std::string filename);
 
 };
 
