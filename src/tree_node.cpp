@@ -131,7 +131,7 @@ int TreeNode::getHeight() const
 
 int TreeNode::getDepth() const
 {
-    /** 
+    /**
      * Get distance between this node and the root (where root has depth zero).
      */
     return this->depth_;
@@ -139,7 +139,7 @@ int TreeNode::getDepth() const
 
 TreeNode * TreeNode::getParent() const
 {
-    /** 
+    /**
      * Get pointer to parent node.
      */
     return this->parent_;
@@ -147,7 +147,7 @@ TreeNode * TreeNode::getParent() const
 
 TreeNode * TreeNode::getLeft() const
 {
-    /** 
+    /**
      * Get pointer to left child.
      */
     return this->left_;
@@ -155,7 +155,7 @@ TreeNode * TreeNode::getLeft() const
 
 TreeNode * TreeNode::getRight() const
 {
-    /** 
+    /**
      * Get pointer to right child.
      */
     return this->right_;
@@ -163,7 +163,7 @@ TreeNode * TreeNode::getRight() const
 
 DataFrame TreeNode::getDataFrame() const
 {
-    /** 
+    /**
      * Get dataframe.
      */
     return this->dataframe_;
@@ -171,7 +171,7 @@ DataFrame TreeNode::getDataFrame() const
 
 int TreeNode::getSplitFeature() const
 {
-    /** 
+    /**
      * Get index of splitting column.
      */
     assert (this->hasSplit());
@@ -181,7 +181,7 @@ int TreeNode::getSplitFeature() const
 double TreeNode::getSplitThreshold() const
 {
     /** 
-     * Get numberical splitting thresold.
+     * Get numerical splitting threshold.
      */
     assert (this->hasSplit());
     return this->split_threshold_;
@@ -191,7 +191,7 @@ double TreeNode::getSplitThreshold() const
 
 void TreeNode::setLeft(TreeNode *left)
 {
-    /** 
+    /**
      * Set pointer to left child.
      */
     // Unlink any existing child:
@@ -207,7 +207,7 @@ void TreeNode::setLeft(TreeNode *left)
 
 void TreeNode::setRight(TreeNode *right)
 {
-    /** 
+    /**
      * Set pointer to right child.
      */
     // Unlink any existing child:
@@ -223,7 +223,7 @@ void TreeNode::setRight(TreeNode *right)
 
 void TreeNode::setDataFrame(DataFrame dataframe)
 {
-    /** 
+    /**
      * Set dataframe for splitting.
      */
     this->dataframe_ = dataframe;
@@ -231,7 +231,7 @@ void TreeNode::setDataFrame(DataFrame dataframe)
 
 void TreeNode::setSplitFeature(int split_feature)
 {
-    /** 
+    /**
      * Set index of splitting column.
      */
     this->has_split_ = true;
@@ -240,8 +240,8 @@ void TreeNode::setSplitFeature(int split_feature)
 
 void TreeNode::setSplitThreshold(double split_threshold)
 {
-    /** 
-     * Set numberical splitting thresold.
+    /**
+     * Set numerical splitting threshold.
      */
     this->has_split_ = true;
     this->split_threshold_ = split_threshold;
