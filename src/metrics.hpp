@@ -5,27 +5,6 @@
 #include <string>
 #include <map>
 
-// class Metric
-// {
-//     /**
-//      * 
-//      * */
-// private:
-//     std::string method_; // Metric type
-//     // Utilities
-// public:
-//     // Accessors:
-//     std::string method();
-//     // Metric functions
-//     double accuracy(DataVector targets, DataVector predictions);
-//     double accuracy(DataVector *targets, DataVector *predictions);
-
-//     // Overloaded operators:
-
-//     // Constructors
-//     Metric(std::string method);
-// };
-
 double accuracy(DataVector targets, DataVector predictions);
 double accuracy(DataVector *targets, DataVector *predictions);
 
