@@ -262,20 +262,15 @@ std::pair<int,double> DecisionTree::findBestSplit(TreeNode *node) const
     std::pair<int,double> split;
     // Vector of indices which may or may not be shuffled.
     std::vector<int> shuf_inds(this->num_features_);
+    // Create vector of column indices, equivalent to np.arange(0, df.shape[-1])
+    std::generate(shuf_inds.begin(), shuf_inds.end(), [n = 0] () mutable { return n++; });
     // Shuffle if mtry_ < num_features_ else deterministic
     if (this->mtry_ < this->num_features_) {
-      // Create vector of column indices, equivalent to np.arange(0, df.shape[-1])
-      std::generate(shuf_inds.begin(), shuf_inds.end(), [n = 0] () mutable { return n++; });
       // Set changing random generator (arrow of time is inexorable!)
       srand((unsigned) time(0));
       // Shuffle it:
       for (int i = 0; i < this->num_features_; i++){
           std::swap(shuf_inds[i], shuf_inds[i+(std::rand() % (this->num_features_-i))]);
-      }
-    } else {
-      // Add indices without actually shuffling:
-      for (int i = 0; i < this->mtry_; i++){
-          shuf_inds[i] = i;
       }
     }
     // Initialize temporary variables:
