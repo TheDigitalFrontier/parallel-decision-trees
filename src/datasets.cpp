@@ -618,7 +618,7 @@ std::vector<DataFrame> DataFrame::train_test_split(double test_pct, int seed) co
 
     // validate test size
     assert (test.length()==len_test);
-
+    
     std::vector<DataFrame> results = {train, test};
     return results;
 }

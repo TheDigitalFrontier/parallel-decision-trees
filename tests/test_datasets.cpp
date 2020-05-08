@@ -49,7 +49,7 @@ int main(){
     DataFrame df = DataFrame();
     DataVector col = DataVector({1,2,3},false);
     col.print();
-    df.addCol(&col);
+    df.addCol(col);
     df.print();
     
     // Test splitting by threshold (vector):
