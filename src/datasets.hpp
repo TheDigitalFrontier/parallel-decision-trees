@@ -147,7 +147,11 @@ public:
     int new_seed();
 
     // Constructors:
-    SeedGenerator(int meta_seed=-1);
+    SeedGenerator(int meta_seed_=-1);
+    // Seed generator
+    SeedGenerator(std::mt19937 eng(int meta_seed_));
+    // Define uniform distribution range
+    SeedGenerator(std::uniform_int_distribution<> distr(1, 10000));
 
 };
 

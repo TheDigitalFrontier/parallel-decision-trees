@@ -61,10 +61,10 @@ RandomForest::RandomForest(
     this->max_leaves_ = max_leaves;
     this->min_obs_ = min_obs;
     this->max_prop_ = max_prop;
-    int seed_;  // Metaseed for random seed generator.
+    this->meta_seed_ = seed;  // Metaseed for random seed generator.
     // Initialize:
     this->fitted_ = false;
-    this->seed_gen = SeedGenerator(this->seed_);
+    this->seed_gen = SeedGenerator(this->meta_seed_);
 };
 
 // Getters:
