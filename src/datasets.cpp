@@ -747,37 +747,91 @@ DataLoader::DataLoader(std::vector<std::vector<double>> matrix)
 DataLoader::DataLoader(std::string filename)
 {
     /** Load dataset from CSV file at filename */
-    std::string line;
-    std::ifstream myfile(filename); // Open file as a stream
+
+    std::ifstream temp_file(filename); // Open file as a stream
+    std::vector<std::vector<std::string>> all_columns_str = {}; // Initialize a vector of vectors for categorical values
+    
+    // Temp operationg for creating empty sets within all_columns_str vector
+    if (temp_file.is_open())
+    {   
+        std::string temp_line;
+        std::getline(temp_file, temp_line);
+        std::stringstream temp_stream(temp_line);
+        std::string word;
+        // std::cout << line_stream << std::endl;
+        int col_num = 0;
+        while (temp_stream.good()) 
+        {   
+            std::string temp_str_value;
+            std::getline(temp_stream, temp_str_value, ',');
+            std::vector<std::string> temp_set;
+            all_columns_str.push_back(temp_set);
+            col_num++;
+        }
+        temp_file.close();
+        // std::cout << int(all_columns_str.size()) << std::endl;
+    }
+
+    std::ifstream myfile(filename); // Create stream from given file
+    std::vector<std::vector<double>> df = {}; // Initialize a matrix
+    std::string line; // Initialize a line as a string
 
     // Check whether file is open
     if (myfile.is_open())
     {
-        std::vector<std::vector<double>> df = {}; // Initialize a matrix
-        std::vector<double> newrow; // Initialize a vector
-
+        
         // Grab line from file stream
         while (std::getline(myfile, line))
-        {
-            newrow = {};
-
-            // Create a string stream for current line
-            std::stringstream line_stream(line);
+        {   
+            
+            std::vector<double> newrow = {}; // Start a new row as vector
+            std::stringstream line_stream(line); // Create a string stream for current line
+            
+            int col_num = 0; // Initialize col_num for this row
 
             // Check whether line stream still has remaining elements
-            while (line_stream.good()) {
-
+            while (line_stream.good()) 
+            {
                 // Save column value as string
-                std::string column_value;
-                std::getline(line_stream, column_value, ',');
+                std::string column_str_value;
+                std::getline(line_stream, column_str_value, ',');
 
                 // Convert column value to double
-                double column_val;
-                column_val = std::stod(column_value);
+                double newval;
+                try
+                {   
+                    // Works if the column_str_value is a numerical
+                    newval = std::stod(column_str_value);
+                }
+                // In case of invalid_argument error
+                catch(const std::invalid_argument&)
+                {
+                    bool found = false;
+                    // Loop through all elements in the corresponding vector
+                    for (std::size_t index = 0; index < all_columns_str[col_num].size(); ++index) 
+                    {   
+                        // If value is found in the corresponding vector
+                        if (all_columns_str[col_num][index] == column_str_value)
+                        {
+                            newval = index;
+                            found = true;
+                        }
+                    }
+
+                    // If value is not found in the corresponding vector, add to it
+                    if (!found)
+                    {
+                        newval = all_columns_str[col_num].size();
+                        all_columns_str[col_num].push_back(column_str_value);
+                    }
+
+                }
 
                 // Append column value to vector
-                newrow.push_back(column_val);
+                newrow.push_back(newval);
 
+                // Increment column number before access next element in the stream
+                col_num++;
             }
 
             // Append vector to matrix
