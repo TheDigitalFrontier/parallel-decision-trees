@@ -34,7 +34,6 @@ RandomForest::RandomForest(
     assert ((max_prop==-1) or (max_prop<=1));  // Proportion cannot be larger than 1.
     assert ((max_prop==-1) or (!regression));  // Proportion is only defined for classification, not regression.
     assert ((mtry>=-1) and (mtry<dataframe.width()));
-    assert (seed>=-1);  // Verify random seed.
     if (regression) {
         // Regression tree:
         if ( (loss=="mean_squared_error") ) {

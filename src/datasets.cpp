@@ -508,8 +508,6 @@ DataFrame DataFrame::sample(int nrow, int seed, bool replace) const{
         // obtain a random number from hardware
         std::random_device rd;
         seed = rd();
-    }else{
-        assert(seed >= 0);
     }
     // number of rows to pull
     if (nrow == -1){
@@ -824,7 +822,6 @@ SeedGenerator::SeedGenerator(int meta_seed)
      * Set meta_seed to -1 for non-deterministic sequence,
      * or non-negative for repeatable sequence.
      */
-    assert(meta_seed >= -1);
     this->meta_seed_ = meta_seed;
     // seed random generator with meta_seed, if -1 it's not used by new_seed() anyway
     std::mt19937 rand_eng(this->meta_seed_);
