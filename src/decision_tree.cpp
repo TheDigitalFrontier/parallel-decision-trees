@@ -56,9 +56,10 @@ DecisionTree::DecisionTree(
     }
     // Set properties constructor from inputs:
     this->dataframe_ = dataframe;
+    this->num_features_ = dataframe.width()-1;  // Number of columns, excluding label column.
     this->regression_ = regression;
     this->loss_ = loss;
-    this->mtry_ = mtry;
+    this->mtry_ = (mtry==-1) ? this->num_features_ : mtry
     this->max_height_ = max_height;
     this->max_leaves_ = max_leaves;
     this->min_obs_ = min_obs;
@@ -68,7 +69,6 @@ DecisionTree::DecisionTree(
     TreeNode *root = new TreeNode(this->dataframe_);
     this->root_ = root;
     this->num_leaves_ = 1;
-    this->num_features_ = dataframe.width()-1;  // Number of columns, excluding label column.
     this->leaves_ = {this->root_};
     this->fitted_ = false;
     this->seed_gen = SeedGenerator(this->seed_);
@@ -260,37 +260,30 @@ std::pair<int,double> DecisionTree::findBestSplit(TreeNode *node) const
     // Must have enough data to split
     assert (dataframe.length()>1);
     std::pair<int,double> split;
-    // How many features to try.
-    int m; 
     // Vector of indices which may or may not be shuffled.
-    std::vector<int> shuf_inds(this->num_features_); 
-    if (this->mtry_==-1){
-        // Deterministic:
-        m = this->num_features_;
-        // Add indices without actually shuffling:
-        for (int i = 0; i < this->num_features_; i++){
-            shuf_inds[i] = i;
-        }
+    std::vector<int> shuf_inds(this->num_features_);
+    // Shuffle if mtry_ < num_features_ else deterministic
+    if (this->mtry_ < this->num_features_) {
+      // Create vector of column indices, equivalent to np.arange(0, df.shape[-1])
+      std::generate(shuf_inds.begin(), shuf_inds.end(), [n = 0] () mutable { return n++; });
+      // Set changing random generator (arrow of time is inexorable!)
+      srand((unsigned) time(0));
+      // Shuffle it:
+      for (int i = 0; i < this->num_features_; i++){
+          std::swap(shuf_inds[i], shuf_inds[i+(std::rand() % (this->num_features_-i))]);
+      }
     } else {
-        // Randomly select mtry features (or sqrt(n_features) if mtry==0):
-        m = (this->mtry_==0) ? int(std::floor(sqrt(this->num_features_))) : this->mtry_;
-        // Pre-allocate vector of column indices
-        std::vector<int> shuf_inds(this->num_features_);
-        // Create vector of column indices, equivalent to np.arange(0, df.shape[-1])
-        std::generate(shuf_inds.begin(), shuf_inds.end(), [n = 0] () mutable { return n++; });
-        // Set changing random generator (arrow of time is inexorable!)
-        srand((unsigned) time(0));
-        // Shuffle it:
-        for (int i = 0; i < this->num_features_; i++){
-            std::swap(shuf_inds[i], shuf_inds[i+(std::rand() % (this->num_features_-i))]);
-        }
+      // Add indices without actually shuffling:
+      for (int i = 0; i < this->mtry_; i++){
+          shuf_inds[i] = i;
+      }
     }
     // Initialize temporary variables:
     bool first_pass = true;
     int best_column, col;
     double best_threshold, best_loss, loss;
     // Explore possible splits:
-    for (int i = 0; i < m; i++){
+    for (int i = 0; i < this->mtry_; i++){
         col = shuf_inds[i];
         std::vector<double> col_vals = dataframe.col(col).vector();
         // Remove duplicates:
@@ -299,7 +292,7 @@ std::pair<int,double> DecisionTree::findBestSplit(TreeNode *node) const
         // For each unique column value, try that col and val as split, get score:
         for (int j = 0; j < col_vals.size()-1; j++){
             // Don't split on last value (because it will produce empty `right`).
-            double val = col_vals[j]; 
+            double val = col_vals[j];
             // But splitting on first value works as <= means left won't be empty
             // Split dataset using current column and threshold, score, and update if best:
             // equal_goes_left=true.
@@ -314,7 +307,7 @@ std::pair<int,double> DecisionTree::findBestSplit(TreeNode *node) const
         }
     }
     // Placeholder value should have been replaced.
-    assert (best_column!=-1); 
+    assert (best_column!=-1);
     split = std::make_pair(best_column, best_threshold);
     return split;
 }
@@ -328,9 +321,9 @@ void DecisionTree::fit_(TreeNode* node)
         return;  // Prune if there is only one class left.
     } else if ( dataframe.length()<2 ) {
         return;  // Prune if there is not enough data to split.
-    } else if ( (this->max_height_!=-1) and (node->getDepth()+1>=this->max_height_) ) { 
+    } else if ( (this->max_height_!=-1) and (node->getDepth()+1>=this->max_height_) ) {
         return;  // Prune if adding children would exceed max depth:
-    } else if ( (this->max_leaves_!=-1) and (this->num_leaves_+1>=this->max_leaves_) ) { 
+    } else if ( (this->max_leaves_!=-1) and (this->num_leaves_+1>=this->max_leaves_) ) {
         return;  // Prune if adding children would exceed max leaves:
     } else if ( (this->min_obs_!=-1) and (dataframe.length()<=this->min_obs_) ) {
         return;  // Prune if node is below minimum leave size.
