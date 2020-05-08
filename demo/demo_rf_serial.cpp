@@ -10,7 +10,7 @@ int main(){
     int ntree = 10;
 
     std::cout << "Load SONAR dataset:" << std::endl;
-    DataLoader csv_loader = DataLoader("../data/sonar.all-data_temp.csv");
+    DataLoader csv_loader = DataLoader("../data/sonar.all-data.numerical.csv");
     DataFrame df_sonar = csv_loader.load();
 
     std::cout << "Rows: " << df_sonar.length() << ", Cols: " << df_sonar.width() << std::endl;
