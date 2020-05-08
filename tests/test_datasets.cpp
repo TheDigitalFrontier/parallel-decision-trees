@@ -86,4 +86,10 @@ int main(){
     std::cout << "Bootstrap and print dataframe:" << std::endl;
     DataFrame df_boot = df_test.sample(5, 1337);
     df_boot.print(4);
+
+    // Testing train-test split
+    std::cout << "Train-test split:" << std::endl;
+    std::vector<DataFrame> train_test_vector = df_test.train_test_split(0.2, 1729);
+    std::cout << "Train:\n" << train_test_vector[0] << std::endl;
+    std::cout << "Test:\n" << train_test_vector[1] << std::endl;
 };

@@ -579,40 +579,46 @@ std::vector<DataFrame> DataFrame::split(int split_column, double split_threshold
     return results;
 }
 
-std::vector<DataFrame> DataFrame::train_test_split(double split_pct) const
+std::vector<DataFrame> DataFrame::train_test_split(double split_pct, int seed) const
 {
     /**
      * Returns a pair of train/test tables (sized using split_pct).
      * Calculates table sizes from val_split percent.
      */
 
-    assert (split_pct >= 0 && split_pct <= 1)
+    assert (split_pct >= 0 && split_pct <= 1);
 
-    // length of dataframe. assert non-empty.
+    // length of dataframe. assert non-empty
+    int nrows;
     nrows = this->length();
     assert(nrows > 0);
 
     // length of train dataframe
-    int len_train = int (nrows * split_pct) // Always rounds down
+    int len_train = int (nrows * split_pct); // Always rounds down
 
     // length of test dataframe
-    int len_test = int (nrows - len_train)
+    int len_test = int (nrows - len_train);
+
+    // Sample current dataframe
+    DataFrame new_frame = DataFrame();
+    new_frame = this->sample(nrows, seed);
 
     // initialize new dataframes
     DataFrame left = DataFrame();  // Train
     DataFrame right = DataFrame(); // Test
 
     for (int i = 0; i < nrows; i++)
-    {
-        DataVector* row = this->row(i);
+    {   
+        DataVector* row = new_frame.row(i);
         if (i < len_train) {
             left.addRow(row);
-        } else if (i >= len_train) {
+        } else if (i >= len_train) {   
             right.addRow(row);
+        }
     }
 
     // validate test size
-    assert (right.size()==len_test);
+    assert (right.length()==len_test);
 
     std::vector<DataFrame> results = { left, right };
     return results;
