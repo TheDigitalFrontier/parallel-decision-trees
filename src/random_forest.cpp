@@ -7,7 +7,7 @@
 
 // Constructors:
 RandomForest::RandomForest(
-    DataFrame dataframe, int num_trees, bool regression, std::string loss, int mtry, 
+    DataFrame dataframe, int num_trees, bool regression, std::string loss, int mtry,
     int max_height, int max_leaves, int min_obs, double max_prop, int seed
 )
 {
@@ -60,7 +60,7 @@ RandomForest::RandomForest(
     this->max_leaves_ = max_leaves;
     this->min_obs_ = min_obs;
     this->max_prop_ = max_prop;
-    int seed_;  // Metaseed for random seed generator.
+    this->seed_ = seed;  // Metaseed for random seed generator.
     // Initialize:
     this->num_features_ = this->dataframe_.width()-1;  // Number of columns, excluding label column.
     this->fitted_ = false;

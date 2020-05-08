@@ -261,9 +261,9 @@ std::pair<int,double> DecisionTree::findBestSplit(TreeNode *node) const
     assert (dataframe.length()>1);
     std::pair<int,double> split;
     // How many features to try.
-    int m; 
+    int m;
     // Vector of indices which may or may not be shuffled.
-    std::vector<int> shuf_inds(this->num_features_); 
+    std::vector<int> shuf_inds(this->num_features_);
     if (this->mtry_==-1){
         // Deterministic:
         m = this->num_features_;
@@ -299,7 +299,7 @@ std::pair<int,double> DecisionTree::findBestSplit(TreeNode *node) const
         // For each unique column value, try that col and val as split, get score:
         for (int j = 0; j < col_vals.size()-1; j++){
             // Don't split on last value (because it will produce empty `right`).
-            double val = col_vals[j]; 
+            double val = col_vals[j];
             // But splitting on first value works as <= means left won't be empty
             // Split dataset using current column and threshold, score, and update if best:
             // equal_goes_left=true.
@@ -314,7 +314,7 @@ std::pair<int,double> DecisionTree::findBestSplit(TreeNode *node) const
         }
     }
     // Placeholder value should have been replaced.
-    assert (best_column!=-1); 
+    assert (best_column!=-1);
     split = std::make_pair(best_column, best_threshold);
     return split;
 }
@@ -328,9 +328,9 @@ void DecisionTree::fit_(TreeNode* node)
         return;  // Prune if there is only one class left.
     } else if ( dataframe.length()<2 ) {
         return;  // Prune if there is not enough data to split.
-    } else if ( (this->max_height_!=-1) and (node->getDepth()+1>=this->max_height_) ) { 
+    } else if ( (this->max_height_!=-1) and (node->getDepth()+1>=this->max_height_) ) {
         return;  // Prune if adding children would exceed max depth:
-    } else if ( (this->max_leaves_!=-1) and (this->num_leaves_+1>=this->max_leaves_) ) { 
+    } else if ( (this->max_leaves_!=-1) and (this->num_leaves_+1>=this->max_leaves_) ) {
         return;  // Prune if adding children would exceed max leaves:
     } else if ( (this->min_obs_!=-1) and (dataframe.length()<=this->min_obs_) ) {
         return;  // Prune if node is below minimum leave size.
