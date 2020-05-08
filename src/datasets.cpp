@@ -806,7 +806,6 @@ int SeedGenerator::new_seed()
      * (returns -1 if SeedGenerator is in non-deterministic mode).
      */
     if (this->meta_seed_==-1) {
-        return -1;
         std::random_device rd;
         return int(rd());
     } else {
