@@ -56,9 +56,10 @@ DecisionTree::DecisionTree(
     }
     // Set properties constructor from inputs:
     this->dataframe_ = dataframe;
+    this->num_features_ = dataframe.width()-1;  // Number of columns, excluding label column.
     this->regression_ = regression;
     this->loss_ = loss;
-    this->mtry_ = mtry;
+    this->mtry_ = (mtry==-1) ? this->num_features_ : mtry
     this->max_height_ = max_height;
     this->max_leaves_ = max_leaves;
     this->min_obs_ = min_obs;
@@ -68,7 +69,6 @@ DecisionTree::DecisionTree(
     TreeNode *root = new TreeNode(this->dataframe_);
     this->root_ = root;
     this->num_leaves_ = 1;
-    this->num_features_ = dataframe.width()-1;  // Number of columns, excluding label column.
     this->leaves_ = {this->root_};
     this->fitted_ = false;
     this->seed_gen = SeedGenerator(this->meta_seed_);
@@ -260,37 +260,25 @@ std::pair<int,double> DecisionTree::findBestSplit(TreeNode *node) const
     // Must have enough data to split
     assert (dataframe.length()>1);
     std::pair<int,double> split;
-    // How many features to try.
-    int m;
     // Vector of indices which may or may not be shuffled.
     std::vector<int> shuf_inds(this->num_features_);
-    if (this->mtry_==-1){
-        // Deterministic:
-        m = this->num_features_;
-        // Add indices without actually shuffling:
-        for (int i = 0; i < this->num_features_; i++){
-            shuf_inds[i] = i;
-        }
-    } else {
-        // Randomly select mtry features (or sqrt(n_features) if mtry==0):
-        m = (this->mtry_==0) ? int(std::floor(sqrt(this->num_features_))) : this->mtry_;
-        // Pre-allocate vector of column indices
-        std::vector<int> shuf_inds(this->num_features_);
-        // Create vector of column indices, equivalent to np.arange(0, df.shape[-1])
-        std::generate(shuf_inds.begin(), shuf_inds.end(), [n = 0] () mutable { return n++; });
-        // Set changing random generator (arrow of time is inexorable!)
-        srand((unsigned) time(0));
-        // Shuffle it:
-        for (int i = 0; i < this->num_features_; i++){
-            std::swap(shuf_inds[i], shuf_inds[i+(std::rand() % (this->num_features_-i))]);
-        }
+    // Create vector of column indices, equivalent to np.arange(0, df.shape[-1])
+    std::generate(shuf_inds.begin(), shuf_inds.end(), [n = 0] () mutable { return n++; });
+    // Shuffle if mtry_ < num_features_ else deterministic
+    if (this->mtry_ < this->num_features_) {
+      // Set changing random generator (arrow of time is inexorable!)
+      srand((unsigned) time(0));
+      // Shuffle it:
+      for (int i = 0; i < this->num_features_; i++){
+          std::swap(shuf_inds[i], shuf_inds[i+(std::rand() % (this->num_features_-i))]);
+      }
     }
     // Initialize temporary variables:
     bool first_pass = true;
     int best_column, col;
     double best_threshold, best_loss, loss;
     // Explore possible splits:
-    for (int i = 0; i < m; i++){
+    for (int i = 0; i < this->mtry_; i++){
         col = shuf_inds[i];
         std::vector<double> col_vals = dataframe.col(col).vector();
         // Remove duplicates:

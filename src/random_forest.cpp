@@ -52,17 +52,17 @@ RandomForest::RandomForest(
     }
     // Set properties from inputs:
     this->dataframe_ = dataframe;
+    this->num_features_ = dataframe.width()-1;  // Number of columns, excluding label column.
     this->num_trees_ = num_trees;
     this->regression_ = regression;
     this->loss_ = loss;
-    this->mtry_ = mtry;
+    this->mtry_ = (mtry==-1) ? int(std::floor(sqrt(this->num_features_))) : mtry
     this->max_height_ = max_height;
     this->max_leaves_ = max_leaves;
     this->min_obs_ = min_obs;
     this->max_prop_ = max_prop;
     this->meta_seed_ = seed;  // Metaseed for random seed generator.
     // Initialize:
-    this->num_features_ = this->dataframe_.width()-1;  // Number of columns, excluding label column.
     this->fitted_ = false;
     this->seed_gen = SeedGenerator(this->meta_seed_);
 };
@@ -115,7 +115,7 @@ void RandomForest::fit()
 {
     /** Fit RandomForest with given parameters. */
     this->trees_ = {};
-    for (int i; i < this->num_trees_; i++)
+    for (int i = 0; i < this->num_trees_; i++)
     {
         int data_seed = this->seed_gen.new_seed();
         int tree_seed = this->seed_gen.new_seed();

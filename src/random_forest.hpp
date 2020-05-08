@@ -30,8 +30,9 @@ public:
 
     // Constructors:
     RandomForest(
-        DataFrame dataframe, int num_trees, bool regression, std::string loss, int mtry=-1, 
-        int max_height=-1, int max_leaves=-1, int min_obs=-1, double max_prop=-1, int seed=-1
+        DataFrame dataframe, int num_trees, bool regression=false,
+        std::string loss="gini_impurity", int mtry=-1, int max_height=-1,
+        int max_leaves=-1, int min_obs=-1, double max_prop=-1, int seed=-1
     );
 
     // Getters:
