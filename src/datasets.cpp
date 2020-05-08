@@ -610,7 +610,7 @@ std::vector<DataFrame> DataFrame::train_test_split(double test_pct, int seed) co
     DataFrame train = DataFrame();  // Train
     DataFrame test = DataFrame(); // Test
     // pop shuffled observations until both sets full
-    for (int i = 0; i < shuffled.length(); i++){   
+    for (int i = 0; i < shuffled.length(); i++){
         if(i < len_train){
             train.addRow(shuffled.row(i));
         }else{
@@ -804,10 +804,17 @@ int SeedGenerator::new_seed()
      * Obtain a new non-negative integer seed
      * (returns -1 if SeedGenerator is in non-deterministic mode).
      */
+    // Obtain random number from hardware
+    std::random_device rd;
+    // Seed generator
+    std::mt19937 eng(rd());
+    // Define uniform distribution range
+    std::uniform_int_distribution<> distr(1, 10000);
+
     if (this->meta_seed_==-1) {
         return -1;
     } else {
-        return -1;  // PLACEHOLDER.
+        return distr(eng);
     }
 }
 
