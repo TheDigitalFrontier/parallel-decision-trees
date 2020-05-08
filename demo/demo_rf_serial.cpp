@@ -39,6 +39,7 @@ int main(){
 
     // Fit RF on train and evalute on test, with lower accuracy
     RandomForest rf2 = RandomForest(df_train,ntree,false,"gini_impurity",-1,-1,-1,-1,-1,1337);
+    rf2.fit();
 
     std::cout << "RF2 accuracy train: " << accuracy(df_train.col(-1), rf2.predict(&df_train)) << std::endl;
     std::cout << "RF2 accuracy test: " << accuracy(df_test.col(-1), rf2.predict(&df_test)) << std::endl;
