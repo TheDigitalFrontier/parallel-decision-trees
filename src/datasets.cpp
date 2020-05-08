@@ -156,8 +156,7 @@ std::vector<DataVector> DataVector::split(double split_threshold, bool equal_goe
      */
     DataVector left = DataVector(this->is_row());
     DataVector right = DataVector(this->is_row());
-    for (int i = 0; i < this->size(); i++)
-    {
+    for (int i = 0; i < this->size(); i++){
         double split_val = this->value(i);
         if (split_val<split_threshold) {
             left.addValue(split_val);
@@ -169,8 +168,7 @@ std::vector<DataVector> DataVector::split(double split_threshold, bool equal_goe
             right.addValue(split_val);
         }
     }
-    std::vector<DataVector> results = { left, right };
-    return results;
+    return std::vector<DataVector> {left, right};
 }
 
 std::string DataVector::to_string(bool new_line, int col_width) const
@@ -180,40 +178,34 @@ std::string DataVector::to_string(bool new_line, int col_width) const
      * Truncated or padded to the specified column width.
      */
     std::string out = "";
-    for (int i = 0; i < this->size(); i++)
-    {
+    for (int i = 0; i < this->size(); i++){
         out += "| ";
         double value = this->value(i);
         std::string pad,val = "";
         val = std::to_string(value);
         // Add space to align negative sign:
-        if (value>=0)
-        {
+        if (value>=0){
             val = ' '+val;
         }
         // Truncate if too long:
-        if (val.length()>col_width)
-        {
+        if (val.length()>col_width){
             val = val.substr(0,col_width);
         }
         // Pad if too short:
-        if (val.length()<col_width)
-        {
+        if (val.length()<col_width){
             pad.append(col_width-val.length(),' ');
         }
         // Append padding and value:
         out += pad;
         out += val;
-        if ((!this->is_row()) or (i==this->size()-1))
-        {
+        if ((!this->is_row()) or (i==this->size()-1)){
             out += " |\n";
         } else {
             out += ' ';
         }
     }
     // Add (optional) extra newline character:
-    if (new_line)
-    {
+    if (new_line){
         out += '\n';
     }
     return out;
@@ -585,42 +577,33 @@ std::vector<DataFrame> DataFrame::train_test_split(double test_pct, int seed) co
      * Returns a pair of train/test tables (sized using test_pct).
      * Calculates table sizes from val_split percent.
      */
-
     assert (test_pct >= 0.0 && test_pct <= 1.0);
-
     // length of dataframe. assert non-empty
     int nrows = this->length();
     assert(nrows > 0);
-
     // length of test dataframe, ensure at least one observation
     int len_test = std::max(1, int(nrows * test_pct));
-
     // length of train dataframe
     int len_train = int(nrows - len_test);
-    
     // Sample current dataframe
     DataFrame new_frame = DataFrame();
     new_frame = this->sample(nrows, seed);
-
     // initialize new dataframes
     DataFrame train = DataFrame();  // Train
     DataFrame test = DataFrame(); // Test
-
-    for (int i = 0; i < nrows; i++)
-    {   
+    // 
+    for (int i = 0; i < nrows; i++){   
         DataVector* row = new_frame.row(i);
-        if (i < len_train) {
+        if(i < len_train){
             train.addRow(row);
-        } else if (i >= len_train) {   
+        }else if(i >= len_train){
             test.addRow(row);
         }
     }
-
     // validate test size
     assert (test.length()==len_test);
-    
-    std::vector<DataFrame> results = {train, test};
-    return results;
+    // return as vector of datasets
+    return std::vector<DataFrame> {train, test};
 }
 
 std::string DataFrame::to_string(bool new_line, int col_width) const
