@@ -257,10 +257,13 @@ std::pair<int,double> DecisionTree::findBestSplit(TreeNode *node) const
 {
     /** Find best split at this node. */
     DataFrame dataframe = node->getDataFrame();
-    assert (dataframe.length()>1);  // Must have enough data to split.
+    // Must have enough data to split
+    assert (dataframe.length()>1);
     std::pair<int,double> split;
-    int m;  // How many features to try.
-    std::vector<int> shuf_inds(this->num_features_);  // Vector of indices which may or may not be shuffled.
+    // How many features to try.
+    int m; 
+    // Vector of indices which may or may not be shuffled.
+    std::vector<int> shuf_inds(this->num_features_); 
     if (this->mtry_==-1){
         // Deterministic:
         m = this->num_features_;
@@ -295,25 +298,24 @@ std::pair<int,double> DecisionTree::findBestSplit(TreeNode *node) const
         col_vals.erase(std::unique(col_vals.begin(), col_vals.end()), col_vals.end());
         // For each unique column value, try that col and val as split, get score:
         for (int j = 0; j < col_vals.size()-1; j++){
-            double val = col_vals[j];  // Don't split on last value (because it will produce empty `right`).
+            // Don't split on last value (because it will produce empty `right`).
+            double val = col_vals[j]; 
             // But splitting on first value works as <= means left won't be empty
             // Split dataset using current column and threshold, score, and update if best:
-            std::vector<DataFrame> dataset_splits = dataframe.split(col, val, true); // equal_goes_left=true.
+            // equal_goes_left=true.
+            std::vector<DataFrame> dataset_splits = dataframe.split(col, val, true);
             loss = this->calculateSplitLoss(&dataset_splits[0],&dataset_splits[1]);
-            // std::cout << "    " << col << ", " << val << ", " << loss << std::endl;  // TEST
             if ((first_pass) or (loss<best_loss)){
                 first_pass = false;
                 best_column = col;
                 best_threshold = val;
                 best_loss = loss;
-                // std::cout << " --> " << best_column << ", " << best_threshold << ", " << best_loss << std::endl;  // TEST
             }
         }
     }
-    // Return result:
-    assert (best_column!=-1);  // Placeholder value should have been replaced.
-    split = std::make_pair(best_column,best_threshold);
-    // std::cout << "===> " << best_column << ", " << best_threshold << ", " << best_loss << std::endl;  // TEST
+    // Placeholder value should have been replaced.
+    assert (best_column!=-1); 
+    split = std::make_pair(best_column, best_threshold);
     return split;
 }
 
