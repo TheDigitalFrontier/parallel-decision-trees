@@ -147,7 +147,7 @@ public:
     int new_seed();
 
     // Constructors:
-    SeedGenerator(int meta_seed=-1);
+    SeedGenerator(int meta_seed_=-1);
 
 };
 

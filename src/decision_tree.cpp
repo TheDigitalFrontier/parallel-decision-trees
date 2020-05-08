@@ -63,7 +63,7 @@ DecisionTree::DecisionTree(
     this->max_leaves_ = max_leaves;
     this->min_obs_ = min_obs;
     this->max_prop_ = max_prop;
-    this->seed_ = seed;
+    this->meta_seed_ = seed;
     // Initialize:
     TreeNode *root = new TreeNode(this->dataframe_);
     this->root_ = root;
@@ -71,7 +71,7 @@ DecisionTree::DecisionTree(
     this->num_features_ = dataframe.width()-1;  // Number of columns, excluding label column.
     this->leaves_ = {this->root_};
     this->fitted_ = false;
-    this->seed_gen = SeedGenerator(this->seed_);
+    this->seed_gen = SeedGenerator(this->meta_seed_);
 }
 
 // Getters:
