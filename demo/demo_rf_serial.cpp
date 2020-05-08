@@ -18,15 +18,12 @@ int main(){
     // Extract targets
     DataVector targets = df_sonar.col(-1);
     std::cout << "Targets size: " << targets.size() << std::endl;
-    std::cout << targets << std::endl;
 
     // Fit RF on full dataset and verify accuracy is high on seen data
     std::cout << "Build and fit RandomForest binary classifier on Sonar" << std::endl;
 
     RandomForest rf1 = RandomForest(df_sonar,ntree,false,"gini_impurity",-1,-1,-1,-1,-1,1337);
     rf1.fit();
-
-    std::cout << "Tree fitted: " << rf1.isFitted() << std::endl;
 
     DataVector preds = rf1.predict(&df_sonar);
     std::cout << "Predictions size: " << preds.size() << std::endl;
