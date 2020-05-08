@@ -8,7 +8,7 @@
 #include <assert.h>
 
 /**
- * 
+ * Calculate classification accuracy of a DataVector of predictions compared to a DataVector of targets
  **/
 double accuracy(DataVector targets, DataVector predictions){
     assert(targets.size() == predictions.size());
@@ -20,3 +20,4 @@ double accuracy(DataVector targets, DataVector predictions){
     }
     return (double)correct / targets.size();
 }
+
