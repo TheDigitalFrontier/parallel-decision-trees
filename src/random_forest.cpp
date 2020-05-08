@@ -115,7 +115,7 @@ void RandomForest::fit()
 {
     /** Fit RandomForest with given parameters. */
     this->trees_ = {};
-    for (int i; i < this->num_trees_; i++)
+    for (int i = 0; i < this->num_trees_; i++)
     {
         int data_seed = this->seed_gen.new_seed();
         int tree_seed = this->seed_gen.new_seed();
