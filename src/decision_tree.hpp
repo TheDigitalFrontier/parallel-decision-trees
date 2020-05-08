@@ -24,7 +24,7 @@ private:
     int num_features_;  // State variable: Number of features in dataset.
     std::vector<TreeNode*> leaves_;  // State variables: List of leaves.
     bool fitted_;  // State variable: Flag indicated whether or not the tree has been trained.
-    int seed_;  // Metaseed for random seed generator.
+    int meta_seed_;  // Metaseed for random seed generator.
     SeedGenerator seed_gen;  // Random seed generator.
 
     // Utilities:

@@ -56,7 +56,7 @@ RandomForest::RandomForest(
     this->num_trees_ = num_trees;
     this->regression_ = regression;
     this->loss_ = loss;
-    this->mtry_ = (mtry==-1) ? int(std::floor(sqrt(this->num_features_))) : mtry
+    this->mtry_ = (mtry==-1) ? int(std::floor(sqrt(this->num_features_))) : mtry;
     this->max_height_ = max_height;
     this->max_leaves_ = max_leaves;
     this->min_obs_ = min_obs;

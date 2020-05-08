@@ -23,7 +23,7 @@ private:
     int max_prop_;  // Stopping condition: minimum proportion of majority class in a leaf.
     int num_features_;  // State variable: Number of features in dataset.
     bool fitted_;  // State variable: Flag indicated whether or not the random forest has been trained.
-    int seed_;  // Metaseed for random seed generator.
+    int meta_seed_;  // Metaseed for random seed generator.
     SeedGenerator seed_gen;  // Random seed generator.
 
 public:

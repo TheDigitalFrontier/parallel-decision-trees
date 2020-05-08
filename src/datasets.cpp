@@ -807,8 +807,10 @@ int SeedGenerator::new_seed()
      */
     if (this->meta_seed_==-1) {
         return -1;
+        std::random_device rd;
+        return int(rd());
     } else {
-        return this->distr(this->eng);
+        return this->distr_(this->eng_);
     }
 }
 
@@ -823,6 +825,13 @@ SeedGenerator::SeedGenerator(int meta_seed)
      * Set meta_seed to -1 for non-deterministic sequence,
      * or non-negative for repeatable sequence.
      */
-    assert (meta_seed>=-1);
-    this->meta_seed_ = meta_seed;
+    if (meta_seed == -1){
+        std::random_device rd;
+        this->meta_seed_ = int(rd());
+    }else{
+        assert(meta_seed >= 0);
+        this->meta_seed_ = meta_seed;
+    }
+    std::mt19937 rand_eng(this->meta_seed_);
+    this->eng_ = rand_eng;
 }

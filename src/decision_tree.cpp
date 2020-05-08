@@ -59,7 +59,7 @@ DecisionTree::DecisionTree(
     this->num_features_ = dataframe.width()-1;  // Number of columns, excluding label column.
     this->regression_ = regression;
     this->loss_ = loss;
-    this->mtry_ = (mtry==-1) ? this->num_features_ : mtry
+    this->mtry_ = (mtry==-1) ? this->num_features_ : mtry;
     this->max_height_ = max_height;
     this->max_leaves_ = max_leaves;
     this->min_obs_ = min_obs;
