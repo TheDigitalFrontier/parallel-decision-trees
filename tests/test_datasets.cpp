@@ -1,7 +1,5 @@
 #include <iostream>
 #include "../src/datasets.cpp"
-#include <random>
-
 
 int main(){
 
@@ -49,7 +47,7 @@ int main(){
     DataFrame df = DataFrame();
     DataVector col = DataVector({1,2,3},false);
     col.print();
-    df.addCol(&col);
+    df.addCol(col);
     df.print();
     
     // Test splitting by threshold (vector):
@@ -83,13 +81,20 @@ int main(){
     std::cout << df_test.mean(1).to_string();
 
     // Bootstrap a sample and print, optionally specifying 5 rows and seed 1337
-    std::cout << "Bootstrap and print dataframe:" << std::endl;
+    std::cout << "Bootstrap small sample with replacement:" << std::endl;
     DataFrame df_boot = df_test.sample(5, 1337);
     df_boot.print(4);
+    // Bootstrap without replacement
+    std::cout << "Bootstrap full without replacement:" << std::endl;
+    // default nrow-1 gets same sample size, 
+    // but use nrow >> length to verify it gets capped at length when not replacing
+    DataFrame df_boot_without = df_test.sample(1000000, 42, false);
+    df_boot_without.print(4);
+    assert(df_boot_without.length() == df_test.length());
 
     // Testing train-test split
     std::cout << "Train-test split:" << std::endl;
-    std::vector<DataFrame> train_test_vector = df_test.train_test_split(0.2, 1729);
+    std::vector<DataFrame> train_test_vector = df_test.train_test_split(0.3, 1729);
     std::cout << "Train:\n" << train_test_vector[0] << std::endl;
     std::cout << "Test:\n" << train_test_vector[1] << std::endl;
 };

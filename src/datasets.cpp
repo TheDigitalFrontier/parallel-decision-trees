@@ -156,8 +156,7 @@ std::vector<DataVector> DataVector::split(double split_threshold, bool equal_goe
      */
     DataVector left = DataVector(this->is_row());
     DataVector right = DataVector(this->is_row());
-    for (int i = 0; i < this->size(); i++)
-    {
+    for (int i = 0; i < this->size(); i++){
         double split_val = this->value(i);
         if (split_val<split_threshold) {
             left.addValue(split_val);
@@ -169,8 +168,7 @@ std::vector<DataVector> DataVector::split(double split_threshold, bool equal_goe
             right.addValue(split_val);
         }
     }
-    std::vector<DataVector> results = { left, right };
-    return results;
+    return std::vector<DataVector> {left, right};
 }
 
 std::string DataVector::to_string(bool new_line, int col_width) const
@@ -180,40 +178,34 @@ std::string DataVector::to_string(bool new_line, int col_width) const
      * Truncated or padded to the specified column width.
      */
     std::string out = "";
-    for (int i = 0; i < this->size(); i++)
-    {
+    for (int i = 0; i < this->size(); i++){
         out += "| ";
         double value = this->value(i);
         std::string pad,val = "";
         val = std::to_string(value);
         // Add space to align negative sign:
-        if (value>=0)
-        {
+        if (value>=0){
             val = ' '+val;
         }
         // Truncate if too long:
-        if (val.length()>col_width)
-        {
+        if (val.length()>col_width){
             val = val.substr(0,col_width);
         }
         // Pad if too short:
-        if (val.length()<col_width)
-        {
+        if (val.length()<col_width){
             pad.append(col_width-val.length(),' ');
         }
         // Append padding and value:
         out += pad;
         out += val;
-        if ((!this->is_row()) or (i==this->size()-1))
-        {
+        if ((!this->is_row()) or (i==this->size()-1)){
             out += " |\n";
         } else {
             out += ' ';
         }
     }
     // Add (optional) extra newline character:
-    if (new_line)
-    {
+    if (new_line){
         out += '\n';
     }
     return out;
@@ -509,7 +501,7 @@ DataFrame DataFrame::copy(bool deep) const
     return new_frame;
 }
 
-DataFrame DataFrame::sample(int nrow, int seed) const{
+DataFrame DataFrame::sample(int nrow, int seed, bool replace) const{
     // Set random seed for reproducibility if specified
     if (seed == -1){
         // obtain a random number from hardware
@@ -520,23 +512,43 @@ DataFrame DataFrame::sample(int nrow, int seed) const{
     }
     // number of rows to pull
     if (nrow == -1){
+        // if default, bootstrap a sample of equal length
         nrow = this->length();
+    } else if (replace == false){
+        // if sample without replacing, cap at original length
+        nrow = std::min(nrow, this->length());
     }else{
         assert(nrow > 0);
     }
-    // Seed the generator
-    std::mt19937 eng(seed);
-    // Draw row indices from uniform distribution
-    std::uniform_int_distribution<> distr(0, this->length()-1);
     // Create new empty DataFrame
     DataFrame new_frame = DataFrame();
-    // pull random rows (as pointers, not copies) until full
-    while (new_frame.length() < nrow)
-    {
-        // get random row index with replacement
-        int rand_row = distr(eng);
-        // get pointer to that row in original dataframe and store in bootstrap
-        new_frame.addRow(this->row(rand_row));
+    if (replace == true){
+        // Seed the generator
+        std::mt19937 eng(seed);
+        // Draw row indices from uniform distribution
+        std::uniform_int_distribution<> distr(0, this->length()-1);
+        // pull random rows (as pointers, not copies) with replacement until full
+        while (new_frame.length() < nrow){
+            // get random row index with replacement
+            int rand_row = distr(eng);
+            // get pointer to that row in original dataframe and store in bootstrap
+            new_frame.addRow(this->row(rand_row));
+        }
+    }else{
+        // pre-allocate vector of row indices
+        std::vector<int> indices(this->length());
+        // fill vector, equivalent to np.arange(0, this->length()-1)
+        std::generate(indices.begin(), indices.end(), [n = 0] () mutable {return n++;});
+        // Seed random generator
+        srand((unsigned) seed);
+        // Shuffle vector of original df row indices
+        for (int i = 0; i < this->length(); i++){
+            std::swap(indices[i], indices[i+(std::rand() % (this->length()-i))]);
+        }
+        // pull random rows (as pointers, not copies) until full
+        for (int i = 0; i < nrow; i++){
+            new_frame.addRow(this->row(indices[i]));
+        }
     }
     return new_frame;
 }
@@ -579,49 +591,36 @@ std::vector<DataFrame> DataFrame::split(int split_column, double split_threshold
     return results;
 }
 
-std::vector<DataFrame> DataFrame::train_test_split(double split_pct, int seed) const
+std::vector<DataFrame> DataFrame::train_test_split(double test_pct, int seed) const
 {
     /**
-     * Returns a pair of train/test tables (sized using split_pct).
+     * Returns a pair of train/test tables (sized using test_pct).
      * Calculates table sizes from val_split percent.
      */
-
-    assert (split_pct >= 0 && split_pct <= 1);
-
-    // length of dataframe. assert non-empty
-    int nrows;
-    nrows = this->length();
-    assert(nrows > 0);
-
-    // length of train dataframe
-    int len_train = int (nrows * split_pct); // Always rounds down
-
+    assert (test_pct >= 0.0 && test_pct <= 1.0);
+    // assert dataframe non-empty
+    assert(this->length() > 0);
     // length of test dataframe
-    int len_test = int (nrows - len_train);
-
-    // Sample current dataframe
-    DataFrame new_frame = DataFrame();
-    new_frame = this->sample(nrows, seed);
-
+    int len_test = int(this->length() * test_pct);
+    // length of train dataframe
+    int len_train = int(this->length() - len_test);
+    // Shuffle current dataframe (sample full without replacement)
+    DataFrame shuffled = this->sample(-1, seed, false);
     // initialize new dataframes
-    DataFrame left = DataFrame();  // Train
-    DataFrame right = DataFrame(); // Test
-
-    for (int i = 0; i < nrows; i++)
-    {   
-        DataVector* row = new_frame.row(i);
-        if (i < len_train) {
-            left.addRow(row);
-        } else if (i >= len_train) {   
-            right.addRow(row);
+    DataFrame train = DataFrame();  // Train
+    DataFrame test = DataFrame(); // Test
+    // pop shuffled observations until both sets full
+    for (int i = 0; i < shuffled.length(); i++){   
+        if(i < len_train){
+            train.addRow(shuffled.row(i));
+        }else{
+            test.addRow(shuffled.row(i));
         }
     }
-
-    // validate test size
-    assert (right.length()==len_test);
-
-    std::vector<DataFrame> results = { left, right };
-    return results;
+    // validate sizes
+    assert (train.length()==len_train && test.length()==len_test);
+    // return as vector of datasets
+    return std::vector<DataFrame> {train, test};
 }
 
 std::string DataFrame::to_string(bool new_line, int col_width) const
