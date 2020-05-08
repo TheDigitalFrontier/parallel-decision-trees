@@ -824,13 +824,9 @@ SeedGenerator::SeedGenerator(int meta_seed)
      * Set meta_seed to -1 for non-deterministic sequence,
      * or non-negative for repeatable sequence.
      */
-    if (meta_seed == -1){
-        std::random_device rd;
-        this->meta_seed_ = int(rd());
-    }else{
-        assert(meta_seed >= 0);
-        this->meta_seed_ = meta_seed;
-    }
+    assert(meta_seed >= -1);
+    this->meta_seed_ = meta_seed;
+    // seed random generator with meta_seed, if -1 it's not used by new_seed() anyway
     std::mt19937 rand_eng(this->meta_seed_);
     this->eng_ = rand_eng;
 }

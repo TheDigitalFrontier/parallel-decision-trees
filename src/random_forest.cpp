@@ -119,7 +119,7 @@ void RandomForest::fit()
     {
         int data_seed = this->seed_gen.new_seed();
         int tree_seed = this->seed_gen.new_seed();
-        DataFrame bootstrap = this->dataframe_.sample(-1,data_seed);
+        DataFrame bootstrap = this->dataframe_.sample(-1, data_seed, true);
         DecisionTree tree = DecisionTree(
             bootstrap, this->regression_, this->loss_, this->mtry_,
             this->max_height_, this->max_leaves_, this->min_obs_, this->max_prop_, tree_seed
