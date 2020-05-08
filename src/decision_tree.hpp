@@ -30,7 +30,7 @@ private:
     // Utilities:
     void fit_(TreeNode* node);  // Helper function to perform fitting recursively.
     double predict_(DataVector* observation) const;  // Helper function to perform prediction on a single observation.
-    std::pair<int,double> findBestSplit(TreeNode *node) const;  // Find best split at this node.
+    std::pair<int,double> findBestSplit(TreeNode *node);  // Find best split at this node.
     double calculateLoss(DataFrame* dataframe) const;  // Calculate loss before split.
     double calculateSplitLoss(DataFrame* left_dataframe, DataFrame* right_dataframe) const;  // Calculate loss on split dataset.
 

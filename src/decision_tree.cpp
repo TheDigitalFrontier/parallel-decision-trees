@@ -253,7 +253,7 @@ double DecisionTree::calculateSplitLoss(DataFrame* left_dataframe, DataFrame* ri
     return loss;
 }
 
-std::pair<int,double> DecisionTree::findBestSplit(TreeNode *node) const
+std::pair<int,double> DecisionTree::findBestSplit(TreeNode *node)
 {
     /** Find best split at this node. */
     DataFrame dataframe = node->getDataFrame();
@@ -266,12 +266,12 @@ std::pair<int,double> DecisionTree::findBestSplit(TreeNode *node) const
     std::generate(shuf_inds.begin(), shuf_inds.end(), [n = 0] () mutable { return n++; });
     // Shuffle if mtry_ < num_features_ else deterministic
     if (this->mtry_ < this->num_features_) {
-      // Set changing random generator (arrow of time is inexorable!)
-      srand((unsigned) time(0));
-      // Shuffle it:
-      for (int i = 0; i < this->num_features_; i++){
-          std::swap(shuf_inds[i], shuf_inds[i+(std::rand() % (this->num_features_-i))]);
-      }
+        // Set changing random generator (arrow of time is inexorable!)
+        srand((unsigned) this->seed_gen.new_seed());
+        // Shuffle it:
+        for (int i = 0; i < this->num_features_; i++){
+            std::swap(shuf_inds[i], shuf_inds[i+(std::rand() % (this->num_features_-i))]);
+        }
     }
     // Initialize temporary variables:
     bool first_pass = true;
@@ -402,10 +402,3 @@ DataVector DecisionTree::predict(DataFrame* testdata) const
     }
     return predictions;
 }
-
-/*
-    int main()
-    {
-        return 0;
-    }
-*/
