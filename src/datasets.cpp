@@ -582,22 +582,22 @@ std::vector<DataFrame> DataFrame::split(int split_column, double split_threshold
 std::vector<DataFrame> DataFrame::train_test_split(double test_pct, int seed) const
 {
     /**
-     * Returns a pair of train/test tables (sized using split_pct).
+     * Returns a pair of train/test tables (sized using test_pct).
      * Calculates table sizes from val_split percent.
      */
 
-    assert (test_pct >= 0 && test_pct <= 1);
+    assert (test_pct >= 0.0 && test_pct <= 1.0);
 
     // length of dataframe. assert non-empty
     int nrows = this->length();
     assert(nrows > 0);
 
+    // length of test dataframe, ensure at least one observation
+    int len_test = std::max(1, int(nrows * test_pct));
+
     // length of train dataframe
-    int len_train = int (nrows * (1-test_pct)); // Always rounds down
-
-    // length of test dataframe
-    int len_test = int (nrows - len_train);
-
+    int len_train = int(nrows - len_test);
+    
     // Sample current dataframe
     DataFrame new_frame = DataFrame();
     new_frame = this->sample(nrows, seed);
