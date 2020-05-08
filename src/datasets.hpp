@@ -84,7 +84,7 @@ public:
     void addRow(std::vector<double> vector);  // Wrap the values in a DataRow and add its pointer to the list.
     void addCol(DataVector col);  // Append the values each row in the lists.
     void addCol(std::vector<double> vector);  // Append the values to each row in the list.
-    DataFrame sample(int nrow = -1, int seed = -1) const; // Samples
+    DataFrame sample(int nrow = -1, int seed = -1, bool replace = true) const; // Samples
     DataFrame copy(bool deep=false) const;  // Returns a copy of the DataFrame.
     DataFrame transpose() const;  // Returns a transposed copy of the DataFrame.
     std::vector<DataFrame> split(int split_column, double split_threshold, bool equal_goes_left=true) const;  // Returns a pair of frames (value above and below threshold in specified column).
