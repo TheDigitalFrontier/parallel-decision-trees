@@ -8,6 +8,7 @@
 #include <iomanip>
 #include <vector>
 #include <random>
+#include <algorithm>
 
 
 /*
