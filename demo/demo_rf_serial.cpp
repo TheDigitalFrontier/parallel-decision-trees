@@ -20,7 +20,6 @@ int main(){
 
     // Use all default values (meaning no seed)
     RandomForest rf1 = RandomForest(df_sonar, ntree);
-    rf1.fit();
 
     std::cout << "RF1 accuracy full train: " << accuracy(df_sonar.col(-1), rf1.predict(&df_sonar)) << std::endl;
     
@@ -31,7 +30,6 @@ int main(){
 
     // Fit RF on train and evalute on test, with lower accuracy
     RandomForest rf2 = RandomForest(df_train,ntree,false,"gini_impurity",-1,-1,-1,-1,-1,42);
-    rf2.fit();
 
     std::cout << "RF2 accuracy train: " << accuracy(df_train.col(-1), rf2.predict(&df_train)) << std::endl;
     std::cout << "RF2 accuracy test: " << accuracy(df_test.col(-1), rf2.predict(&df_test)) << std::endl;
