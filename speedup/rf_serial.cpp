@@ -7,7 +7,7 @@
 #include "../src/random_forest.cpp"
 
 int main(){
-    int ntree = 100;
+    int ntree = 500;
     
     DataLoader csv_loader = DataLoader("../data/sonar.all-data.numerical.csv");
     DataFrame df_sonar = csv_loader.load();
