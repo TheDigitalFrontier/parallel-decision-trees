@@ -34,7 +34,6 @@ RandomForest::RandomForest(
     assert ((max_prop==-1) or (max_prop<=1));  // Proportion cannot be larger than 1.
     assert ((max_prop==-1) or (!regression));  // Proportion is only defined for classification, not regression.
     assert ((mtry>=-1) and (mtry<dataframe.width()));
-    assert (seed>=-1);  // Verify random seed.
     if (regression) {
         // Regression tree:
         if ( (loss=="mean_squared_error") ) {
@@ -56,7 +55,7 @@ RandomForest::RandomForest(
     this->num_trees_ = num_trees;
     this->regression_ = regression;
     this->loss_ = loss;
-    this->mtry_ = (mtry==-1) ? int(std::floor(sqrt(this->num_features_))) : mtry
+    this->mtry_ = (mtry==-1) ? int(std::floor(sqrt(this->num_features_))) : mtry;
     this->max_height_ = max_height;
     this->max_leaves_ = max_leaves;
     this->min_obs_ = min_obs;
@@ -119,7 +118,7 @@ void RandomForest::fit()
     {
         int data_seed = this->seed_gen.new_seed();
         int tree_seed = this->seed_gen.new_seed();
-        DataFrame bootstrap = this->dataframe_.sample(-1,data_seed);
+        DataFrame bootstrap = this->dataframe_.sample(-1, data_seed, true);
         DecisionTree tree = DecisionTree(
             bootstrap, this->regression_, this->loss_, this->mtry_,
             this->max_height_, this->max_leaves_, this->min_obs_, this->max_prop_, tree_seed

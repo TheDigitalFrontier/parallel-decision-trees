@@ -38,7 +38,6 @@ DecisionTree::DecisionTree(
     assert ((max_prop==-1) or (max_prop<=1));  // Proportion cannot be larger than 1.
     assert ((max_prop==-1) or (!regression));  // Proportion is only defined for classification, not regression.
     assert ((mtry>=-1) and (mtry<dataframe.width()));
-    assert (seed>=-1);  // Verify random seed.
     if (regression) {
         // Regression tree:
         if ( (loss=="mean_squared_error") ) {
@@ -59,7 +58,7 @@ DecisionTree::DecisionTree(
     this->num_features_ = dataframe.width()-1;  // Number of columns, excluding label column.
     this->regression_ = regression;
     this->loss_ = loss;
-    this->mtry_ = (mtry==-1) ? this->num_features_ : mtry
+    this->mtry_ = (mtry==-1) ? this->num_features_ : mtry;
     this->max_height_ = max_height;
     this->max_leaves_ = max_leaves;
     this->min_obs_ = min_obs;
@@ -253,7 +252,7 @@ double DecisionTree::calculateSplitLoss(DataFrame* left_dataframe, DataFrame* ri
     return loss;
 }
 
-std::pair<int,double> DecisionTree::findBestSplit(TreeNode *node) const
+std::pair<int,double> DecisionTree::findBestSplit(TreeNode *node)
 {
     /** Find best split at this node. */
     DataFrame dataframe = node->getDataFrame();
@@ -266,12 +265,12 @@ std::pair<int,double> DecisionTree::findBestSplit(TreeNode *node) const
     std::generate(shuf_inds.begin(), shuf_inds.end(), [n = 0] () mutable { return n++; });
     // Shuffle if mtry_ < num_features_ else deterministic
     if (this->mtry_ < this->num_features_) {
-      // Set changing random generator (arrow of time is inexorable!)
-      srand((unsigned) time(0));
-      // Shuffle it:
-      for (int i = 0; i < this->num_features_; i++){
-          std::swap(shuf_inds[i], shuf_inds[i+(std::rand() % (this->num_features_-i))]);
-      }
+        // Set changing random generator (arrow of time is inexorable!)
+        srand((unsigned) this->seed_gen.new_seed());
+        // Shuffle it:
+        for (int i = 0; i < this->num_features_; i++){
+            std::swap(shuf_inds[i], shuf_inds[i+(std::rand() % (this->num_features_-i))]);
+        }
     }
     // Initialize temporary variables:
     bool first_pass = true;
@@ -402,10 +401,3 @@ DataVector DecisionTree::predict(DataFrame* testdata) const
     }
     return predictions;
 }
-
-/*
-    int main()
-    {
-        return 0;
-    }
-*/

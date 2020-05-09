@@ -15,19 +15,14 @@ int main(){
 
     std::cout << "Rows: " << df_sonar.length() << ", Cols: " << df_sonar.width() << std::endl;
 
-    // Extract targets
-    DataVector targets = df_sonar.col(-1);
-    std::cout << "Targets size: " << targets.size() << std::endl;
-
     // Fit RF on full dataset and verify accuracy is high on seen data
     std::cout << "Build and fit RandomForest binary classifier on Sonar" << std::endl;
 
-    RandomForest rf1 = RandomForest(df_sonar,ntree,false,"gini_impurity",-1,-1,-1,-1,-1,1337);
+    // Use all default values (meaning no seed)
+    RandomForest rf1 = RandomForest(df_sonar, ntree);
     rf1.fit();
 
-    DataVector preds = rf1.predict(&df_sonar);
-    std::cout << "Predictions size: " << preds.size() << std::endl;
-    std::cout << "RF1 accuracy full train: " << accuracy(targets, preds) << std::endl;
+    std::cout << "RF1 accuracy full train: " << accuracy(df_sonar.col(-1), rf1.predict(&df_sonar)) << std::endl;
     
     // Create train and test data
     std::vector<DataFrame> train_and_test = df_sonar.train_test_split(0.2, 1337);
@@ -35,7 +30,7 @@ int main(){
     DataFrame df_test = train_and_test[1];
 
     // Fit RF on train and evalute on test, with lower accuracy
-    RandomForest rf2 = RandomForest(df_train,ntree,false,"gini_impurity",-1,-1,-1,-1,-1,1337);
+    RandomForest rf2 = RandomForest(df_train,ntree,false,"gini_impurity",-1,-1,-1,-1,-1,42);
     rf2.fit();
 
     std::cout << "RF2 accuracy train: " << accuracy(df_train.col(-1), rf2.predict(&df_train)) << std::endl;

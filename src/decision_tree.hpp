@@ -24,13 +24,13 @@ private:
     int num_features_;  // State variable: Number of features in dataset.
     std::vector<TreeNode*> leaves_;  // State variables: List of leaves.
     bool fitted_;  // State variable: Flag indicated whether or not the tree has been trained.
-    int seed_;  // Metaseed for random seed generator.
+    int meta_seed_;  // Metaseed for random seed generator.
     SeedGenerator seed_gen;  // Random seed generator.
 
     // Utilities:
     void fit_(TreeNode* node);  // Helper function to perform fitting recursively.
     double predict_(DataVector* observation) const;  // Helper function to perform prediction on a single observation.
-    std::pair<int,double> findBestSplit(TreeNode *node) const;  // Find best split at this node.
+    std::pair<int,double> findBestSplit(TreeNode *node);  // Find best split at this node.
     double calculateLoss(DataFrame* dataframe) const;  // Calculate loss before split.
     double calculateSplitLoss(DataFrame* left_dataframe, DataFrame* right_dataframe) const;  // Calculate loss on split dataset.
 
