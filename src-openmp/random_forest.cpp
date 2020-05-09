@@ -130,7 +130,7 @@ void RandomForest::fit_()
             std::cout << "nthreads: " << nthreads << std::endl;
         }
 
-        #pragma omp for schedule(static)
+        #pragma omp for ordered schedule(dynamic)
         for (i = 0; i < this->num_trees_; i++){
             int data_seed = seeder.new_seed();
             int tree_seed = seeder.new_seed();
