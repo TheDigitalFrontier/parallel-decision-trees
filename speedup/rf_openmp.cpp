@@ -18,10 +18,10 @@ int main(){
     DataFrame df_test = train_and_test[1];
 
     // Fit RF on train and evalute on test, with lower accuracy
-    RandomForest rf2 = RandomForest(df_train,ntree,false,"gini_impurity",-1,-1,-1,3,-1,69);
+    RandomForest rf = RandomForest(df_train,ntree,false,"gini_impurity",-1,-1,-1,3,-1,69);
 
-    std::cout << "Accuracy train: " << accuracy(df_train.col(-1), rf2.predict(&df_train)) << std::endl;
-    std::cout << "Accuracy test:  " << accuracy(df_test.col(-1), rf2.predict(&df_test)) << std::endl;
+    std::cout << "Accuracy train: " << accuracy(df_train.col(-1), rf.predict(&df_train)) << std::endl;
+    std::cout << "Accuracy test:  " << accuracy(df_test.col(-1), rf.predict(&df_test)) << std::endl;
 
     return 0;
 };
