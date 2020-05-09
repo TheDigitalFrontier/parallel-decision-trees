@@ -1,10 +1,10 @@
 #include <iostream>
-#include "../src/datasets.cpp"
-#include "../src/losses.cpp"
-#include "../src/metrics.cpp"
-#include "../src/tree_node.cpp"
-#include "../src/decision_tree.cpp"
-#include "../src/random_forest.cpp"
+#include "../src-openmp/datasets.cpp"
+#include "../src-openmp/losses.cpp"
+#include "../src-openmp/metrics.cpp"
+#include "../src-openmp/tree_node.cpp"
+#include "../src-openmp/decision_tree.cpp"
+#include "../src-openmp/random_forest.cpp"
 
 int main(){
     int ntree = 100;
