@@ -52,6 +52,12 @@ double DataVector::value(int i) const
     return this->values_[ i ];
 }
 
+double DataVector::getValue(int i) const
+{
+    /** Get cell in given position (positive or negative index). */
+    return this->value(i);
+}
+
 std::vector<double> DataVector::vector() const
 {
     /** Get a copy of the values as a vector of doubles. */
@@ -115,8 +121,25 @@ double DataVector::mean() const
 
 
 /*
- * DATA VECTOR - UTILITES :
+ * DATA VECTOR - SETTERS :
  */
+
+
+void DataVector::setValue(int i, double value)
+{
+    /** Get value in given position. */
+    assert (!this->is_locked());
+    if (i>=0)
+    {
+        // Index from beginning (positive):
+        assert ( i<this->size() );
+    } else {
+        // Index from end (negative):
+        assert ( i>=-this->size() );
+        i += this->size();
+    }
+    this->values_[i] = value;
+}
 
 
 void DataVector::lock()
@@ -323,7 +346,15 @@ DataVector DataFrame::col(int c) const
 double DataFrame::value(int r, int c) const
 {
     /** Get value in given row and column. */
+    // Error checking is performed by accessor functions.
     return this->row(r)->value(c);
+}
+
+double DataFrame::getValue(int r, int c) const
+{
+    /** Get value in given row and column. */
+    // Error checking is performed by accessor functions.
+    return this->value(r,c);
 }
 
 std::vector<std::vector<double>> DataFrame::matrix() const
@@ -409,6 +440,19 @@ DataVector DataFrame::mean(bool axis) const
     }
     return result;
 }
+
+
+/*
+ * DATA FRAME - SETTERS :
+ */
+
+
+void DataFrame::setValue(int r, int c, double value)
+{
+    /** Set value in given row and column. */
+    this->row(r)->setValue(c,value);
+}
+
 
 
 /*
