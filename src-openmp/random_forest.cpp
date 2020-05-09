@@ -141,7 +141,7 @@ void RandomForest::fit_()
         }
 
         // Execute for loop in parallel
-        #pragma omp for
+        #pragma omp for schedule(dynamic)
         for (i = 0; i < this->num_trees_; i++){
             int data_seed = data_seed_vector[i];
             int tree_seed = tree_seed_vector[i];
