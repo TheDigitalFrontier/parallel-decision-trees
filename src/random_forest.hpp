@@ -26,6 +26,9 @@ private:
     int meta_seed_;  // Metaseed for random seed generator.
     SeedGenerator seed_gen;  // Random seed generator.
 
+    // Utilities:
+    void fit_();  // Perform fitting (using fit_ helper).
+
 public:
 
     // Constructors:
@@ -46,7 +49,6 @@ public:
     // Setters:
 
     // Utilities:
-    void fit();  // Perform fitting (using fit_ helper).
     DataVector predict(DataFrame* testdata) const;  // Perform prediction sequentially on each observation.
 
 };
