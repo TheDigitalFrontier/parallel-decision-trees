@@ -33,7 +33,7 @@ RandomForest::RandomForest(
     assert ((max_prop==-1) or (max_prop>0));  // -1 indicates no max proportion.
     assert ((max_prop==-1) or (max_prop<=1));  // Proportion cannot be larger than 1.
     assert ((max_prop==-1) or (!regression));  // Proportion is only defined for classification, not regression.
-    assert ((mtry>=-1) and (mtry<dataframe.width()));
+    assert ((mtry>=-1) and (mtry<dataframe.width()));  // num_features = dataframe.width()-1  (column of labels is not a feature).
     if (regression) {
         // Regression tree:
         if ( (loss=="mean_squared_error") ) {
@@ -90,6 +90,7 @@ bool RandomForest::isFitted() const
 std::vector<DecisionTree> RandomForest::getTrees() const
 {
     /** Get a vector of the fitted trees. */
+    assert (this->isFitted());
     return this->trees_;
 }
 
@@ -98,6 +99,7 @@ DecisionTree RandomForest::getTree(int i) const
     /** Get one of the fitted trees. */
     assert (i>=0);
     assert (i<this->trees_.size());
+    assert (this->isFitted());
     return this->trees_[i];
 }
 
