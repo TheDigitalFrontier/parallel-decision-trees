@@ -71,6 +71,11 @@ DecisionTree::DecisionTree(
     this->leaves_ = {this->root_};
     this->fitted_ = false;
     this->seed_gen = SeedGenerator(this->meta_seed_);
+    // Perform training:
+    fit_(this->root_);  // Fit recursively, beginning at root:
+    // Update list of leaves:
+    this->leaves_ = this->root_->findLeaves();
+    this->fitted_ = true;
 }
 
 // Getters:
@@ -346,15 +351,6 @@ void DecisionTree::fit_(TreeNode* node)
     // Recurse to (new) children:
     this->fit_(left_child);
     this->fit_(right_child);
-}
-
-void DecisionTree::fit()
-{
-    // Fit recursively, beginning at root:
-    fit_(this->root_);
-    // Update list of leaves:
-    this->leaves_ = this->root_->findLeaves();
-    this->fitted_ = true;
 }
 
 double DecisionTree::predict_(DataVector* observation) const
