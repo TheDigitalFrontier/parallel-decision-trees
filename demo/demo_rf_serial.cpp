@@ -19,8 +19,8 @@ int main(){
     std::cout << "Build and fit RandomForest binary classifier on Sonar" << std::endl;
 
     // Use all default values (meaning no seed)
-    RandomForest rf1 = RandomForest(df_sonar, ntree);
-    rf1.fit();
+    RandomForest rf1 = RandomForest(ntree);
+    rf1.fit(df_sonar);
 
     std::cout << "RF1 accuracy full train: " << accuracy(df_sonar.col(-1), rf1.predict(&df_sonar)) << std::endl;
     
@@ -30,8 +30,8 @@ int main(){
     DataFrame df_test = train_and_test[1];
 
     // Fit RF on train and evalute on test, with lower accuracy
-    RandomForest rf2 = RandomForest(df_train,ntree,false,"gini_impurity",-1,-1,-1,-1,-1,42);
-    rf2.fit();
+    RandomForest rf2 = RandomForest(ntree,false,"gini_impurity",-1,-1,-1,-1,-1,42);
+    rf2.fit(df_train);
 
     std::cout << "RF2 accuracy train: " << accuracy(df_train.col(-1), rf2.predict(&df_train)) << std::endl;
     std::cout << "RF2 accuracy test: " << accuracy(df_test.col(-1), rf2.predict(&df_test)) << std::endl;
