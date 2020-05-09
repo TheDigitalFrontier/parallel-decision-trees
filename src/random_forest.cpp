@@ -90,6 +90,7 @@ bool RandomForest::isFitted() const
 std::vector<DecisionTree> RandomForest::getTrees() const
 {
     /** Get a vector of the fitted trees. */
+    assert (this->isFitted());
     return this->trees_;
 }
 
@@ -98,6 +99,7 @@ DecisionTree RandomForest::getTree(int i) const
     /** Get one of the fitted trees. */
     assert (i>=0);
     assert (i<this->trees_.size());
+    assert (this->isFitted());
     return this->trees_[i];
 }
 
