@@ -30,7 +30,7 @@ public:
 
     // Constructors:
     RandomForest(
-        DataFrame dataframe, int num_trees, bool regression=false,
+        int num_trees, bool regression=false,
         std::string loss="gini_impurity", int mtry=-1, int max_height=-1,
         int max_leaves=-1, int min_obs=-1, double max_prop=-1, int seed=-1
     );
@@ -46,7 +46,7 @@ public:
     // Setters:
 
     // Utilities:
-    void fit();  // Perform fitting (using fit_ helper).
+    void fit(DataFrame dataframe);  // Perform fitting with training data (using fit_ helper).
     DataVector predict(DataFrame* testdata) const;  // Perform prediction sequentially on each observation.
 
 };

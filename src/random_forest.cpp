@@ -7,7 +7,7 @@
 
 // Constructors:
 RandomForest::RandomForest(
-    DataFrame dataframe, int num_trees, bool regression, std::string loss, int mtry,
+    int num_trees, bool regression, std::string loss, int mtry,
     int max_height, int max_leaves, int min_obs, double max_prop, int seed
 )
 {
@@ -25,7 +25,6 @@ RandomForest::RandomForest(
      *    seed       : Non-negative seed (for repeatable results), or -1 (for non-deterministic sequence).
     */
     // Check inputs:
-    assert ((dataframe.length()>0) and dataframe.width()>0);  // Need at least one row and column (plus class column).
     assert ((num_trees>0));  // Number of trees must be non-zero.
     assert ((max_height==-1) or (max_height>=1));  // -1 indicates no max depth.
     assert ((max_leaves==-1) or (max_leaves>=1));  // -1 indicates no max leaves.
@@ -33,7 +32,6 @@ RandomForest::RandomForest(
     assert ((max_prop==-1) or (max_prop>0));  // -1 indicates no max proportion.
     assert ((max_prop==-1) or (max_prop<=1));  // Proportion cannot be larger than 1.
     assert ((max_prop==-1) or (!regression));  // Proportion is only defined for classification, not regression.
-    assert ((mtry>=-1) and (mtry<dataframe.width()));
     if (regression) {
         // Regression tree:
         if ( (loss=="mean_squared_error") ) {
@@ -50,18 +48,18 @@ RandomForest::RandomForest(
         }
     }
     // Set properties from inputs:
-    this->dataframe_ = dataframe;
-    this->num_features_ = dataframe.width()-1;  // Number of columns, excluding label column.
     this->num_trees_ = num_trees;
     this->regression_ = regression;
+    this->mtry_ = mtry;
     this->loss_ = loss;
-    this->mtry_ = (mtry==-1) ? int(std::floor(sqrt(this->num_features_))) : mtry;
     this->max_height_ = max_height;
     this->max_leaves_ = max_leaves;
     this->min_obs_ = min_obs;
     this->max_prop_ = max_prop;
     this->meta_seed_ = seed;  // Metaseed for random seed generator.
     // Initialize:
+    //this->dataframe_ = nullptr;
+    this->num_features_ = -1;  // Placeholder value until training data is received in `fit` method.
     this->fitted_ = false;
     this->seed_gen = SeedGenerator(this->meta_seed_);
 };
@@ -88,6 +86,7 @@ bool RandomForest::isFitted() const
 std::vector<DecisionTree> RandomForest::getTrees() const
 {
     /** Get a vector of the fitted trees. */
+    assert (this->isFitted());
     return this->trees_;
 }
 
@@ -96,12 +95,14 @@ DecisionTree RandomForest::getTree(int i) const
     /** Get one of the fitted trees. */
     assert (i>=0);
     assert (i<this->trees_.size());
+    assert (this->isFitted());
     return this->trees_[i];
 }
 
 DataFrame RandomForest::getDataFrame() const
 {
     /** Training data. */
+    assert (this->isFitted());
     return this->dataframe_;
 }
 
@@ -110,9 +111,22 @@ DataFrame RandomForest::getDataFrame() const
 
 // Utilities:
 
-void RandomForest::fit()
+void RandomForest::fit(DataFrame dataframe)
 {
     /** Fit RandomForest with given parameters. */
+
+    // Store training data:
+    this->dataframe_ = dataframe;
+    this->num_features_ = dataframe.width()-1;  // Assume last column contains labels.
+    if (this->mtry_==-1) {
+        int(std::floor(sqrt(this->num_features_)));
+    } else {
+        this->mtry_;
+    }
+    // Verify traning data:
+    assert ((dataframe.length()>0) and (dataframe.width()>0));  // Need at least one row and column (plus class column).
+    assert (this->mtry_<=this->num_features_);  // Make sure dataframe size is consistent with mtry provided in constructor.
+    // Create and fit requested number of trees:
     this->trees_ = {};
     for (int i = 0; i < this->num_trees_; i++)
     {
@@ -120,10 +134,10 @@ void RandomForest::fit()
         int tree_seed = this->seed_gen.new_seed();
         DataFrame bootstrap = this->dataframe_.sample(-1, data_seed, true);
         DecisionTree tree = DecisionTree(
-            bootstrap, this->regression_, this->loss_, this->mtry_,
+            this->regression_, this->loss_, this->mtry_,
             this->max_height_, this->max_leaves_, this->min_obs_, this->max_prop_, tree_seed
         );
-        tree.fit();
+        tree.fit(bootstrap);
         this->trees_.push_back(tree);
     }
     this->fitted_ = true;
