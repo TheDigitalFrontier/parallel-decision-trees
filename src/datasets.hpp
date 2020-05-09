@@ -25,12 +25,16 @@ public:
     int size() const;  // Returns number of entries in vector.
     bool is_row() const;  // Checks if object represents a row (true) or column (false).
     bool is_locked() const;  // Checks if object is read-only.
-    double value(int c) const;  // Get value in given position.
+    double value(int i) const;  // Get value in given position.
+    double getValue(int i) const;  // Get value in given position.
     std::vector<double> vector() const;  // Get a copy of values as a vector of doubles.
     double min() const;  // Returns the min of the values in the vector.
     double max() const;  // Returns the max of the values in the vector.
     double sum() const;  // Returns the sum of the values in the vector.
     double mean() const;  // Returns the mean of the values in the vector.
+
+    // Setters:
+    void setValue(int i, double value);  // Get value in given position.
 
     // Utilities:
     void lock();  // Lock object to make it read-only.
@@ -73,11 +77,15 @@ public:
     DataVector* row(int r) const;  // Get pointer to given row (stored internally).
     DataVector col(int c) const;  // Get given column (constructed on the fly).
     double value(int r, int c) const;  // Get value in given row and column.
+    double getValue(int r, int c) const;  // Get value in given row and column.
     std::vector<std::vector<double>> matrix() const;  // Get a copy of values as a vector of vectors of doubles.
     DataVector min(bool axis=0) const;  // Returns a vector of the min down columns (axis==0) or across rows (axis==1).
     DataVector max(bool axis=0) const;  // Returns a vector of the max down columns (axis==0) or across rows (axis==1).
     DataVector sum(bool axis=0) const;  // Returns a vector of the means down columns (axis==0) or across rows (axis==1).
     DataVector mean(bool axis=0) const;  // Returns a vector of the means down columns (axis==0) or across rows (axis==1).
+
+    // Setters:
+    void setValue(int r, int c, double value);  // Set value in given row and column.
 
     // Utilities:
     void lock();  // Lock object to make it read-only.
