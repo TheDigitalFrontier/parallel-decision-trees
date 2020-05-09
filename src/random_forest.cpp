@@ -33,7 +33,7 @@ RandomForest::RandomForest(
     assert ((max_prop==-1) or (max_prop>0));  // -1 indicates no max proportion.
     assert ((max_prop==-1) or (max_prop<=1));  // Proportion cannot be larger than 1.
     assert ((max_prop==-1) or (!regression));  // Proportion is only defined for classification, not regression.
-    assert ((mtry>=-1) and (mtry<dataframe.width()));
+    assert ((mtry>=-1) and (mtry<dataframe.width()));  // num_features = dataframe.width()-1  (column of labels is not a feature).
     if (regression) {
         // Regression tree:
         if ( (loss=="mean_squared_error") ) {
