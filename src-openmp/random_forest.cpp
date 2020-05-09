@@ -121,19 +121,30 @@ void RandomForest::fit_()
     /** Fit RandomForest with given parameters. */
     this->trees_ = {};
     int i;
-    SeedGenerator seeder = this->seed_gen;
 
-    #pragma omp parallel shared(seeder) private(i)
+    // Initialize vectors with seed values
+    std::vector<int> data_seed_vector;
+    std::vector<int> tree_seed_vector;
+
+    // Pre-fill vectors with seed values
+    for(int j=0; j < this->num_trees_; j++){
+        data_seed_vector.push_back(this->seed_gen.new_seed());
+        tree_seed_vector.push_back(this->seed_gen.new_seed());
+    }
+
+    // Create a team of threads for parallel execution
+    #pragma omp parallel shared(data_seed_vector, tree_seed_vector) private(i)
     {
         if ((int)omp_get_thread_num() == 0){
             int nthreads = (int)omp_get_num_threads();
             std::cout << "nthreads: " << nthreads << std::endl;
         }
 
-        #pragma omp for ordered schedule(dynamic)
+        // Execute for loop in parallel
+        #pragma omp for
         for (i = 0; i < this->num_trees_; i++){
-            int data_seed = seeder.new_seed();
-            int tree_seed = seeder.new_seed();
+            int data_seed = data_seed_vector[i];
+            int tree_seed = tree_seed_vector[i];
             DataFrame bootstrap = this->dataframe_.sample(-1, data_seed, true);
             DecisionTree tree = DecisionTree(
                 bootstrap, this->regression_, this->loss_, this->mtry_,
