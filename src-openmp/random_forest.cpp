@@ -4,6 +4,8 @@
 #include "datasets.hpp"
 #include "losses.hpp"
 #include <assert.h>
+#include <iostream>
+#include <omp.h>
 
 // Constructors:
 RandomForest::RandomForest(
@@ -118,9 +120,15 @@ void RandomForest::fit_()
 {
     /** Fit RandomForest with given parameters. */
     this->trees_ = {};
-    #pragma omp parallel shared() private(i)
+    
+    #pragma omp parallel
     {
-        #pragma omp for
+        if ((int)omp_get_thread_num() == 0){
+            int nthreads = (int)omp_get_num_threads();
+            std::cout << "nthreads: " << nthreads << std::endl;
+        }
+
+        #pragma omp for ordered
         for (int i = 0; i < this->num_trees_; i++){
             int data_seed = this->seed_gen.new_seed();
             int tree_seed = this->seed_gen.new_seed();
