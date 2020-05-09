@@ -384,16 +384,28 @@ double DecisionTree::predict_(DataVector* observation) const
 DataVector DecisionTree::predict(DataFrame* testdata) const
 {
     /** Perform prediction sequentially on each observation and collect a vector of predictions. */
-    DataVector predictions = DataVector(false);  // is_row=false.
+    //DataVector predictions = DataVector(false);  // is_row=false.
+    int n = testdata->length();
+    std::vector<double> preds(n, -1);
     // Make sure tree has been fitted before prediction:
     assert (this->isFitted());
     // Make sure dataframe has the correct number of features (or one extra column with labels).
     assert ( (testdata->width()==this->num_features_) or (testdata->width()==this->num_features_+1) );
-    for (int i = 0; i < testdata->length(); i++)
+    
+    int i;
+    #pragma omp parallel shared(n, preds) private(i)
     {
-        DataVector* observation = testdata->row(i);
-        double prediction = this->predict_(observation);
-        predictions.addValue(prediction);
+        #pragma omp for schedule(dynamic)
+        for (i = 0; i < n; i++)
+        {
+            DataVector* observation = testdata->row(i);
+            double prediction = this->predict_(observation);
+            //predictions.addValue(prediction);
+            preds[i] = prediction;
+        }
     }
+    DataVector predictions = DataVector(preds, false);
+    assert(predictions.min() != -1);
+
     return predictions;
 }
