@@ -49,7 +49,6 @@ int main(){
     
     std::cout << "Build and train RandomForest for classification." << std::endl;
     RandomForest rf_classification = RandomForest(training_data,num_trees,false,"gini_impurity",-1,-1,-1,-1,-1);
-    rf_classification.fit();
     
     std::cout << "Perform prediction on new data:" << std::endl;
     DataVector pred_classification = rf_classification.predict(&test_data);
@@ -57,7 +56,6 @@ int main(){
     
     std::cout << "Build and train RandomForest for regression." << std::endl;
     RandomForest rf_regression = RandomForest(training_data,num_trees,true,"mean_squared_error",-1,-1,-1,-1,-1);
-    rf_regression.fit();
     
     std::cout << "Perform prediction on new data:" << std::endl;
     DataVector pred_regression = rf_regression.predict(&test_data);
