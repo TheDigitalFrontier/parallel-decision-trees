@@ -64,6 +64,8 @@ RandomForest::RandomForest(
     // Initialize:
     this->fitted_ = false;
     this->seed_gen = SeedGenerator(this->meta_seed_);
+    // Perform training:
+    this->fit_();
 };
 
 // Getters:
@@ -110,7 +112,7 @@ DataFrame RandomForest::getDataFrame() const
 
 // Utilities:
 
-void RandomForest::fit()
+void RandomForest::fit_()
 {
     /** Fit RandomForest with given parameters. */
     this->trees_ = {};
@@ -123,7 +125,6 @@ void RandomForest::fit()
             bootstrap, this->regression_, this->loss_, this->mtry_,
             this->max_height_, this->max_leaves_, this->min_obs_, this->max_prop_, tree_seed
         );
-        tree.fit();
         this->trees_.push_back(tree);
     }
     this->fitted_ = true;

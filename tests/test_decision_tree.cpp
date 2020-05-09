@@ -32,7 +32,6 @@ int main(){
     std::cout << "Building test classification tree." << std::endl;
     DecisionTree classification_tree = DecisionTree(training_data,false,"gini_impurity",-1,-1,-1,-1,-1);
     std::cout << "Size (before fitting) : " + std::to_string(classification_tree.getSize()) << std::endl;
-    classification_tree.fit();
     std::cout << "Size (after fitting) : " + std::to_string(classification_tree.getSize()) << std::endl;
     std::vector<TreeNode*> tree_leaves = classification_tree.getLeaves();
     TreeNode *leaf;
@@ -73,7 +72,6 @@ int main(){
 
     // Print regression tree:
     DecisionTree regression_tree = DecisionTree(training_data,true,"mean_squared_error",-1,-1,-1,-1,-1);
-    regression_tree.fit();
     std::cout << regression_tree << std::endl;
 
     return 0;

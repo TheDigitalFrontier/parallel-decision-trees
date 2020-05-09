@@ -60,7 +60,6 @@ public:
     // Setters:
 
     // Utilities:
-    void fit();  // Perform fitting recursively (using fit_ helper).
     DataVector predict(DataFrame* testdata) const;  // Perform prediction sequentially on each observation.
 
 };
