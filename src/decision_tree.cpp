@@ -13,7 +13,7 @@
 // Constructors:
 
 DecisionTree::DecisionTree(
-    DataFrame dataframe, bool regression, std::string loss,
+    bool regression, std::string loss,
     int mtry, int max_height, int max_leaves, int min_obs, double max_prop, int seed
 )
 {
@@ -30,14 +30,13 @@ DecisionTree::DecisionTree(
      *    seed       : Non-negative seed (for repeatable results), or -1 (for non-deterministic sequence).
     */
     // Check inputs:
-    assert ((dataframe.length()>0) and dataframe.width()>0);  // Need at least one row and column (plus class column).
     assert ((max_height==-1) or (max_height>=1));  // -1 indicates no max depth.
     assert ((max_leaves==-1) or (max_leaves>=1));  // -1 indicates no max leaves.
     assert ((min_obs==-1) or (min_obs>=1));  // -1 indicates no min observation number.
     assert ((max_prop==-1) or (max_prop>0));  // -1 indicates no max proportion.
     assert ((max_prop==-1) or (max_prop<=1));  // Proportion cannot be larger than 1.
     assert ((max_prop==-1) or (!regression));  // Proportion is only defined for classification, not regression.
-    assert ((mtry>=-1) and (mtry<dataframe.width()));
+    assert (mtry>=-1);
     if (regression) {
         // Regression tree:
         if ( (loss=="mean_squared_error") ) {
@@ -54,21 +53,20 @@ DecisionTree::DecisionTree(
         }
     }
     // Set properties constructor from inputs:
-    this->dataframe_ = dataframe;
-    this->num_features_ = dataframe.width()-1;  // Number of columns, excluding label column.
     this->regression_ = regression;
     this->loss_ = loss;
-    this->mtry_ = (mtry==-1) ? this->num_features_ : mtry;
+    this->mtry_ = mtry;
     this->max_height_ = max_height;
     this->max_leaves_ = max_leaves;
     this->min_obs_ = min_obs;
     this->max_prop_ = max_prop;
     this->meta_seed_ = seed;
     // Initialize:
-    TreeNode *root = new TreeNode(this->dataframe_);
-    this->root_ = root;
-    this->num_leaves_ = 1;
-    this->leaves_ = {this->root_};
+    //this->dataframe_ = nullptr;
+    this->num_features_ = -1;  // Placeholder value until training data is received in `fit` method.
+    this->root_ = nullptr;
+    this->num_leaves_ = 0;
+    this->leaves_ = {};
     this->fitted_ = false;
     this->seed_gen = SeedGenerator(this->meta_seed_);
 }
@@ -118,12 +116,14 @@ TreeNode * DecisionTree::getRoot() const
     /**
      * Get the pointer to the root node.
      */
+    assert (this->isFitted());
     return this->root_;
 }
 
 std::vector<TreeNode*> DecisionTree::getLeaves()
 {
     /** Get leaves of fitted tree. */
+    assert (this->isFitted());
     return this->leaves_;
 }
 
@@ -132,6 +132,7 @@ DataFrame DecisionTree::getDataFrame() const
     /**
      * Get the pointer to the dataframe.
      */
+    assert (this->isFitted());
     return this->dataframe_;
 }
 
@@ -254,6 +255,7 @@ double DecisionTree::calculateSplitLoss(DataFrame* left_dataframe, DataFrame* ri
 
 std::pair<int,double> DecisionTree::findBestSplit(TreeNode *node)
 {
+    assert (this->num_features_>0);  // num_features_==-1 indicates that training data has not yet been loaded.
     /** Find best split at this node. */
     DataFrame dataframe = node->getDataFrame();
     // Must have enough data to split
@@ -277,7 +279,9 @@ std::pair<int,double> DecisionTree::findBestSplit(TreeNode *node)
     int best_column, col;
     double best_threshold, best_loss, loss;
     // Explore possible splits:
-    for (int i = 0; i < this->mtry_; i++){
+    int m;
+    if (this->mtry_==-1) { m = this->num_features_; } else { m = this->mtry_; }
+    for (int i = 0; i < m; i++){
         col = shuf_inds[i];
         std::vector<double> col_vals = dataframe.col(col).vector();
         // Remove duplicates:
@@ -348,8 +352,28 @@ void DecisionTree::fit_(TreeNode* node)
     this->fit_(right_child);
 }
 
-void DecisionTree::fit()
+void DecisionTree::fit(DataFrame dataframe)
 {
+    /**
+     * Fit decision tree with training data.
+     */
+    // Make sure tree hasn't already been trained.
+    assert (!this->isFitted());  // Re-fitting would require proper deletion of previous tree to avoid ghost nodes.
+    // Store training data:
+    this->dataframe_ = dataframe;
+    this->num_features_ = dataframe.width()-1;  // Assume last column contains labels.
+    if (this->mtry_==-1) {
+        int(std::floor(sqrt(this->num_features_)));
+    } else {
+        this->mtry_;
+    }
+    // Verify training data:
+    assert ((dataframe.length()>0) and (dataframe.width()>0));  // Need at least one row and column (plus class column).
+    assert (this->mtry_<=this->num_features_);  // Make sure dataframe size is consistent with mtry provided in constructor.
+    // Create a root node:
+    TreeNode *root = new TreeNode(this->dataframe_);
+    this->root_ = root;
+    this->leaves_ = {this->root_};
     // Fit recursively, beginning at root:
     fit_(this->root_);
     // Update list of leaves:
