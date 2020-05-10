@@ -7,9 +7,9 @@
 #include "../src/random_forest.cpp"
 
 int main(){
-    int ntree = 100;
+    int ntree = 500;
     
-    DataLoader csv_loader = DataLoader("../data/classification_cancer.csv");
+    DataLoader csv_loader = DataLoader("../data/cancer_clean.csv");
     DataFrame df_csv = csv_loader.load();
 
     // Create train and test data

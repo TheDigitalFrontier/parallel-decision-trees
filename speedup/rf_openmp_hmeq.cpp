@@ -7,7 +7,7 @@
 #include "../src-openmp/random_forest.cpp"
 
 int main(){
-    int ntree = 100;
+    int ntree = 10;
     
     DataLoader csv_loader = DataLoader("../data/hmeq_clean.csv");
     DataFrame df_csv = csv_loader.load();

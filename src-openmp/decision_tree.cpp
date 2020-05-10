@@ -305,14 +305,17 @@ std::pair<int,double> DecisionTree::findBestSplit(TreeNode *node)
             }
         }
     }
-    int best_column;
-    double best_threshold;
+    int best_column = -1;
+    double best_threshold = -1.0;
     // Find lowest loss combination and return it
-    int ind_min = std::min_element(losses.begin(), losses.end()) - losses.begin();
-    best_column = cols_splits[ind_min].first;
-    best_threshold = cols_splits[ind_min].second;
+    if (losses.size() > 0)
+    {
+        int ind_min = std::min_element(losses.begin(), losses.end()) - losses.begin();
+        best_column = cols_splits[ind_min].first;
+        best_threshold = cols_splits[ind_min].second;
+    }
     // Sanity check that function did something
-    assert(best_column >= 0);
+    // assert(best_column >= 0);
     split = std::make_pair(best_column, best_threshold);
     return split;
 }
@@ -339,6 +342,11 @@ void DecisionTree::fit_(TreeNode* node)
     std::pair<int,double> split = this->findBestSplit(node);
     int split_feature = split.first;
     double split_threshold = split.second;
+    // To handle scenario where all columns within mtry have just 1 unique value
+    if (split_feature == -1 && split_threshold == -1.0)
+    {
+        return;
+    }
     node->setSplitFeature(split_feature);
     node->setSplitThreshold(split_threshold);
     // Calculate results of best split:
