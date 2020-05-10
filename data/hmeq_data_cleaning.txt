@@ -1,0 +1,21 @@
+Data cleaning:
+- Source: https://www.kaggle.com/ajay1735/hmeq-data
+    BAD: 1 = client defaulted on loanl 0 = loan repaid
+    LOAN: Amount of the loan request
+    MORTDUE: Amount due on existing mortgage
+    VALUE: Value of current property
+    REASON: DebtCon = debt consolidation HomeImp = home improvement
+    JOB: Six occupational categories
+    YOJ: Years at present job
+    DEROG: Number of major derogatory reports
+    DELINQ: Number of delinquent credit lines
+    CLAGE: Age of oldest trade line in months
+    NINQ: Number of recent credit lines
+    CLNO: Number of credit lines
+    DEBTINC: Debt-to-income ratio
+
+- Starting with 5960 observations
+- Removed variable JOB (categorical with 6 variables)
+- Remove rows with missing values (2515 observations)
+- Remaning dataset has 3445 observations, 11 predictors
+- Converted REASON to binary (DebtCon = 0, HomeImp = 1)
