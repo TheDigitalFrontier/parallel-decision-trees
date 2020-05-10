@@ -277,36 +277,42 @@ std::pair<int,double> DecisionTree::findBestSplit(TreeNode *node)
             std::swap(shuf_inds[i], shuf_inds[i+(std::rand() % (this->num_features_-i))]);
         }
     }
-    // Initialize temporary variables:
-    bool first_pass = true;
-    int best_column, col;
-    double best_threshold, best_loss, loss;
+    // Can't pre-allocate since we don't know the number of unique values per column
+    std::vector<double> losses;
+    std::vector<std::pair<int, double>> cols_splits;
     // Explore possible splits:
     for (int i = 0; i < this->mtry_; i++){
-        col = shuf_inds[i];
+        int col = shuf_inds[i];
         std::vector<double> col_vals = dataframe.col(col).vector();
         // Remove duplicates:
         std::sort(col_vals.begin(), col_vals.end());
         col_vals.erase(std::unique(col_vals.begin(), col_vals.end()), col_vals.end());
-        // For each unique column value, try that col and val as split, get score:
-        for (int j = 0; j < col_vals.size()-1; j++){
-            // Don't split on last value (because it will produce empty `right`).
-            double val = col_vals[j];
-            // But splitting on first value works as <= means left won't be empty
-            // Split dataset using current column and threshold, score, and update if best:
-            // equal_goes_left=true.
-            std::vector<DataFrame> dataset_splits = dataframe.split(col, val, true);
-            loss = this->calculateSplitLoss(&dataset_splits[0],&dataset_splits[1]);
-            if ((first_pass) or (loss<best_loss)){
-                first_pass = false;
-                best_column = col;
-                best_threshold = val;
-                best_loss = loss;
+        int j;
+        #pragma omp parallel shared(losses, cols_splits, col) private(j)
+        {        
+            // For each unique column value, try that col and val as split, get score:
+            #pragma omp for schedule(dynamic)
+            for (j = 0; j < col_vals.size()-1; j++){
+                // Don't split on last value (because it will produce empty `right`).
+                double val = col_vals[j];
+                // But splitting on first value works as <= means left won't be empty
+                // Split dataset using current column and threshold, score, and update if best:
+                // equal_goes_left=true.
+                std::vector<DataFrame> dataset_splits = dataframe.split(col, val, true);
+                double loss = this->calculateSplitLoss(&dataset_splits[0], &dataset_splits[1]);
+                losses.push_back(loss);
+                cols_splits.push_back(std::make_pair(col, val));
             }
         }
     }
-    // Placeholder value should have been replaced.
-    assert (best_column!=-1);
+    int best_column;
+    double best_threshold;
+    // Find lowest loss combination and return it
+    int ind_min = std::min_element(losses.begin(), losses.end()) - losses.begin();
+    best_column = cols_splits[ind_min].first;
+    best_threshold = cols_splits[ind_min].second;
+    // Sanity check that function did something
+    assert(best_column >= 0);
     split = std::make_pair(best_column, best_threshold);
     return split;
 }
@@ -384,7 +390,6 @@ double DecisionTree::predict_(DataVector* observation) const
 DataVector DecisionTree::predict(DataFrame* testdata) const
 {
     /** Perform prediction sequentially on each observation and collect a vector of predictions. */
-    //DataVector predictions = DataVector(false);  // is_row=false.
     int n = testdata->length();
     std::vector<double> preds(n, -1);
     // Make sure tree has been fitted before prediction:
@@ -400,7 +405,6 @@ DataVector DecisionTree::predict(DataFrame* testdata) const
         {
             DataVector* observation = testdata->row(i);
             double prediction = this->predict_(observation);
-            //predictions.addValue(prediction);
             preds[i] = prediction;
         }
     }
