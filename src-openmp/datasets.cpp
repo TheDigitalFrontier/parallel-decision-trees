@@ -527,7 +527,6 @@ DataFrame DataFrame::sample(int nrow, int seed, bool replace) const{
         // Draw row indices from uniform distribution
         std::uniform_int_distribution<> distr(0, this->length()-1);
         // pull random rows (as pointers, not copies) with replacement until full
-        #pragma omp parallel shared(new_frame)
         {
             while (new_frame.length() < nrow){
                 // get random row index with replacement
