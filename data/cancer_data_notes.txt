@@ -1,0 +1,3 @@
+Dataset from CS109a Homework 4
+- Full data: 750 observations, 7219 predictors
+- Temp data: 750 observations, 19 predictors
