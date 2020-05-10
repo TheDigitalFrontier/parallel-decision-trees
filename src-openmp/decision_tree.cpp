@@ -281,6 +281,7 @@ std::pair<int,double> DecisionTree::findBestSplit(TreeNode *node)
     bool first_pass = true;
     int best_column, col;
     double best_threshold, best_loss, loss;
+
     // Explore possible splits:
     for (int i = 0; i < this->mtry_; i++){
         col = shuf_inds[i];
@@ -288,20 +289,29 @@ std::pair<int,double> DecisionTree::findBestSplit(TreeNode *node)
         // Remove duplicates:
         std::sort(col_vals.begin(), col_vals.end());
         col_vals.erase(std::unique(col_vals.begin(), col_vals.end()), col_vals.end());
-        // For each unique column value, try that col and val as split, get score:
-        for (int j = 0; j < col_vals.size()-1; j++){
-            // Don't split on last value (because it will produce empty `right`).
-            double val = col_vals[j];
-            // But splitting on first value works as <= means left won't be empty
-            // Split dataset using current column and threshold, score, and update if best:
-            // equal_goes_left=true.
-            std::vector<DataFrame> dataset_splits = dataframe.split(col, val, true);
-            loss = this->calculateSplitLoss(&dataset_splits[0],&dataset_splits[1]);
-            if ((first_pass) or (loss<best_loss)){
-                first_pass = false;
-                best_column = col;
-                best_threshold = val;
-                best_loss = loss;
+
+        int j;
+        double val;
+        std::vector<DataFrame> dataset_splits;
+        #pragma omp parallel shared(col_vals, first_pass, best_column, best_threshold, best_loss) private(j, dataset_splits, loss)
+        {        
+            // For each unique column value, try that col and val as split, get score:
+            #pragma omp for schedule(dynamic)
+            for (j = 0; j < col_vals.size()-1; j++){
+                // Don't split on last value (because it will produce empty `right`).
+                //double val = col_vals[j];
+                val = col_vals[j];
+                // But splitting on first value works as <= means left won't be empty
+                // Split dataset using current column and threshold, score, and update if best:
+                // equal_goes_left=true.
+                dataset_splits = dataframe.split(col, val, true);
+                loss = this->calculateSplitLoss(&dataset_splits[0], &dataset_splits[1]);
+                if ((first_pass) or (loss<best_loss)){
+                    first_pass = false;
+                    best_column = col;
+                    best_threshold = val;
+                    best_loss = loss;
+                }
             }
         }
     }
