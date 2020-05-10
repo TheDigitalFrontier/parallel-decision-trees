@@ -121,17 +121,14 @@ void RandomForest::fit_()
     /** Fit RandomForest with given parameters. */
     this->trees_ = {};
     int i;
-
     // Initialize vectors with seed values
     std::vector<int> data_seed_vector;
     std::vector<int> tree_seed_vector;
-
     // Pre-fill vectors with seed values
     for(int j=0; j < this->num_trees_; j++){
         data_seed_vector.push_back(this->seed_gen.new_seed());
         tree_seed_vector.push_back(this->seed_gen.new_seed());
     }
-
     // Create a team of threads for parallel execution
     #pragma omp parallel shared(data_seed_vector, tree_seed_vector) private(i)
     {
@@ -139,7 +136,6 @@ void RandomForest::fit_()
             int nthreads = (int)omp_get_num_threads();
             std::cout << "nthreads: " << nthreads << std::endl;
         }
-
         // Execute for loop in parallel
         #pragma omp for schedule(dynamic)
         for (i = 0; i < this->num_trees_; i++){
