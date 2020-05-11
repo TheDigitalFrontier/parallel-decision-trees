@@ -21,9 +21,14 @@ double LossFunction::misclassification_error(DataVector labels)
     int prediction = label_counter.get_most_frequent();
     int correct = 0;
     int incorrect = 0;
-    for (int i = 0; i < labels.size(); i++)
+    for (int i = 0; i < labels.size(); i+=2)
     {
         if (labels.value(i) == prediction) {
+            correct += 1;
+        } else {
+            incorrect += 1;
+        }
+        if (labels.value(i+1) == prediction) {
             correct += 1;
         } else {
             incorrect += 1;
@@ -44,12 +49,18 @@ double LossFunction::cross_entropy(DataVector labels)
     DataVector labels_ = label_counter.get_labels();  // Get labels.
     DataVector counts_ = label_counter.get_values();  // Get count for each label.
     double prop;  // Temporary variable to store proportion of current class.
-    for (int i = 0; i < counts_.size(); i++)
+    double prop2;
+    for (int i = 0; i < counts_.size(); i+=2)
     {
         int label = labels_.value(i);
         int count = counts_.value(i);
         prop = 1.0*count/sum_of_counts;
         loss += prop * std::log2(prop);
+
+        int label2 = labels_.value(i+1);
+        int count2 = counts_.value(i+1);
+        prop2 = 1.0*count2/sum_of_counts;
+        loss += prop2 * std::log2(prop2);
     }
     loss = -loss;  // Negate the sum.
     return loss;
@@ -65,10 +76,18 @@ double LossFunction::gini_impurity(DataVector labels)
     //int predicted_label = label_counter.get_most_frequent();
     DataVector counts_ = label_counter.get_values();  // Get count for each label (don't actually need the label).
     double prop;  // Temporary variable to store proportion of current class.
-    for (int i = 0; i < counts_.size(); i++)
+    double prop2;
+    // double prop3;
+    for (int i = 0; i < counts_.size(); i+=2)
     {
         prop = 1.0*counts_.value(i)/sum_of_counts;
         loss += prop*(1-prop);
+
+        prop2 = 1.0*counts_.value(i+1)/sum_of_counts;
+        loss += prop2*(1-prop2);
+
+        // prop3 = 1.0*counts_.value(i+2)/sum_of_counts;
+        // loss += prop3*(1-prop3);
     }
     return loss;
 }
@@ -79,10 +98,14 @@ double LossFunction::mean_squared_error(DataVector labels)
     double prediction = labels.mean();
     double loss = 0;
     double error;
-    for (int i = 0; i < labels.size(); i++)
+    double error2;
+    for (int i = 0; i < labels.size(); i+=2)
     {
         error = ( labels.value(i) - prediction );
         loss += (error*error);
+
+        error2 = ( labels.value(i+1) - prediction );
+        loss += (error2*error2);
     }
     loss = 1.0*loss/labels.size();
     return loss;
