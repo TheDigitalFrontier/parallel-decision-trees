@@ -99,7 +99,7 @@ For regression, the loss functions take in a vector of (true) values. The predic
 The label counter stores the labels in a map (where each key is a label and each value is the number of occurrences of that label). Although they are stored as doubles, the labels are assumed to have integer values. Labels are coerced to integers when they are added to the map. Non-integer labels will cause an assertion error.
 
 
-![alt text](https://github.com/johannes-kk/cs205_final_project/blob/readme/docs/html/class_decision_tree__coll__graph.png  "Decision Tree Relations")
+![alt text](https://github.com/johannes-kk/cs205_final_project/blob/master/docs/html/class_decision_tree__coll__graph.png  "Decision Tree Relations")
 
 __(Diagram generated with [doxygen](http://www.doxygen.nl/).)__
 
@@ -147,7 +147,7 @@ A number of subroutines in our algorithm use a random seed to introduce randomne
 #### Dependencies
 Our code is written in C++14. We use some standard libraries listed below but do not use any external packages.
 
-![alt text](https://github.com/johannes-kk/cs205_final_project/blob/readme/docs/html/decision__tree_8cpp__incl.png  "Library Usage for Decision Tree")
+![alt text](https://github.com/johannes-kk/cs205_final_project/blob/master/docs/html/decision__tree_8cpp__incl.png  "Library Usage for Decision Tree")
 
 ## OpenMP Parallelization
 The `src-openmp` directory contains parallelized versions of the baseline serial codebase.
@@ -191,7 +191,7 @@ $ time ./demo_rf_serial
 ```
 Expected Output:
 
-![alt text](https://github.com/johannes-kk/cs205_final_project/blob/readme/demo/RF_Serial_Demo.png "Output Preview")
+![alt text](https://github.com/johannes-kk/cs205_final_project/blob/master/demo/RF_Serial_Demo.png "Output Preview")
 
 ## Experimental Design
 
@@ -239,7 +239,7 @@ $ time ./rf_serial
 
 Output preview:
 
-![alt text](https://github.com/johannes-kk/cs205_final_project/blob/readme/demo/RF_Serial_Test.png "Output Preview")
+![alt text](https://github.com/johannes-kk/cs205_final_project/blob/master/demo/RF_Serial_Test.png "Output Preview")
 
 ```plaintext
 Compile the demo file (parallel execution)
@@ -251,7 +251,7 @@ $ time ./rf_openmp
 
 Output preview:
 
-![alt text](https://github.com/johannes-kk/cs205_final_project/blob/readme/demo/RF_Parallel_Test.png "Output Preview")
+![alt text](https://github.com/johannes-kk/cs205_final_project/blob/master/demo/RF_Parallel_Test.png "Output Preview")
 
 
 To change number of threads
@@ -268,7 +268,7 @@ Our parallel implementation achieved overall speed up gains between 4-12x our se
 
 One very positive thing about our implementation is that other than at 10 trees, where available work is very limited, we continue to see sizable gains in speed up as we increase the number of nodes, suggesting that we do not have much overhead and can fully utilize increased resources. When the number of trees equals 50, moving from 4 to 8 nodes increases speed up by 57.83% while moving from 8 to 16 increases it by a still sizable 32.61%.
 
-![alt text](https://github.com/johannes-kk/cs205_final_project/blob/readme/speedup/SpeedUp_OpenMP.png "OpenMP Achieved Speed Up")
+![alt text](https://github.com/johannes-kk/cs205_final_project/blob/master/speedup/SpeedUp_OpenMP.png "OpenMP Achieved Speed Up")
 
 ## Challenges
 Our decision to define our own data structures proved very useful for modularizing our code and and implementing the RandomForest algorithm (by repeatedly invoking the fitting algorithm of our DecisionTree class, which in turn made use of our DataFrame class). In addition to the usual pitfalls with pointers and memory management faced by many first-time C++ programmers, we faced interesting challenges with how to protect data between threads in our multiprocessing approach.
