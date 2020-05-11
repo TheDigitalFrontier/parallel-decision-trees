@@ -1,0 +1,6 @@
+<map id="DecisionTree" name="DecisionTree">
+<area shape="rect" id="node1" title=" " alt="" coords="88,201,185,228"/>
+<area shape="rect" id="node2" href="$class_tree_node.html" title=" " alt="" coords="98,103,175,130"/>
+<area shape="rect" id="node3" href="$class_data_frame.html" title=" " alt="" coords="5,5,92,32"/>
+<area shape="rect" id="node4" href="$class_seed_generator.html" title=" " alt="" coords="271,103,381,130"/>
+</map>
