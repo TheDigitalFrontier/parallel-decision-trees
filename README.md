@@ -7,7 +7,7 @@ Spring 2020
 ### Summary
 Supervised learning in today's high performance computing industry can require high computational costs and extended time during model training, prediction or elsewhere. Identifying methods to speed up supervised learning will be a critical innovation path in coming years. A recent Stanford study quantified a new Moore's Law for AI by calculating that compute available for model training has been doubling every 3.4 months compared with every two years for processor development.[1](https://www.computerweekly.com/news/252475371/Stanford-University-finds-that-AI-is-outpacing-Moores-Law "Computer Weekly"). That same study said the time reduction to train ResNet image classification dropped from three hours in late 2017 to 88 seconds in mid-2019. Accelerating model training at all levels will unlock new capacity for data science and machine learning to help important problems or decrease necessary cost and time enough to provide greater access.
 
-To participate in this innovation, we wanted to assess the speed up possible by parallelizing various parts of some of today's most relied upon supervised learning models - decision trees and random forest. Because of the nature of these models, there are various places where parallelization can be applied for potential speed up. These locations include training, loss calculation, pruning, prediction and tuning. 
+To participate in this innovation, we wanted to assess the speed up possible by parallelizing various parts of some of today's most relied upon supervised learning models - decision trees and random forest. Because of the nature of these models, there are various places where parallelization can be applied for potential speed up. These locations include training, loss calculation, pruning, prediction and tuning.
 
 ## Project Structure
 Our parallel implementation of random forest can be found in this repository.
@@ -94,15 +94,17 @@ First, in the findBestSplit() function of the DecisionTree class, OpenMP was abl
 
 Second, in the predict() function of DecisionTree, OpenMP was able to parallelize the creation of a prediction for every row value such that the full set of predictions could be made much faster.
 
-Third, in the fit() function of RandomForest, OpenMP was able to parallelize the creation of a random subsample of trees and branches so the model could learn multiple random fits at once. 
+Third, in the fit() function of RandomForest, OpenMP was able to parallelize the creation of a random subsample of trees and branches so the model could learn multiple random fits at once.
 
 ## Cloud Infrastructure
 We utilize an Amazon Web Service m5.4xlarge instance for our parallel implementation tests. Our instance was running Ubuntu Server 16.04 with 16 vCPUs, 64 GiB Memory and EBS Storage. We were able to leverage 2 threads per core and 8 cores for the single socket. The CPU was an Intel Xeon Platinum 8259CL with 2.5GHz, L2 cache of 1024K and L3 cache of 36608K.
 
 ## Speed Up Achieved
-todo@H
+On our SONAR dataset, we see continually increasing speed-up on the order of 4-10x the greater the number of nodes. Above 100 trees, the speed up gains become minimal. For HMEQ, we see a first positive, then negative trend. Going from 10 to 50 trees, sees an increase from 6x to 8-9x speedup. But going from 50 trees to 100 or more begins to slow down the speed up achieved. 100 trees is limited to 4x speed up and 500 trees shows a speed *down* at 2 and 4 nodes before matching serial parity at 6 and 16 nodes. This suggests that for HMEQ, coordination costs are greater than efficiency gains until we get more computational power from more nodes.
+
+![alt text](https://github.com/johannes-kk/cs205_final_project/blob/readme/speedup/SpeedUp_OpenMP.png "OpenMP Achieved Speed Up")
 
 ## Challenges
 todo@J
 
-## Future Work 
+## Future Work
