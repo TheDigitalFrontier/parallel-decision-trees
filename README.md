@@ -53,8 +53,23 @@ Our models are comprised of three custom C++ classes representing model logic an
 - TreeNode: Represents a single node in a Decision Tree. *File: tree_node.hpp.*
 - DecisionTree: Represents a standard Decision Tree. Constructed to allow regression or classification. *File: decision_tree.hpp.*
 - RandomForest: Represents a Random Forest model. *File: random_forest.hpp.*
-- LossFunction: Enables loss calculation of types Misclassification, Cross Entropy, Gini and MSE. *File: losses.hpp.*
+- LossFunction: Enables loss calculation of various provided types. *File: losses.hpp.*
 - LabelCounter: Utility to calculate occurrences in a label for classification *File: losses.hpp.*
+
+We needed to write extensive methods from scratch to create a basic working version of a Decision Tree or Random Forest. The most important of these methods are written below:
+- calculateLoss(): Calculates loss before split
+- calculateSplitLoss(): Calculates loss on split dataset using weighted average of loss in each split
+- findBestSplit(): Finds best split location for values of every column
+- fit(): Fits decision tree to provided dataframe
+- predict(): Predicts new values from provided test vector
+- print(): Returns tree as string to std::cout
+
+We provide loss and accuracy calculation options of five types for various model types. These types include:
+- Misclassification Error
+- Cross Entropy
+- Gini Impurity
+- Mean Squared Error
+- Classification Accuracy
 
 All code can be found in the *src* or *src-openmp* folders depending on your desire for serial or parallel.i
 
@@ -73,7 +88,13 @@ We relied on several core C++ packages during our development. These packages in
 - <string>
 
 ## OpenMP Parallelization
-todo
+We experimented with parallelizing several of the previously listed opportunities and the greatest speed up was achieved in three locations.
+
+First, in the findBestSplit() function of the DecisionTree class, OpenMP was able to parallelize the identification and testing of split values for each column to more quickly identify the best split loss and subsequent split decision.
+
+Second, in the predict() function of DecisionTree, OpenMP was able to parallelize the creation of a prediction for every row value such that the full set of predictions could be made much faster.
+
+Third, in the fit() function of RandomForest, OpenMP was able to parallelize the creation of a random subsample of trees and branches so the model could learn multiple random fits at once. 
 
 ## Cloud Infrastructure
 We utilize an Amazon Web Service m5.4xlarge instance for our parallel implementation tests. Our instance was running Ubuntu Server 16.04 with 16 vCPUs, 64 GiB Memory and EBS Storage. We were able to leverage 2 threads per core and 8 cores for the single socket. The CPU was an Intel Xeon Platinum 8259CL with 2.5GHz, L2 cache of 1024K and L3 cache of 36608K.
