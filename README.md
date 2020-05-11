@@ -47,6 +47,8 @@ We built from the ground up C++ classes for data integration and manipulation. S
 ├───demo
 │       demo_rf_serial.cpp
 │
+├───docs (by Doxygen)
+│
 ├───scripts
 │       print-config-c.sh
 │       print-config-general.sh
@@ -161,7 +163,7 @@ Parallelizing Random Forest’s prediction method proved difficult as it relies 
 Our design choice to implement custom `DataVector` and `DataFrame` classes helped tremendously in handling data, but proved to be a challenge when parallelizing. In particular, OpenMP performs a lot of pre-allocation, creation, and deletion of objects under the hood, which requires a very thorough implementation of any custom classes and data structures. As such, when parallelizing using OpenMP pragmas, we usually avoided using our custom data structures where possible, instead using atomic types or standard objects from the `std` namespace. This was not a problem per se, but meant that parallelization did not merely consist of adding pragmas, but required some comprehensive refactoring. Consequently the OpenMP-parallelization took a lot longer than anticipated, impacting our stretch goals.
 
 ### Alternative parallelization techniques considered
-#### Loop unrolling
+#### Loop Unrolling
 Our design leaves limited opportunities for loop unrolling. The primary target was in unrolling loss calculations. Our experiments found that as expected this had no material impact on training speed and was thus not incorporated in the final design. We have kept our loop unrolling code in branch `unroll` for review by those that might be interested.
 
 #### OpenACC
@@ -236,6 +238,7 @@ $ time ./rf_serial
 ```
 
 Output preview:
+
 ![alt text](https://github.com/johannes-kk/cs205_final_project/blob/readme/demo/RF_Serial_Test.png "Output Preview")
 
 ```plaintext
@@ -247,6 +250,7 @@ $ time ./rf_openmp
 ```
 
 Output preview:
+
 ![alt text](https://github.com/johannes-kk/cs205_final_project/blob/readme/demo/RF_Parallel_Test.png "Output Preview")
 
 
@@ -286,7 +290,7 @@ Ultimately, our custom abstract data types worked fairly well because it made it
 #### Hyperparameter Search
 Our project focused primarily on parallelizing the fitting of trees and forests consisting of multiple such trees, given a set of hyperparameter values. In our experiments, these are simply set manually after some experimentation and based on experience in the field. A more holistic approach would also incorporate searching a space of hyperparameters to identify the best configuration to then fit using our shared-memory parallelized implementation. This was on our roadmap to implement, but due to time constraints, we had to de-prioritize it.
 
-####Cross Validation
+#### Cross Validation
 A truly robust hyperparameter search is conducted using cross validation, whereby performance is not evaluated on a static held-out validation set, but the training set is instead split into k “folds”. For a given set of hyperparameter values, a model is fit for each k on all k-1 folds and evaluated on the held-out fold k. The performance on each held-out fold k is then averaged to find the best hyperparameter values. K-fold cross validation is thus only relevant if hyperparameter search is performed in the first place, thus this is a natural extension once such searching functionality is potentially added.
 
 A challenge with cross validation is thus that it means fitting k instances of the same hyperparameter configuration, which makes it much more costly than simple training validation split. As is usually the case, robustness and reliability comes at computational cost. However, fitting k models rather than a single one is an obvious candidate for parallelization.
