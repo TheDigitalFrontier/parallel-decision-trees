@@ -1,0 +1,29 @@
+## Git clone
+git clone https://github.com/johannes-kk/cs205_final_project.git
+
+## On a new instance
+sudo apt-get install software-properties-common
+sudo add-apt-repository ppa:ubuntu-toolchain-r/test
+sudo apt-get update
+sudo apt-get install gcc
+sudo apt install g++
+
+## Running experiments
+
+vim ../speedup/rf_serial.cpp
+g++ -std=c++14 -O0 ../speedup/rf_serial.cpp -o rf_serial
+time ./rf_serial
+
+vim ../speedup/rf_serial_hmeq.cpp
+g++ -std=c++14 -O0 ../speedup/rf_serial_hmeq.cpp -o rf_serial_hmeq
+time ./rf_serial_hmeq
+
+export OMP_NUM_THREADS=1
+vim ../speedup/rf_openmp.cpp
+g++-5 -std=c++14 -O0 -fopenmp ../speedup/rf_openmp.cpp -o rf_openmp
+time ./rf_openmp
+
+export OMP_NUM_THREADS=1
+vim ../speedup/rf_openmp_hmeq.cpp
+g++-5 -std=c++14 -O0 -fopenmp ../speedup/rf_openmp_hmeq.cpp -o rf_openmp_hmeq
+time ./rf_openmp_hmeq
