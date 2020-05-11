@@ -7,7 +7,8 @@
 #include "../src-openmp/random_forest.cpp"
 
 int main(){
-    int ntree = 500;
+    int ntree = 100;
+    std::cout << "ntree: " << ntree << std::endl;
     
     DataLoader csv_loader = DataLoader("../data/sonar.all-data.numerical.csv");
     DataFrame df_sonar = csv_loader.load();

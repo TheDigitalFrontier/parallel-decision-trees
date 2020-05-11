@@ -7,7 +7,8 @@
 #include "../src/random_forest.cpp"
 
 int main(){
-    int ntree = 10;
+    int ntree = 100;
+    std::cout << "ntree: " << ntree << std::endl;
     
     DataLoader csv_loader = DataLoader("../data/hmeq_clean.csv");
     DataFrame df_csv = csv_loader.load();
