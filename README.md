@@ -1,13 +1,13 @@
 # Decision Tree Parallelization
-CS205: Computing Foundations for Computational Science
+#### CS205: Computing Foundations for Computational Science
 Harvard School of Engineering and Applied Sciences
 Spring 2020
-Team: Gabriel Pestre, Johannes Kolberg, Hardik Gupta, Will Seaton
+**Team**: Gabriel Pestre, Johannes Kolberg, Hardik Gupta, Will Seaton
 
 ### Summary
 Supervised learning in today's high performance computing industry can require high computational costs and extended time during model training, prediction or elsewhere. Identifying methods to speed up supervised learning will be a critical innovation path in coming years. A recent Stanford study quantified a new Moore's Law for AI by calculating that compute available for model training has been doubling every 3.4 months compared with every two years for processor development.[1](https://www.computerweekly.com/news/252475371/Stanford-University-finds-that-AI-is-outpacing-Moores-Law "Computer Weekly"). That same study said the time reduction to train ResNet image classification dropped from three hours in late 2017 to 88 seconds in mid-2019. Accelerating model training at all levels will unlock new capacity for data science and machine learning to help important problems or decrease necessary cost and time enough to provide greater access.
 
-To participate in this innovation, we wanted to assess the speed up possible by parallelizing various parts of some of today's most relied upon supervised learning models - decision trees and random forest. These models require....
+To participate in this innovation, we wanted to assess the speed up possible by parallelizing various parts of some of today's most relied upon supervised learning models - decision trees and random forest. Because of the nature of these models, there are various places where parallelization can be applied for potential speed up. These locations include training, loss calculation, pruning, prediction and tuning. 
 
 ## Project Structure
 Our parallel implementation of random forest can be found in this repository.
@@ -38,6 +38,10 @@ $ g++ -std=c++14 -O0 demo_rf_serial.cpp -o demo_rf_serial
 
 $ time ./demo_rf_serial
 
+Expected Output:
+
+![alt text](https://github.com/johannes-kk/cs205_final_project/blob/readme/demo/RF_Serial_Demo.png "Output Preview")
+
 ## Code Base Design
 We built from the ground up C++ classes for data integration and manipulation. Since this was all of our first time implementing a project in C/C++, this allowed us to have greater control over parallelization options at every level. Our custom classes are located in datasets.hpp and include:
 - DataVectors: Represents an individual row or column as a <vector>
@@ -52,7 +56,21 @@ Our models are comprised of three custom C++ classes representing model logic an
 - LossFunction: Enables loss calculation of types Misclassification, Cross Entropy, Gini and MSE. *File: losses.hpp.*
 - LabelCounter: Utility to calculate occurrences in a label for classification *File: losses.hpp.*
 
-All code can be found in the *src* or *src-openmp* folders depending on your desire for serial or parallel.
+All code can be found in the *src* or *src-openmp* folders depending on your desire for serial or parallel.i
+
+## Dependencies
+We relied on several core C++ packages during our development. These packages include:
+- <assert.h>
+- <math.h>
+- <cmath>
+- <iostream>
+- <fstream>
+- <sstream>
+- <iomanip>
+- <vector>
+- <random>
+- <algorithm>
+- <string>
 
 ## OpenMP Parallelization
 todo
