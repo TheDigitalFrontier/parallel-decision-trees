@@ -85,19 +85,20 @@ We built from the ground up C++ classes for data integration and manipulation. S
 #### Data Structures:
 The **DataVector**, **DataFrame**, and **DataLoader** classes are used for data management.
 They provide some functionality helpful for decision trees (e.g. splitting a data frame into two frames based on a splitting column and threshold) but none of the logic for training a tree.
-All values are stored as doubles.
-Negative indexing is permitted.
-The **TreeNode** class implements a basic tree structure.
-The nodes have storage for data relevant to decision trees (e.g. training data, splitting values), but none of the logic for training those splits.
-Each node has a height (number of levels in the subtree rooted at this node, including this level) and a depth (distance between this node and root node, where root node has depth zero). Thus, for any node, the sum of its height and depth should be equivalent to the height of the tree it is in.
+
+All values are stored as doubles. Negative indexing is permitted.
+
+The **TreeNode** class implements a basic tree structure. The nodes have storage for data relevant to decision trees (e.g. training data, splitting values), but none of the logic for training those splits. Each node has a height (number of levels in the subtree rooted at this node, including this level) and a depth (distance between this node and root node, where root node has depth zero). Thus, for any node, the sum of its height and depth should be equivalent to the height of the tree it is in.
+
 The **LossFunction** and **LabelCounter** classes are helpers for the decision tree.
 For classification, the loss functions take in a vector of (true) labels. The predicted label is not passed because it is implicit (majority label, with ties broken in favor of smallest label).
 For regression, the loss functions take in a vector of (true) values. The predicted value is not passed because it is implicit (mean value).
-The label counter stores the labels in a map (where each key is a label and each value is the number of occurrences of that label).
-Although they are stored as doubles, the labels are assumed to have integer values. Labels are coerced to integers when they are added to the map. Non-integer labels will cause an assertion error.
+
+The label counter stores the labels in a map (where each key is a label and each value is the number of occurrences of that label). Although they are stored as doubles, the labels are assumed to have integer values. Labels are coerced to integers when they are added to the map. Non-integer labels will cause an assertion error.
 
 
 ![alt text](https://github.com/johannes-kk/cs205_final_project/blob/readme/docs/html/class_decision_tree__coll__graph.png  "Decision Tree Relations")
+
 __(Diagram generated with [doxygen](http://www.doxygen.nl/).)__
 
 #### Algorithms:
@@ -105,23 +106,24 @@ The **DecisionTree** class implements classification and regression trees.
 Assumes the class is stored in the final column (accessible with column index `-1`).
 It is initialized with a dataset, which is placed in a new TreeNode and serves as the root.
 The fitting process recursively visits leaf nodes, checks for stopping/pruning conditions, and potentially performs a new split.
+
 When a new split is added, the splitting column and threshold are stored in the splitting node, and new child nodes are created, each with their respective portion of the dataset.
 When initialized, nodes in the decision tree typically have a piece of the dataset, but no splitting values (column+threshold); the latter are not set until the node is actually visited by the recursive fitting function.
+
 The **RandomForest** class implements the random forest algorithm.
-It creates a series of **DecisionTree**s and fits each one on a bootstrapped sample of the dataset.
-It allows a number of hyperparameters, so of which it delegates to the **DecisionTree**s.
+It creates a series of **DecisionTrees** and fits each one on a bootstrapped sample of the dataset. It allows a number of hyperparameters, so of which it delegates to the **DecisionTrees**.
 
 #### Import conventions:
-Header files (`.hpp`) only import other header files.
-Class files (`.cpp`) that don’t have a `main` method only import header files.
-Class files (`.cpp`) that do have a `main` method import all relevant class files (but never another class file that has a `main` method).
+- Header files (`.hpp`) only import other header files.
+- Class files (`.cpp`) that don’t have a `main` method only import header files.
+- Class files (`.cpp`) that do have a `main` method import all relevant class files (but never another class file that has a `main` method).
 #### Naming conventions:
-"set_" and "add_" methods modify the object.
-"get_" methods return a constant or pre-computed attribute of the object without modifying it.
-"find_" methods calculate something about the object without modifying it.
-utility methods (public or private) are helpers that may or may not modify the object (as indicated in the docstring).
+- "set_" and "add_" methods modify the object.
+- "get_" methods return a constant or pre-computed attribute of the object without modifying it.
+- "find_" methods calculate something about the object without modifying it.
+- Utility methods (public or private) are helpers that may or may not modify the object (as indicated in the docstring).
 #### Parameter conventions:
-Generally, vectors are returned as pointers. Data frames are sometimes returned as pointers (*), especially for functions that return multiple frames (i.e. a vector of pointers to data frames).
+Generally, vectors are returned as pointers. Data frames are sometimes returned as pointers (\*), especially for functions that return multiple frames (i.e. a vector of pointers to data frames).
 Objects are rarely passed by reference (&) except if it was necessary to achieve functionality.
 
 ## Salient Design Choices
@@ -130,7 +132,9 @@ We decided to define our own **DataVector** and **DataFrame** data types in orde
 #### Use of nested algorithms
 We decided on a modularized approach for implementing the random forest algorithm:
 We defined a **TreeNode** class to handle tree traversal operations and data storage operations: each node in the tree stores a subset of the training data (i.e. the collection of observations that have been routed to that node in the decision tree based on previous splits), as well as the results of the splitting operation (i.e. which column to split on and what threshold value to use).
+
 We defined a **DecisionTree** class to implement the fitting algorithm, which loads the full training set into its root node, and recursively looks for the best split and generates left and right child **TreeNode** accordingly.
+
 We defined a **RandomForest** class to create a series of **DecisionTree** objects, fit each one on a different version of the dataset (using bootstrapped sampling), and make predictions based on the ensemble results.
 We felt this approach would make it easier to verify the accuracy of our results, and also facilitate comparisons to figure out where parallelization is most effective.
 #### Delegation of hyperparameters:
@@ -156,25 +160,33 @@ Parallelizing Random Forest’s prediction method proved difficult as it relies 
 
 Our design choice to implement custom `DataVector` and `DataFrame` classes helped tremendously in handling data, but proved to be a challenge when parallelizing. In particular, OpenMP performs a lot of pre-allocation, creation, and deletion of objects under the hood, which requires a very thorough implementation of any custom classes and data structures. As such, when parallelizing using OpenMP pragmas, we usually avoided using our custom data structures where possible, instead using atomic types or standard objects from the `std` namespace. This was not a problem per se, but meant that parallelization did not merely consist of adding pragmas, but required some comprehensive refactoring. Consequently the OpenMP-parallelization took a lot longer than anticipated, impacting our stretch goals.
 
+### Alternative parallelization techniques considered
+#### Loop unrolling
+Our design leaves limited opportunities for loop unrolling. The primary target was in unrolling loss calculations. Our experiments found that as expected this had no material impact on training speed and was thus not incorporated in the final design. We have kept our loop unrolling code in branch `unroll` for review by those that might be interested.
+
+#### OpenACC
+We did not prioritize this approach because we felt decision tree algorithms would not be amenable to GPU parallelization: the decision tree’s fitting algorithm relies extensively on branching and control flow statements, making it much more appropriate for CPUs. We considered GPU acceleration of DataVector and DataFrame operations but given how often these are called by other parts of the code base, we expect large overheads.
+
+#### MPI
+MPI is distributed-memory message-passing parallelization. Our DataFrame is merely a collection of pointers to underlying DataVector rows, such that data is not unnecessarily copied and moved around. This makes data handling much faster, but also less suited to distributed-memory parallelization. Since MPI passes messages around, there seems to be no convenient way to send entire tree structures between nodes. A more promising avenue is using MPI to parallelize the hyperparameter search. Implementing a robust grid search methodology was a stretch goal that must remain for now in Future Work, but MPI shows more promise for this problem.
+
+
+
 ## How to Run Demo
 To run our Random Forest demonstration locally, please run the below commands in your Terminal. Please ensure you are using a version of C++ compatible with c++14.
-
+```plaintext
 // Clone our repository locally
-
 $ git clone https://github.com/johannes-kk/cs205_final_project.git
 
 // Navigate to Demo folder
-
 $ cd cs205_final_project/demo/
 
 // Compile the demo file
-
 $ g++ -std=c++14 -O0 demo_rf_serial.cpp -o demo_rf_serial
 
 // Run the executable
-
 $ time ./demo_rf_serial
-
+```
 Expected Output:
 
 ![alt text](https://github.com/johannes-kk/cs205_final_project/blob/readme/demo/RF_Serial_Demo.png "Output Preview")
@@ -203,14 +215,17 @@ We utilize an Amazon Web Service m5.4xlarge instance for our parallel implementa
 To run our code on your own AWS instance, please follow these commands.
 
 Install the compiler
-
+```plaintext
 $ sudo apt-get install software-properties-common
 $ sudo add-apt-repository ppa:ubuntu-toolchain-r/test
 $ sudo apt-get update
 $ sudo apt-get install gcc
 $ sudo apt install g++
+```
 
 Run our code
+```plaintext
+Clone our repository
 $ git clone https://github.com/johannes-kk/cs205_final_project.git
 Navigate to the bin folder
 $ cd cs205_final_project/bin/
@@ -218,13 +233,19 @@ Compile the demo file (serial execution)
 $ g++ -std=c++14 -O0 ../speedup/rf_serial.cpp -o rf_serial
 Run the executable
 $ time ./rf_serial
+```
+
 Output preview:
 ![alt text](https://github.com/johannes-kk/cs205_final_project/blob/readme/demo/RF_Serial_Test.png "Output Preview")
+
+```plaintext
 Compile the demo file (parallel execution)
 $ g++-5 -std=c++14 -O0 -fopenmp ../speedup/rf_openmp.cpp -o rf_openmp
 [Note: On an Ubuntu 16.04 AWS instance, `sudo apt install g++` installs g++-5. Our code will compile successfully using g++-5 as well.]
 Run the executable
 $ time ./rf_openmp
+```
+
 Output preview:
 ![alt text](https://github.com/johannes-kk/cs205_final_project/blob/readme/demo/RF_Parallel_Test.png "Output Preview")
 
@@ -233,9 +254,9 @@ To change number of threads
 
     $ export OMP_NUM_THREADS=8
 
-To change number of trees
+To change number of trees, edit variable `int ntree = 100;`
 
-$ vim ../speedup/rf_openmp.cpp
+    $ vim ../speedup/rf_openmp.cpp
 
 
 ## Speed Up Achieved
@@ -246,16 +267,13 @@ One very positive thing about our implementation is that other than at 10 trees,
 ![alt text](https://github.com/johannes-kk/cs205_final_project/blob/readme/speedup/SpeedUp_OpenMP.png "OpenMP Achieved Speed Up")
 
 ## Challenges
-In addition to the usual pitfalls with pointers and memory management faced by many first-time C++ programmers, we also faced some interesting challenges with how to protect data between threads in our multiprocessing approach.
-
-Although our decision to define our own data structures proved very useful for modularising our code and and easily implementing the RandomForest algorithm (by repeatedly invoking the fitting algorithm of our DecisionTree class, which in turn made use of our DataFrame class), it also resulted in some problems.
+Our decision to define our own data structures proved very useful for modularizing our code and and implementing the RandomForest algorithm (by repeatedly invoking the fitting algorithm of our DecisionTree class, which in turn made use of our DataFrame class). In addition to the usual pitfalls with pointers and memory management faced by many first-time C++ programmers, we faced interesting challenges with how to protect data between threads in our multiprocessing approach.
 
 When we used OpenMP to parallelize various parts of the RandomForest functionality, our initial attempts often failed because of memory clashes between different instances of the DecisionTree object. Although we declared variables in the parallel for-loop as private, we had some cases where the abstract data types we created were not fully protected: even if each thread had its own instance of the DecisionTree class, some of the helper methods or temporary variables accessed within the class were causing conflicts.
 
 For example, in the case of the RandomForest.predict method, our serial implementation used a DataFrame to collect the predictions from each DecisionTree. However, when we added OpenMP directives to this section of code, we faced issues with the AddRow method: although the DataFrame was a shared variable (which should have prevented two threads from appending their results at the same time), some of the temporary variables used within the DataFrame were not properly protected, causing the parallel version to fail.
 
-<img width=”100%” src=”https://github.com/johannes-kk/cs205_final_project/blob/master/docs/html/class_random_forest_a2fb0036a88d4138c4c5234bf8acf62b0_cgraph.png” />
-__(Diagram generated with [doxygen](http://www.doxygen.nl/).)__
+![alt text](https://github.com/johannes-kk/cs205_final_project/blob/master/docs/html/class_random_forest_a2fb0036a88d4138c4c5234bf8acf62b0_cgraph.png  "Random Forest Class")
 
 In most cases, we were able to temporarily store data in a more primitive type (e.g. vector of doubles) and repackage it as a DataVector after or at the end of the parallel section.
 
@@ -265,17 +283,20 @@ Ultimately, our custom abstract data types worked fairly well because it made it
 
 
 ## Future Work
-Hyperparameter Search
-Our project focused primarily on parallelizing the fitting of trees and forests consisting of multiple such trees, given a set of hyperparameter values. In our experiments, these are simply set manually after some experimentation and based on experience in the field. A more holistic approach would also incorporate searching a space of hyperparameters to identify the best configuration to then fit using our shared-memory parallelized implementation. This was on our roadmap to implement, but due to time constraints we had to de-prioritize it.
-Cross Validation
+#### Hyperparameter Search
+Our project focused primarily on parallelizing the fitting of trees and forests consisting of multiple such trees, given a set of hyperparameter values. In our experiments, these are simply set manually after some experimentation and based on experience in the field. A more holistic approach would also incorporate searching a space of hyperparameters to identify the best configuration to then fit using our shared-memory parallelized implementation. This was on our roadmap to implement, but due to time constraints, we had to de-prioritize it.
+
+####Cross Validation
 A truly robust hyperparameter search is conducted using cross validation, whereby performance is not evaluated on a static held-out validation set, but the training set is instead split into k “folds”. For a given set of hyperparameter values, a model is fit for each k on all k-1 folds and evaluated on the held-out fold k. The performance on each held-out fold k is then averaged to find the best hyperparameter values. K-fold cross validation is thus only relevant if hyperparameter search is performed in the first place, thus this is a natural extension once such searching functionality is potentially added.
 
 A challenge with cross validation is thus that it means fitting k instances of the same hyperparameter configuration, which makes it much more costly than simple training validation split. As is usually the case, robustness and reliability comes at computational cost. However, fitting k models rather than a single one is an obvious candidate for parallelization.
-OpenMP+MPI hybrid parallelization
+
+#### OpenMP+MPI hybrid parallelization
 As mentioned, MPI is not optimal for parallelizing the fitting of a single forest with multiple trees. A better candidate for distributed-memory parallelization is performing hyperparameter search. This was on our roadmap as a stretch goal. In the intended OpenMP+MPI hybrid parallelization model we would use OpenMP to parallelize the fitting of separate trees and the search for candidate node splits within each across threads, while MPI would distribute doing so within different subset of hyperparameter values across computing nodes.
 
 Thus, the master node would determine the hyperparameter combinations to evaluate, and pass subsets out to the different worker nodes. Each worker would take its set of hyperparameters and fit a forest of trees, parallelized using OpenMP, before evaluating its validation data performance and sending that result back to the master node. The master would then pick the best-performing hyperparameter configuration, and fit a final forest on the combined training and validation sets. The demo would then presumably evaluate this final model on held-out test data.
-Genetic algorithms
+
+#### Genetic algorithms
 Excitingly, we were hoping to implement a basic genetic algorithm to perform a more sophisticated hyperparameter search than simply exhausting a grid. Genetic algorithms are not a novelty as such, but they are not often used for hyperparameter searching. Admittedly they are somewhat overkill for tree-based models as there is only so much one can do with their hyperparameter values, but it would have been an interesting learning experience. Similarly to the proposed hybrid model of using distributed-memory parallelization for evaluating subsets of hyperparameters and shared-memory parallelization for fitting the forest for each configuration, a genetic searching algorithm would be very similar.
 
 Rather than searching a predetermined grid of hyperparameter values, a genetic algorithm fits iterations of a fixed number of models with different configurations, evaluates their performance on held-out data (or, ideally, using cross-validation), discards the worst-performing ones, and combines the best ones to fill the set back up to the fixed size. Children configurations are made by pairing parent models, which manifests itself in different ways for different functional forms; for trees, a natural way to combine high-performing parent trees is picking some hyperparameter values for each. Inspired by natural selection, random mutations are typically thrown in on top to give the search some randomness and, hopefully, the ability to escape local minima.
