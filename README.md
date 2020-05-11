@@ -2,10 +2,11 @@
 #### CS205: Computing Foundations for Computational Science
 Harvard School of Engineering and Applied Sciences
 Spring 2020
+
 **Team**: Gabriel Pestre, Johannes Kolberg, Hardik Gupta, Will Seaton
 
 ### Summary
-Supervised learning in today's high performance computing industry can require high computational costs and extended time during model training or prediction. Identifying methods to speed up supervised learning will be a critical innovation path in coming years. A recent Stanford study quantified a new Moore's Law for AI by calculating that compute available for model training has been doubling every 3.4 months compared with every two years for processor development.[1](https://www.computerweekly.com/news/252475371/Stanford-University-finds-that-AI-is-outpacing-Moores-Law "Computer Weekly"). That same study said the time reduction to train ResNet image classification dropped from three hours in late 2017 to 88 seconds in mid-2019. Accelerating model training at all levels will unlock new capacity for data science and machine learning to help important problems or decrease necessary cost and time enough to provide greater access.
+Supervised learning in today's high performance computing industry can require high computational costs and extended time during model training or prediction. Identifying methods to speed up supervised learning will be a critical innovation path in coming years. A recent Stanford study quantified a new Moore's Law for AI by calculating that compute available for model training has been doubling every 3.4 months compared with every two years for processor development.([1](https://www.computerweekly.com/news/252475371/Stanford-University-finds-that-AI-is-outpacing-Moores-Law "Computer Weekly")). That same study said the time reduction to train ResNet image classification dropped from three hours in late 2017 to 88 seconds in mid-2019. Accelerating model training at all levels will unlock new capacity for data science and machine learning to help important problems or decrease necessary cost and time enough to provide greater access.
 
 To participate in this innovation, we wanted to assess the speed up possible by parallelizing various parts of some of today's most relied upon supervised learning models - decision trees and random forest. Because of the nature of these models, there are various places where parallelization can be applied for potential speed up. These locations include training, loss calculation, pruning, prediction and tuning.
 
@@ -21,7 +22,7 @@ Random Forest models are an improvement over decision trees because each tree co
 
 The trade off is that random forests have more available unique tree types if you make subsets available and computational costs can quickly skyrocket. As the dataset grows, the cost of fitting each tree does too. The benefit in accuracy from fitting more trees remains high though, so despite the increasing costs from increasing data and number of trees, a data scientist still must pursue this route.
 
-#### Fitting the Trees for the Forest
+#### Fitting the Trees to the Forest
 Since each tree is an independent structure, it can be fitted separately and is therefore an excellent candidate for parallelization. Each tree bootstraps a new training sample and recursively splits nodes until some stopping criteria is met. Fitting a hundred trees can theoretically be done in the same time as fitting a single one, provided one has sufficient parallel resources available.
 
 Fitting each tree requires considering many values as the optimal location to split at and this loss calculation can also be parallelized. At each value, the model must calculate an independent loss value before collating results and selecting the minimum loss.
@@ -29,9 +30,9 @@ Fitting each tree requires considering many values as the optimal location to sp
 Lastly, due to the nature of bootstrap resampling and random selection of subsets of predictors, random forests can be difficult to reproduce.  Popular libraries like sklearn and caret are not guaranteed to reproduce identical results even with the same seed. This is a challenge when making speed up experiments reproducible, a pillar of effective computational science.
 
 ## Code Base Design
-We built from the ground up C++ classes for data integration and manipulation. Since this was all of our first time implementing a project in C/C++, this allowed us to have greater control over parallelization options at every level.
+We built from the ground up C++ classes for data integration and manipulation. Since this was all of our first time implementing a project in C/C++, this allowed us to have greater control over parallelization options at every level. We parallelize using OpenMP.
 
-## Project Structure
+### Project Structure
 ```plaintext
 ├───bin
 │       compile.sh
@@ -78,7 +79,7 @@ We built from the ground up C++ classes for data integration and manipulation. S
 │       random_forest.hpp
 │
 └───tests
-    ```
+```
 
 ## Class Structure
 #### Data Structures:
@@ -95,13 +96,14 @@ For regression, the loss functions take in a vector of (true) values. The predic
 The label counter stores the labels in a map (where each key is a label and each value is the number of occurrences of that label).
 Although they are stored as doubles, the labels are assumed to have integer values. Labels are coerced to integers when they are added to the map. Non-integer labels will cause an assertion error.
 
-docs/html/class_decision_tree__coll__graph.png
+
+![alt text](https://github.com/johannes-kk/cs205_final_project/blob/readme/docs/html/class_decision_tree__coll__graph.png  "Decision Tree Relations")
 __(Diagram generated with [doxygen](http://www.doxygen.nl/).)__
 
 #### Algorithms:
 The **DecisionTree** class implements classification and regression trees.
 Assumes the class is stored in the final column (accessible with column index `-1`).
-It is initialized with a dataset, which is placed in a new TreeNode which serves as the root.
+It is initialized with a dataset, which is placed in a new TreeNode and serves as the root.
 The fitting process recursively visits leaf nodes, checks for stopping/pruning conditions, and potentially performs a new split.
 When a new split is added, the splitting column and threshold are stored in the splitting node, and new child nodes are created, each with their respective portion of the dataset.
 When initialized, nodes in the decision tree typically have a piece of the dataset, but no splitting values (column+threshold); the latter are not set until the node is actually visited by the recursive fitting function.
@@ -119,16 +121,16 @@ Class files (`.cpp`) that do have a `main` method import all relevant class file
 "find_" methods calculate something about the object without modifying it.
 utility methods (public or private) are helpers that may or may not modify the object (as indicated in the docstring).
 #### Parameter conventions:
-Generally, vectors are returned as pointers. Dataframes are sometimes returned as pointers (*), especially for functions that return multiple frames (i.e. a vector of pointers to data frames).
+Generally, vectors are returned as pointers. Data frames are sometimes returned as pointers (*), especially for functions that return multiple frames (i.e. a vector of pointers to data frames).
 Objects are rarely passed by reference (&) except if it was necessary to achieve functionality.
 
 ## Salient Design Choices
 #### Use of abstract data structures:
-We decided to define our own **DataVector** and **DataFrame** data types, in order to ensure consistency in our data manipulations and make it easier to unit-test the code. For example, the **DataFrame** class contains a method that inspects values in a specified column and splits the rows into two new **DataFrames** depending on whether the values are above or below a specified threshold value. We also chose this approach because we were interested in seeing whether we could achieve speedups by introduction parallelism and the data-structure level (e.g. by unrolling some of the loops in the **DataFrame**’s helper functions).
+We decided to define our own **DataVector** and **DataFrame** data types in order to ensure consistency in our data manipulations and make it easier to unit-test the code. For example, the **DataFrame** class contains a method that inspects values in a specified column and splits the rows into two new **DataFrames** depending on whether the values are above or below a specified threshold value. We also chose this approach because we were interested in seeing whether we could achieve speed up by introduction parallelism at the data-structure level (e.g. by unrolling some of the loops in the **DataFrame**’s helper functions).
 #### Use of nested algorithms
 We decided on a modularized approach for implementing the random forest algorithm:
 We defined a **TreeNode** class to handle tree traversal operations and data storage operations: each node in the tree stores a subset of the training data (i.e. the collection of observations that have been routed to that node in the decision tree based on previous splits), as well as the results of the splitting operation (i.e. which column to split on and what threshold value to use).
-We defined a **DecisonTree** class to implement the fitting algorithm, which loads the full training set into its root node, and recursively looks for the best split and generates left and right child **TreeNode** accordingly.
+We defined a **DecisionTree** class to implement the fitting algorithm, which loads the full training set into its root node, and recursively looks for the best split and generates left and right child **TreeNode** accordingly.
 We defined a **RandomForest** class to create a series of **DecisionTree** objects, fit each one on a different version of the dataset (using bootstrapped sampling), and make predictions based on the ensemble results.
 We felt this approach would make it easier to verify the accuracy of our results, and also facilitate comparisons to figure out where parallelization is most effective.
 #### Delegation of hyperparameters:
@@ -142,17 +144,17 @@ Our code is written in C++14. We use some standard libraries listed below but do
 ![alt text](https://github.com/johannes-kk/cs205_final_project/blob/readme/docs/html/decision__tree_8cpp__incl.png  "Library Usage for Decision Tree")
 
 ## OpenMP Parallelization
-Using shared-memory parallelization via OpenMP rather than, say, message-passing distributed-memory via MPI, affects how we parallelize. The src-openmp directory contains parallelized versions of the baseline serial codebase.
+The `src-openmp` directory contains parallelized versions of the baseline serial codebase.
 
-`random_forest.cpp` has a parallelized version of `RandomForest.fit()` which distributes the fitting of separate trees across threads. This is where most of the performance gains comes from, as now num_threads trees are being fitted at any given time rather than a single one.
+`random_forest.cpp` has a parallelized version of `RandomForest.fit()` which distributes the fitting of separate trees across threads. This is where most of the performance gains come from, as now `num_threads` trees are being fitted at any given time rather than a single one.
 
-`decision_tree.cpp` contains a parallelized version of `predict()` and `findBestSplit()`. Each random forest constituent tree is of the type DecisionTree, so further gains from parallelization can be achieved here. The `fit()` method is not parallelized, as it makes recursive calls to evaluate splits, and though we could parallelize different branches of the splitting process rather than greedily going left to right, the sequential portion of the code means the additional overhead would quickly outweigh the added computational power from parallelization. The `predict()` method, however, simply loops through the input observations to make a prediction for each, which is an obvious candidate for parallelization, though a bottleneck is that the combining of resultant predictions must be done in the right order, which slows it down a bit.
+`decision_tree.cpp` contains a parallelized version of `predict()` and `findBestSplit()`. Each random forest constituent tree is of the type DecisionTree, so further gains from parallelization can be achieved here. The `fit()` method is not parallelized, as it makes recursive calls to evaluate splits, and though we could parallelize different branches of the splitting process rather than greedily going left to right, the sequential portion of the code means the additional overhead would quickly outweigh the added computational power from parallelization. The `predict()` method, however, simply loops through the input observations to make a prediction for each, which is an obvious candidate for parallelization. A bottleneck is that the combining of resultant predictions must be done in the right order, which slows it down a bit.
 
-Finally `DecisionTree.findBestSplit()` is called every time a new split is evaluated in a tree; it searches the pool of candidate predictors to use as splits and evaluates all unique values of each to be used as the splitting criteria. This is an increasingly expensive task as the dataset grows. This is also parallelized such that different threads evaluate different subsets of the candidate space of split criteria, which noticeably improves training time, especially in combination with parallelized `RandomForest.fit()`.
+Finally, `DecisionTree.findBestSplit()` is called every time a new split is evaluated in a tree. It searches the pool of candidate predictors to use as splits and evaluates all unique values of each to be used as the splitting criteria. This is an increasingly expensive task as the dataset grows. This is also parallelized such that different threads evaluate different subsets of the candidate space of split criteria, which noticeably improves training time, especially in combination with parallelized `RandomForest.fit()`.
 
-Parallelizing Random Forest’s prediction method proved difficult as it relies heavily on recursive use of our custom data structures, which was not 100% reliable with OpenMP pragmas. After extensive experimentation we opted not to parallelize the `RandomForest.predict()` method, which ultimately does not matter much as the method is already very fast in serial execution; prediction is not the expensive part.
+Parallelizing Random Forest’s prediction method proved difficult as it relies heavily on recursive use of our custom data structures, which was not 100% reliable with OpenMP pragmas. After extensive experimentation, we opted not to parallelize the `RandomForest.predict()` method, which ultimately does not matter much as the method is already very fast in serial execution; prediction is not the expensive part.
 
-Our design choice to implement custom `DataVector` and `DataFrame` classes tremendously helped handling data, but proved to be a challenge when parallelizing. In particular, OpenMP apparently performs a lot of pre-allocation, creation, and deletion of objects under the hood, which requires a very thorough implementation of any custom classes and data structures. As such, when parallelizing using OpenMP pragmas, we usually avoided using our custom data structures where possible, instead using atomic types or standard objects from the std namespace. This was not a problem per se, but meant that parallelization did not merely consist of adding pragmas, but occasionally required some comprehensive refactoring. Consequently the OpenMP-parallelization took a lot longer than anticipated, which forced us to shelve some of our stretch goals.
+Our design choice to implement custom `DataVector` and `DataFrame` classes helped tremendously in handling data, but proved to be a challenge when parallelizing. In particular, OpenMP performs a lot of pre-allocation, creation, and deletion of objects under the hood, which requires a very thorough implementation of any custom classes and data structures. As such, when parallelizing using OpenMP pragmas, we usually avoided using our custom data structures where possible, instead using atomic types or standard objects from the `std` namespace. This was not a problem per se, but meant that parallelization did not merely consist of adding pragmas, but required some comprehensive refactoring. Consequently the OpenMP-parallelization took a lot longer than anticipated, impacting our stretch goals.
 
 ## How to Run Demo
 To run our Random Forest demonstration locally, please run the below commands in your Terminal. Please ensure you are using a version of C++ compatible with c++14.
@@ -179,6 +181,21 @@ Expected Output:
 
 ## Experimental Design
 
+#### Datasets
+We use three open-source machine learning datasets with varied characteristics for development, testing, and our experimentation.
+
+The Sonar dataset is a binary classification problem of discriminating between sonar signals bounced off metal cylinders versus roughly cylindrical rocks. We change the class column from a string to numerical, but otherwise use the dataset as-is. It only has a couple hundred observations, so it is mostly used for development and testing.
+
+Dataset link: https://archive.ics.uci.edu/ml/datasets/Connectionist+Bench+(Sonar,+Mines+vs.+Rocks)
+
+The HMEQ dataset contains loan performance information for 5,960 home equity loans (down to 3,445 observations after removing rows with missing values). For each loan, there are 12 predictors including loan amount, mortgage balance, and length of credit report. We dropped a predictor variable that represented the job category of the borrower because our implementation does not handle multi-class categorical variables yet. The target variable is a binary variable indicating whether a loan eventually went bad (defaulted / seriously delinquent). This adverse outcome occurs in 20% of the cases.
+
+We used the HMEQ dataset for testing the speedup achieved by our implementation.
+
+Dataset link: https://www.kaggle.com/ajay1735/hmeq-data
+
+The Cancer dataset is taken from a homework assignment from the Harvard Fall 2019 course AC209a (Data Science I). Each observation corresponds to a tissue sample from a patient with one of the two forms of leukemia. The target variable represents the cancer type, with 0 indicating the acute lymphoblastic leukemia (ALL) class and 1 indicating the acute myeloid leukemia (AML) class. The original dataset had 750 observations and expression levels of 7,129 different genes. For our testing, we reduced the number of predictors to only the first 30 genes.
+
 #### Cloud Infrastructure
 We utilize an Amazon Web Service m5.4xlarge instance for our parallel implementation tests. Our instance was running Ubuntu Server 16.04 with 16 vCPUs, 64 GiB Memory and EBS Storage. We were able to leverage 2 threads per core and 8 cores for the single socket. The CPU was an Intel Xeon Platinum 8259CL with 2.5GHz, L2 cache of 1024K and L3 cache of 36608K.
 
@@ -201,13 +218,15 @@ Compile the demo file (serial execution)
 $ g++ -std=c++14 -O0 ../speedup/rf_serial.cpp -o rf_serial
 Run the executable
 $ time ./rf_serial
-Expected output
-
+Output preview:
+![alt text](https://github.com/johannes-kk/cs205_final_project/blob/readme/demo/RF_Serial_Test.png "Output Preview")
 Compile the demo file (parallel execution)
 $ g++-5 -std=c++14 -O0 -fopenmp ../speedup/rf_openmp.cpp -o rf_openmp
 [Note: On an Ubuntu 16.04 AWS instance, `sudo apt install g++` installs g++-5. Our code will compile successfully using g++-5 as well.]
 Run the executable
 $ time ./rf_openmp
+Output preview:
+![alt text](https://github.com/johannes-kk/cs205_final_project/blob/readme/demo/RF_Parallel_Test.png "Output Preview")
 
 
 To change number of threads
