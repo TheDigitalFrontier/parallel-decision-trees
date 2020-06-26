@@ -1,4 +1,4 @@
-# Decision Tree Parallelization
+# Decision Tree Parallelization in C++
 #### CS205: Computing Foundations for Computational Science
 Harvard School of Engineering and Applied Sciences
 Spring 2020
